@@ -7,7 +7,7 @@ CORS(app)
 
 @app.route('/')
 def default():
-    return 'default path'
+    return 'default path.'
 
 @app.route('/api/search', methods=['POST'])
 def search():
