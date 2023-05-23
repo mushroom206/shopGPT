@@ -1,0 +1,19 @@
+steps:
+  # build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'us-west2-docker.pkg.dev/${_PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}', '.']
+
+  # push the Docker image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-west2-docker.pkg.dev/${_PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}']
+
+  # deploy the image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: ['run', 'deploy', '${_SERVICE_NAME}', '--image', 'us-west2-docker.pkg.dev/${_PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}', '--region', '${_REGION}', '--platform', 'managed', '--allow-unauthenticated']
+  
+substitutions:
+  _PROJECT_ID: shopgpt
+  _REPO_NAME: shopgptar
+  _SERVICE_NAME: shopgpt-cloudbuild-service
+  _REGION: us-west2
