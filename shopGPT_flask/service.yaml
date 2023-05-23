@@ -1,0 +1,11 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: shopgpt-cloudbuild-service
+  namespace: shopgpt
+spec:
+  template:
+    spec:
+      containers:
+      - image: us-west2-docker.pkg.dev/shopgpt/shopgptar/shopgpt-backend
+
