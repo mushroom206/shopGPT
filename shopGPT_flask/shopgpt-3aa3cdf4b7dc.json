@@ -1,0 +1,14 @@
+{
+  "type": "service_account",
+  "project_id": "shopgpt",
+  "private_key_id": "3aa3cdf4b7dcc1ac5b774f3d1b5675a32781b43b",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCO4BA3ceoDST/L\n2/cqdQLEXMYi7jM2ILVS2k9+KxVFvn562qso7N4j236SVjsEmDQ89SmQ6pdS5mN/\nFPohCfNP0XRp6Y9cEp8nGYblHRlauOaiznQSFf38qjOPmzImBf027Tknr9ODmCAq\n8b9AVQ4lGM/n+krFa3MMPZCB3yof1TqwXfGGo8aWYqRG0oHvOazGqxwR5JjCBRlD\nsYyqdz64z8IE3alDRFzEEyq9HzKPj5/B7uL7zbxg1pn9W/0TfbBL1xhGEBbjGRqe\nhJd3Ff7bpk0c6L2um8IgmJ3OvQre3i/Y/nehODmJyfXjc2yiTEQqjosASFZZCLkk\n0pGxRDSdAgMBAAECggEACI7QOdn3Z+H70cSnreHbXBKohZAZ/iyAX+mWqFqBSC+s\nWMR/SxDBD4nGr5I9r71EJ8CRkE4U6VDGdea2QsNbURUdMXjdbujooolrZI7VJXN8\n0RSnrCuoDnnNY9UqcE+chq035rIn67JxftEDISHXGo69aUo7L08L0Zhgbv8EgWqH\nznn63LzO8ciZREOjwJZ0RZcwGLCgT4DFhDvaQgOui6dm7M/FRIhR7y7gJ4pBU5PY\nEScB8jalQMnMTVpKxWo/2R64+OnwUMCBpmt4hTMOjn3y6Sn4U7c23yu/O7fFmm66\nry5leLjDPzFWscSNmY2NaPN7T14BQ7VJjh7tytcaewKBgQDHfSOoZEJ+x1Hcs10/\numFdS/635/nODo55s4rAAKUAMj072rmoZaU5IyJc9m07C8m7M6WYOTh83Qb3aIEJ\nsOOwaswGYjpNaC7nV/UD3PjrYND5y7XUKXgohoxpkfk6DGSXHTX+6/49fSmDxiIL\nSaITj2qkCIGdAOmJweBiztSFGwKBgQC3WVOygcciRZceUgVyc06ec4CevAQYVKLO\nD46OdREKwYegynVBcOc0GFxrJQBdEJfG0XPWkNnSznIk3tXKargtPo5wT9YZIJqt\nbWu+uvoKBUBATL1MVzmrYVX30XyMPFRJRn1E4x9QV5XbEg1euxiqdZVsgTIPBbhC\nXrVHQdogpwKBgEyIdwCojlZDM+XfLlw/rhD0EeIObmkebozEU+v7k1Hy9EkdTfMM\nJAo6r3lI1Xk8uYVHeDVhZomI5p5OiorkQUYygtnEH6gI203IEekMgrcS6rma7MRb\nsIyjqgTqito5XPIYs9l8QormlOHIRtFby4GDmR8bYFaSvgYqymI+BYyXAoGAZQ8k\ndgDYXQiUig7Vl8b8r5OkclnZu/tynTev8M+P7CjN9A+D3+U2Wt2OmzQS5jkOH3U1\nby/6EBrgiXgVyPNXvwB7DGbE8Kaq+yqTt9ZhmYJZbtedg2WUkOUeuHDMQJPENXtX\n8s9pZCRSoiRqICvqJZKYIO15RRR3AoYnTzZ534MCgYAR3oe+un4fgVqrXYSIOvW/\nB5B7fSw0gWFu7pLzh3Iu8xoQZsR+UFMn5h3kJTi5HpowpY3BxBtyam9jvwOq/aA6\nEqkrgQLzoecrWH87BHXp+v54yUsrKbDJ9yTATeIXDaxwT2u+RW+E8GCosu/6pZsr\n5m9UMglHDjrQCin9WoX/MQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "docker-service-account@shopgpt.iam.gserviceaccount.com",
+  "client_id": "107624325378641788842",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/docker-service-account%40shopgpt.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
+
