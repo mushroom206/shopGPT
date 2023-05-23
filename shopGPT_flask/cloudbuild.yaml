@@ -1,9 +1,7 @@
 steps:
   # build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'us-west2-docker.pkg.dev/${_PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}', './shopGPT_flask']
-  images:
-- 'us-west2-docker.pkg.dev/$PROJECT_ID/shopgptar/shopgpt-backend'  
+    args: ['build', '-t', 'us-west2-docker.pkg.dev/${_PROJECT_ID}/${_REPO_NAME}/${_SERVICE_NAME}', './shopGPT_flask'] 
 
   # push the Docker image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
