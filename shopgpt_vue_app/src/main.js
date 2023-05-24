@@ -8,12 +8,13 @@ import apiService from './services/apiService'
 import './assets/global.css'
 
 // Import your views
+import HomePage from './views/HomePage.vue'
 import PrivacyPolicy from './views/PrivacyPolicy.vue'
 import TermsOfService from './views/TermsOfService.vue'
 
 // Define your routes
 const routes = [
-  { path: '/', component: App },
+  { path: '/', component: HomePage },
   { path: '/privacy-policy', component: PrivacyPolicy },
   { path: '/terms-of-service', component: TermsOfService }
 ]
