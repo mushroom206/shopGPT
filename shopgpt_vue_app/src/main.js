@@ -2,18 +2,27 @@
 
 import { createStore } from 'vuex'
 import { createApp } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
 import apiService from './services/apiService'
 import './assets/global.css'
-import Vue from 'vue'
-import router from './router'
 
-Vue.config.productionTip = false
+// Import your views
+import PrivacyPolicy from './views/PrivacyPolicy.vue'
+import TermsOfService from './views/TermsOfService.vue'
 
-new Vue({
-  router,
-  render: h => h(App),
-}).$mount('#app')
+// Define your routes
+const routes = [
+  { path: '/', component: App },
+  { path: '/privacy-policy', component: PrivacyPolicy },
+  { path: '/terms-of-service', component: TermsOfService }
+]
+
+// Create the router instance and pass the `routes` option
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+})
 
 const store = createStore({
   state() {
@@ -68,4 +77,5 @@ const store = createStore({
 const app = createApp(App)
 
 app.use(store)
+app.use(router)
 app.mount('#app')
