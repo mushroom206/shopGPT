@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <router-view/>
     <SearchForm @submit="initialSubmit" />
     <div class="choices">
       <ChoiceCard v-for="choice in searchResults.choices" :key="choice.brand" :choice="choice" />
