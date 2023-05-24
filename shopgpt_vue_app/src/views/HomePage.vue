@@ -1,5 +1,6 @@
 <template>
     <div>
+      <GoogleLogin :callback="callback"/>
       <SearchForm @submit="initialSubmit" />
       <div class="choices">
         <ChoiceCard v-for="choice in searchResults.choices" :key="choice.brand" :choice="choice" />
@@ -69,5 +70,13 @@
         }
     }
   }
-  </script>
+</script>
+<script setup>
+import { decodeCredential } from 'vue3-google-login'
+const callback = (response) => {
+  // decodeCredential will retrive the JWT payload from the credential
+  const userData = decodeCredential(response.credential)
+  console.log("Handle the userData", userData)
+}
+</script>
   

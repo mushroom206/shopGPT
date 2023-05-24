@@ -6,17 +6,20 @@ import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
 import apiService from './services/apiService'
 import './assets/global.css'
+import vue3GoogleLogin from 'vue3-google-login'
 
 // Import your views
 import HomePage from './views/HomePage.vue'
 import PrivacyPolicy from './views/PrivacyPolicy.vue'
 import TermsOfService from './views/TermsOfService.vue'
+import DataDeletion from './views/DataDeletion.vue'
 
 // Define your routes
 const routes = [
   { path: '/', component: HomePage },
   { path: '/privacy-policy', component: PrivacyPolicy },
-  { path: '/terms-of-service', component: TermsOfService }
+  { path: '/terms-of-service', component: TermsOfService },
+  { path: '/data-deletion', component: DataDeletion }
 ]
 
 // Create the router instance and pass the `routes` option
@@ -79,4 +82,9 @@ const app = createApp(App)
 
 app.use(store)
 app.use(router)
+
+app.use(vue3GoogleLogin, {
+  clientId: '386372323157-34tj0kthjhnbcgb9jl9msamk33fi27ad.apps.googleusercontent.com'
+})
+
 app.mount('#app')
