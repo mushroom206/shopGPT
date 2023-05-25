@@ -22,7 +22,18 @@ async function refineSearchItems(queryObject) {
   }
 }
 
+async function askItemDetails(choice, question) {
+  try {
+    const response = await axios.post(`${API_URL}ask`, { choice, question });
+    console.log(response.data)
+    return response.data;
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
 export default {
   searchItems,
-  refineSearchItems
+  refineSearchItems,
+  askItemDetails
 }

@@ -130,3 +130,26 @@ def callChatGPT_refine(data):
     response = completion.choices[0].message.content
     print(response)
     return response
+
+def callChatGPT_ask(data):
+    print("callChatGPT_ask")
+    print(data)
+    completion = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=[
+            {"role": "user", "content": """you are my shopping advisor. 
+            Answer my question about this item, represented as [brand, item_category, model]: 
+            ["""+ data['choice']['brand'] +""", """+ data['choice']['item_category'] +""", """+ data['choice']['model'] +"""].
+            The question is: """+ data['question'] +""". 
+              Write your response in JSON and only JSON, so I can utilize your whole response directly in my app. 
+              The format is as follow: 
+            {
+            "answer": ""
+            }
+            """
+            }
+    ]
+    )
+    response = completion.choices[0].message.content
+    print(response)
+    return response

@@ -17,10 +17,16 @@
         </ul>
       </div>
     </div>
+    <div class="ask-question">
+      <input type="text" v-model="question" placeholder="Ask a question about this item">
+      <button @click="askQuestion">Ask</button>
+      </div>
   </div>
 </template>
 
 <script>
+import apiService from '../services/apiService'
+
 export default {
   props: {
     choice: {
@@ -31,8 +37,23 @@ export default {
   data() {
     return {
       placeholderImageUrl: 'https://via.placeholder.com/150',
+      question: '',
     };
   },
+  methods: {
+    async askQuestion() {
+      if (this.question !== '') {
+        // trigger the API call here
+        const response = await apiService.askItemDetails(this.choice, this.question);
+        // for now just log the response
+        console.log(response);
+        // Emit the custom event with the response as payload
+        this.$emit('ask-response', response);
+        // clear the question field after submitting
+        this.question = '';
+      }
+    }
+  }
 };
 </script>
 

@@ -3,7 +3,10 @@
       <GoogleLogin :callback="callback"/>
       <SearchForm @submit="initialSubmit" />
       <div class="choices">
-        <ChoiceCard v-for="choice in searchResults.choices" :key="choice.brand" :choice="choice" />
+        <ChoiceCard v-for="choice in searchResults.choices" :key="choice.brand" :choice="choice" @ask-response="handleAskResponse" />
+      </div>
+      <div class="ask-response" v-if="askResponse">
+        <p><strong>Response:</strong> {{ askResponse.answer }}</p>
       </div>
       <div v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" class="qualities-properties">
         <h2>Things to consider when shopping {{ searchResults.target }}</h2>
@@ -32,6 +35,7 @@
         item_query: null,
         selectedQualities: {},
         allQualitiesSelected: false,
+        askResponse: null,
       }
     },
     computed: mapState({
@@ -67,7 +71,18 @@
         if (Object.keys(this.selectedQualities).length === this.searchResults['qualities-properties'].length) {
             this.allQualitiesSelected = true;
         }
-        }
+        },
+        handleAskResponse(response) {
+          let parsedResponse;
+          try {
+            console.log(response)
+            parsedResponse = JSON.parse(response);
+          } catch (e) {
+            console.error('Error parsing response:', e);
+            parsedResponse = response;  // Use the original response if parsing fails
+          }
+          this.askResponse = parsedResponse;
+        },
     }
   }
 </script>
