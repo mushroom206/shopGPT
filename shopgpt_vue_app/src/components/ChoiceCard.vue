@@ -29,7 +29,7 @@
         </el-main>
         <el-footer v-if="!choice.default">
           <div class="ask-question">
-            <el-input v-model="question" placeholder="Tell me more?" :prefix-icon="Search" clearable>
+            <el-input v-model="question" placeholder="Tell me more" :prefix-icon="Search" clearable>
               <template #append>
                 <el-button type="primary" @click="askQuestion">Ask AI</el-button>
               </template>

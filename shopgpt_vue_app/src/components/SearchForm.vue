@@ -55,7 +55,7 @@
   .search-form {
       text-align: center;
       vertical-align: middle;
-      line-height: 1000%;
+      line-height: 400%;
     }
   /* .error-text {
     color: red;

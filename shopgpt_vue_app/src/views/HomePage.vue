@@ -3,15 +3,21 @@
     <el-container class="el-container">
       <el-header class="el-header">
         <el-row :gutter="20" justify="center">
-          <el-col :span="6"></el-col>
+          <el-col :span="6">
+            <el-image
+              style="width: 150px; height: 50px"
+              :src="require('@/assets/images/shopGPT_logo_noBG_banner.png')"
+              :fit="contain" class="logo">
+            </el-image>
+          </el-col>
           <el-col :span="6"></el-col>
           <el-col :span="6"></el-col>
           <el-col :span="6" :push="4">
-            <GoogleLogin :callback="callback"/>
+            <GoogleLogin :callback="callback" class="google-login"/>
           </el-col>
         </el-row>
       </el-header>
-      <el-main class="el-main">
+      <el-main class="el-main" v-loading="loading" element-loading-text="Loading...">
         <el-row :gutter="20" justify="center" class="search-form">
           <el-col :span="8">
             <SearchForm @submit="initialSubmit" />
@@ -22,11 +28,15 @@
         <ChoiceCard :choice="choice" @ask-response="handleAskResponse" />
       </el-col>
     </el-row>
-      <div v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" class="qualities-properties">
-        <h2>Things to consider when shopping {{ searchResults.target }}</h2>
-        <QualityProperty v-for="quality in searchResults['qualities-properties']" :key="quality.name" :quality="quality" @option-selected="updateQuality" />
-      </div>
-      <SearchButton v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" @submit="submitQualities" label="Fine Tune Choices!" />
+    <el-row :gutter="20" justify="center" class="fine-tune-section">
+      <el-col :span="6">
+        <el-card v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" shadow="hover" class="fine-tune-card">
+          <!-- <h2>Things to consider when shopping {{ searchResults.target }}</h2> -->
+          <QualityProperty v-for="quality in searchResults['qualities-properties']" :key="quality.name" :quality="quality" @option-selected="updateQuality" />
+          <SearchButton v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" @submit="submitQualities" label="Fine Tune Choices!" class="fine-tune-button" />
+        </el-card>
+      </el-col>
+    </el-row>
     </el-main>
       <!-- <el-footer>Footer</el-footer> -->
     </el-container>
@@ -54,6 +64,7 @@ const store = useStore()
 let item_query = ref(null)
 let selectedQualities = ref({})
 let askResponse = ref(null)
+let loading = computed(() => store.state.loading);
 
 // Initialize default choices
 let defaultChoices = reactive([
@@ -83,7 +94,14 @@ let searchResults = computed(() => {
 const initialSubmit = () => {
   if (item_query.value != null) {
     console.log('initialSubmit is called with item_query: ', item_query.value)
+    loading.value = true;
     store.dispatch('fetchSearchResults', item_query.value)
+      .then(() => {
+        loading.value = false;
+      })
+      .catch(() => {
+        loading.value = false;
+      });
   }
 }
 
@@ -147,9 +165,26 @@ const open = (askResponse) => {
     padding-bottom: 20px;
   }
 
+  .fine-tune-section{
+    background-color: honeydew;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+
+  .fine-tune-card{
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .fine-tune-button{
+    margin-top: 10px;
+  }
+
   .el-container{
     background-color: #f5c4c9;
-    padding-top: 20px;
+    padding-top: 10px;
     padding-bottom: 20px;
   }
 
@@ -157,6 +192,10 @@ const open = (askResponse) => {
     padding-left: 0%;
     padding-right: 0.4%;
     padding-top: 0;
+  }
+
+  .google-login{
+    padding-top: 5px;
   }
   
 </style>

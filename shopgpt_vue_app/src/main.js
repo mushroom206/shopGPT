@@ -37,6 +37,7 @@ const store = createStore({
       searchResults: {
         choices: []
       },
+      loading: false, 
     }
   },
   mutations: {
@@ -48,15 +49,19 @@ const store = createStore({
         }
 
         state.searchResults = results;
-    }
+    },
+    startLoading(state) {  // Add this mutation
+      state.loading = true;
+    },
+    endLoading(state) {  // Add this mutation
+      state.loading = false;
+    },
 },
-  actions: {
-    async fetchSearchResults({ commit }, item_query) {
-      console.log('Dispatching fetchSearchResults with item_query: ', item_query);
+actions: {
+  async fetchSearchResults({ commit }, item_query) {
+    try {
+      commit('startLoading');  // Start loading before the API request
       const response = await apiService.searchItems(item_query);
-  
-      // If the response is already an object, this will have no effect.
-      // If the response is a JSON string, it will be parsed into an object.
       let results;
       try {
         results = JSON.parse(response);
@@ -64,12 +69,17 @@ const store = createStore({
         console.error('Error parsing response:', e);
         results = response;  // Use the original response if parsing fails
       }
-  
       commit('setSearchResults', results);
-    },
-    async fetchRefinedSearchResults({ commit }, queryObject) {
+    } catch (error) {
+      console.error('Error fetching search results:', error);
+    } finally {
+      commit('endLoading');  // End loading after the API request and committing the results or catching an error
+    }
+  },
+  async fetchRefinedSearchResults({ commit }, queryObject) {
+    try {
+      commit('startLoading');  // Start loading before the API request
       const response = await apiService.refineSearchItems(queryObject);
-      
       let results;
       try {
         results = JSON.parse(response);
@@ -77,10 +87,14 @@ const store = createStore({
         console.error('Error parsing refined search response:', e);
         results = response; // Use the original response if parsing fails
       }
-
       commit('setSearchResults', results);
+    } catch (error) {
+      console.error('Error refining search results:', error);
+    } finally {
+      commit('endLoading');  // End loading after the API request and committing the results or catching an error
     }
   }
+}
 })
 
 const app = createApp(App)
