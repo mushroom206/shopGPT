@@ -34,7 +34,9 @@ const router = createRouter({
 const store = createStore({
   state() {
     return {
-      searchResults: [],
+      searchResults: {
+        choices: []
+      },
     }
   },
   mutations: {

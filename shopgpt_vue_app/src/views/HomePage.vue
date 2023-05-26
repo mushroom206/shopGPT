@@ -1,10 +1,17 @@
 <template>
   <div class="common-layout">
-    <el-container>
-      <el-header>
-        <GoogleLogin :callback="callback"/>
+    <el-container class="el-container">
+      <el-header class="el-header">
+        <el-row :gutter="20" justify="center">
+          <el-col :span="6"></el-col>
+          <el-col :span="6"></el-col>
+          <el-col :span="6"></el-col>
+          <el-col :span="6" :push="4">
+            <GoogleLogin :callback="callback"/>
+          </el-col>
+        </el-row>
       </el-header>
-      <el-main>
+      <el-main class="el-main">
         <el-row :gutter="20" justify="center" class="search-form">
           <el-col :span="8">
             <SearchForm @submit="initialSubmit" />
@@ -27,7 +34,7 @@
   </template>
   
   <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, reactive } from 'vue'
 import { useStore } from 'vuex'
 import { decodeCredential } from 'vue3-google-login'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -35,6 +42,10 @@ import SearchForm from '../components/SearchForm.vue'
 import ChoiceCard from '../components/ChoiceCard.vue'
 import QualityProperty from '../components/QualityProperty.vue'
 import SearchButton from '../components/SearchButton.vue'
+
+import defaultImage1 from '@/assets/images/undraw_Web_search_re_efla.png';
+import defaultImage2 from '@/assets/images/undraw_Faq_re_31cw.png';
+import defaultImage3 from '@/assets/images/undraw_shopping_app_flsj.png';
 
 // Vuex store
 const store = useStore()
@@ -44,8 +55,29 @@ let item_query = ref(null)
 let selectedQualities = ref({})
 let askResponse = ref(null)
 
+// Initialize default choices
+let defaultChoices = reactive([
+  {
+    default: true,
+    image: defaultImage1,
+    description: 'Find and compare items',
+  },
+  {
+    default: true,
+    description: 'Ask AI anything about the items',
+    image: defaultImage2,
+  },
+  {
+    default: true,
+    description: 'Happy shopping!',
+    image: defaultImage3,
+  },
+])
 // Computed
-let searchResults = computed(() => store.state.searchResults)
+let searchResults = computed(() => {
+  return store.state.searchResults.choices.length ? store.state.searchResults : { choices: defaultChoices }
+})
+
 
 // Methods
 const initialSubmit = () => {
@@ -109,6 +141,24 @@ const open = (askResponse) => {
     padding-top: 20px;
     padding-bottom: 20px;
   }
+  .search-form{
+    background-color: honeydew;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+
+  .el-container{
+    background-color: #f5c4c9;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+
+  .el-main{
+    padding-left: 0%;
+    padding-right: 0.4%;
+    padding-top: 0;
+  }
+  
 </style>
 
   
