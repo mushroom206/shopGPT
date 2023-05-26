@@ -3,23 +3,23 @@
     <el-container class="el-container">
       <el-header class="el-header">
         <el-row :gutter="20" justify="center">
-          <el-col :span="6">
+          <el-col :xs="11" :sm="10" :md="8" :lg="6">
             <el-image
               style="width: 150px; height: 50px"
               :src="require('@/assets/images/shopGPT_logo_noBG_banner.png')"
               :fit="contain" class="logo">
             </el-image>
           </el-col>
-          <el-col :span="6"></el-col>
-          <el-col :span="6"></el-col>
-          <el-col :span="6" :push="4">
+          <el-col :xs="1" :sm="2" :md="4" :lg="6"></el-col>
+          <el-col :xs="1" :sm="2" :md="4" :lg="6"></el-col>
+          <el-col :xs="11" :sm="10" :md="8" :lg="6">
             <GoogleLogin :callback="callback" class="google-login"/>
           </el-col>
         </el-row>
       </el-header>
       <el-main class="el-main" v-loading="loading" element-loading-text="Loading...">
         <el-row :gutter="20" justify="center" class="search-form">
-          <el-col :span="8">
+          <el-col ::xs="24" :sm="12" :md="8" :lg="6">
             <SearchForm @submit="initialSubmit" />
           </el-col>
         </el-row>
@@ -29,7 +29,7 @@
       </el-col>
     </el-row>
     <el-row :gutter="20" justify="center" class="fine-tune-section">
-      <el-col :span="6">
+      <el-col :xs="24" :sm="12" :md="8" :lg="6">
         <el-card v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" shadow="hover" class="fine-tune-card">
           <!-- <h2>Things to consider when shopping {{ searchResults.target }}</h2> -->
           <QualityProperty v-for="quality in searchResults['qualities-properties']" :key="quality.name" :quality="quality" @option-selected="updateQuality" />
