@@ -3,23 +3,23 @@
     <el-container class="el-container">
       <el-header class="el-header">
         <el-row :gutter="20" justify="center">
-          <el-col :xs="11" :sm="10" :md="8" :lg="6">
+          <el-col :xs="23" :sm="23" :md="23" :lg="23">
             <el-image
               style="width: 150px; height: 50px"
               :src="require('@/assets/images/shopGPT_logo_noBG_banner.png')"
               :fit="contain" class="logo">
             </el-image>
           </el-col>
-          <el-col :xs="1" :sm="2" :md="4" :lg="6"></el-col>
-          <el-col :xs="1" :sm="2" :md="4" :lg="6"></el-col>
-          <el-col :xs="11" :sm="10" :md="8" :lg="6">
-            <GoogleLogin :callback="callback" class="google-login"/>
-          </el-col>
+          <el-col :xs="1" :sm="1" :md="1" :lg="1">
+            <GoogleLogin :callback="callback" class="google-login">
+              <el-button :icon="Avatar" circle />
+              </GoogleLogin>
+            </el-col>    
         </el-row>
       </el-header>
       <el-main class="el-main" v-loading="loading" element-loading-text="Loading...">
         <el-row :gutter="20" justify="center" class="search-form">
-          <el-col ::xs="24" :sm="12" :md="8" :lg="6">
+          <el-col ::xs="24" :sm="16" :md="12" :lg="8">
             <SearchForm @submit="initialSubmit" />
           </el-col>
         </el-row>
@@ -29,7 +29,7 @@
       </el-col>
     </el-row>
     <el-row :gutter="20" justify="center" class="fine-tune-section">
-      <el-col :xs="24" :sm="12" :md="8" :lg="6">
+      <el-col :xs="24" :sm="18" :md="14" :lg="10">
         <el-card v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" shadow="hover" class="fine-tune-card">
           <!-- <h2>Things to consider when shopping {{ searchResults.target }}</h2> -->
           <QualityProperty v-for="quality in searchResults['qualities-properties']" :key="quality.name" :quality="quality" @option-selected="updateQuality" />
@@ -56,6 +56,10 @@ import SearchButton from '../components/SearchButton.vue'
 import defaultImage1 from '@/assets/images/undraw_Web_search_re_efla.png';
 import defaultImage2 from '@/assets/images/undraw_Faq_re_31cw.png';
 import defaultImage3 from '@/assets/images/undraw_shopping_app_flsj.png';
+
+import {
+  Avatar,
+} from '@element-plus/icons-vue'
 
 // Vuex store
 const store = useStore()
@@ -192,6 +196,7 @@ const open = (askResponse) => {
     padding-left: 0%;
     padding-right: 0.4%;
     padding-top: 0;
+    padding-bottom: 0%;
   }
 
   .google-login{

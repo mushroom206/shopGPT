@@ -1,7 +1,5 @@
 <template>
   <el-card shadow="hover" class="card">
-    <el-container>
-      <el-aside width="10%" v-if="!choice.default"></el-aside>
       <el-container>
         <!-- <el-header>HEAD</el-header> -->
         <el-main>
@@ -37,7 +35,6 @@
           </div>
         </el-footer>
       </el-container>
-    </el-container>
   </el-card>
 </template>
 
