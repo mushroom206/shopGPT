@@ -21,11 +21,11 @@ def callChatGPT(data):
             detailed enough so I can use your response to query for the items on a shopping site like Amazon, 
             give a brief description and a list of 3 pros and cons of each of your choices,
               represented as [choice1[description, pro1, pro2,pro3,con1,con2,con3]]. 
-              You will also give me 3 common and important quality or properties specific to {target} that may affect your choices. for example, 
+              You will also give me 3 most common and important quality or properties specific to {target} that may affect your choices. for example, 
               if {target} = rice cooker, the quality or properties that may affect your choices can be price, size, design, etc. 
               For each quality or property, provide 3 options so you can fine tune your choices accordingly, 
               provide numerical range for each option if applicable. 
-              Write your response in JSON and only JSON, so I can utilize your whole response directly in my app. 
+              Write your response in valid JSON and only valid JSON, validate your JSON and remedy any issue so I can utilize your whole response directly in my app. 
               The format is as follow: 
             {
             "target": "",
@@ -92,7 +92,7 @@ def callChatGPT_refine(data):
             detailed enough so I can use your response to query for the items on a shopping site like Amazon, 
             give a brief description and a list of 3 pros and cons of each of your choices,
               represented as [choice1[description, pro1, pro2,pro3,con1,con2,con3]]. 
-              Write your response in JSON and only JSON, so I can utilize your whole response directly in my app. 
+              Write your response in valid JSON and only valid JSON, validate your JSON and remedy any issue before return so I can utilize your whole response directly in my app. 
               The format is as follow: 
             {
             "target": "",
@@ -141,7 +141,7 @@ def callChatGPT_ask(data):
             Answer my question about this item, represented as [brand, item_category, model]: 
             ["""+ data['choice']['brand'] +""", """+ data['choice']['item_category'] +""", """+ data['choice']['model'] +"""].
             The question is: """+ data['question'] +""". 
-              Write your response in JSON and only JSON, so I can utilize your whole response directly in my app. 
+              Write your response in valid JSON and only valid JSON, validate your JSON and remedy any issue so I can utilize your whole response directly in my app. 
               The format is as follow: 
             {
             "answer": ""

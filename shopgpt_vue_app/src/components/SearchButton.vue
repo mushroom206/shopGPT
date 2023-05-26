@@ -1,6 +1,6 @@
 <!-- SearchButton.vue -->
 <template>
-  <button class="search-button" @click="emitSubmit">{{ label }}</button>
+  <el-button class="search-button" @click="emitSubmit">{{ label }}</el-button>
 </template>
 
 <script>

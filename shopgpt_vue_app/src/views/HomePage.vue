@@ -1,97 +1,114 @@
 <template>
-    <div>
-      <GoogleLogin :callback="callback"/>
-      <SearchForm @submit="initialSubmit" />
-      <div class="choices">
-        <ChoiceCard v-for="choice in searchResults.choices" :key="choice.brand" :choice="choice" @ask-response="handleAskResponse" />
-      </div>
-      <div class="ask-response" v-if="askResponse">
-        <p><strong>Response:</strong> {{ askResponse.answer }}</p>
-      </div>
+  <div class="common-layout">
+    <el-container>
+      <el-header>
+        <GoogleLogin :callback="callback"/>
+      </el-header>
+      <el-main>
+        <el-row :gutter="20" justify="center" class="search-form">
+          <el-col :span="8">
+            <SearchForm @submit="initialSubmit" />
+          </el-col>
+        </el-row>
+    <el-row :gutter="20" justify="center" class="card-container">
+      <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="choice in searchResults.choices" :key="choice.brand">
+        <ChoiceCard :choice="choice" @ask-response="handleAskResponse" />
+      </el-col>
+    </el-row>
       <div v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" class="qualities-properties">
         <h2>Things to consider when shopping {{ searchResults.target }}</h2>
         <QualityProperty v-for="quality in searchResults['qualities-properties']" :key="quality.name" :quality="quality" @option-selected="updateQuality" />
       </div>
-      <SearchButton v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" @submit="submitQualities" label="Fine Tune!" />
+      <SearchButton v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" @submit="submitQualities" label="Fine Tune Choices!" />
+    </el-main>
+      <!-- <el-footer>Footer</el-footer> -->
+    </el-container>
     </div>
   </template>
   
-  <script>
-  import SearchForm from '../components/SearchForm.vue'
-  import ChoiceCard from '../components/ChoiceCard.vue'
-  import QualityProperty from '../components/QualityProperty.vue'
-  import { mapState } from 'vuex'
-  import SearchButton from '../components/SearchButton.vue'
-  
-  export default {
-    components: {
-      SearchForm,
-      ChoiceCard,
-      QualityProperty,
-      SearchButton
-    },
-    data() {
-      return {
-        item_query: null,
-        selectedQualities: {},
-        allQualitiesSelected: false,
-        askResponse: null,
-      }
-    },
-    computed: mapState({
-      searchResults: state => state.searchResults
-    }),
-    watch: {
-      searchResults: {
-        handler(newVal) {
-          console.log(JSON.stringify(newVal, null, 2))
-        },
-        deep: true
-      }
-    },
-    methods: {
-        initialSubmit() {
-        if (this.item_query != null) {
-        console.log('initialSubmit is called with item_query: ', this.item_query);
-        this.$store.dispatch('fetchSearchResults', this.item_query);
-        }
-        else {
-            return
-        }
-        },
-        submitQualities() {
-        if (this.allQualitiesSelected) {
-            this.$store.dispatch('fetchRefinedSearchResults', { target: this.searchResults.target, qualities: this.selectedQualities });
-            this.allQualitiesSelected = false;
-        }
-        },
-        updateQuality(selectedQuality) {
-        this.selectedQualities = { ...this.selectedQualities, ...selectedQuality };
-
-        if (Object.keys(this.selectedQualities).length === this.searchResults['qualities-properties'].length) {
-            this.allQualitiesSelected = true;
-        }
-        },
-        handleAskResponse(response) {
-          let parsedResponse;
-          try {
-            console.log(response)
-            parsedResponse = JSON.parse(response);
-          } catch (e) {
-            console.error('Error parsing response:', e);
-            parsedResponse = response;  // Use the original response if parsing fails
-          }
-          this.askResponse = parsedResponse;
-        },
-    }
-  }
-</script>
-<script setup>
+  <script setup>
+import { ref, computed } from 'vue'
+import { useStore } from 'vuex'
 import { decodeCredential } from 'vue3-google-login'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import SearchForm from '../components/SearchForm.vue'
+import ChoiceCard from '../components/ChoiceCard.vue'
+import QualityProperty from '../components/QualityProperty.vue'
+import SearchButton from '../components/SearchButton.vue'
+
+// Vuex store
+const store = useStore()
+
+// Data
+let item_query = ref(null)
+let selectedQualities = ref({})
+let askResponse = ref(null)
+
+// Computed
+let searchResults = computed(() => store.state.searchResults)
+
+// Methods
+const initialSubmit = () => {
+  if (item_query.value != null) {
+    console.log('initialSubmit is called with item_query: ', item_query.value)
+    store.dispatch('fetchSearchResults', item_query.value)
+  }
+}
+
+const submitQualities = () => {
+    store.dispatch('fetchRefinedSearchResults', { target: searchResults.value.target, qualities: selectedQualities.value })
+}
+
+const updateQuality = (selectedQuality) => {
+  selectedQualities.value = { ...selectedQualities.value, ...selectedQuality }
+}
+
+const handleAskResponse = (response) => {
+  let parsedResponse
+  try {
+    parsedResponse = JSON.parse(response)
+  } catch (e) {
+    console.error('Error parsing response:', e)
+    parsedResponse = response  // Use the original response if parsing fails
+  }
+  askResponse.value = parsedResponse
+  open(askResponse.value)
+}
+
 const callback = (response) => {
   // decodeCredential will retrive the JWT payload from the credential
   const userData = decodeCredential(response.credential)
   console.log("Handle the userData", userData)
 }
+
+const open = (askResponse) => {
+  ElMessageBox.alert(askResponse.answer, 'I\'m Back', {
+    // if you want to disable its autofocus
+    // autofocus: false,
+    confirmButtonText: 'OK',
+    callback: (action) => {  // Remove type annotation here
+      ElMessage({
+        type: 'info',
+        message: `action: ${action}`,
+      })
+    },
+  })
+}
 </script>
+
+<style scoped>
+  /* .imgBK {
+  background-image: url("https://www.usatoday.com/gcdn/-mm-/b2b05a4ab25f4fca0316459e1c7404c537a89702/c=0-0-1365-768/local/-/media/2022/03/16/USATODAY/usatsports/imageForEntry5-ODq.jpg?width=1365&height=768&fit=crop&format=pjpg&auto=webp");
+  background-repeat: no-repeat;
+  background-size: cover; 
+  background-position: center; 
+  } */
+
+  .card-container{
+    background-color: honeydew;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+</style>
+
   

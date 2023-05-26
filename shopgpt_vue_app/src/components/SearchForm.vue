@@ -1,9 +1,12 @@
 <template>
     <div class="search-form">
-      <form @submit.prevent="submitForm" class="search-form">
-        <input type="text" v-model="item_query" placeholder="Enter item name or description">
-        <span v-if="v$.item_query.$error" class="error-text">Input is required and should be less than 20 words</span>
-        <SearchButton @submit="submit" />
+      <form @submit.prevent="submitForm">
+        <el-input v-model="item_query" placeholder="Enter item name or description" :prefix-icon="Search" clearable maxlength="30" show-word-limit size="large" :autofocus="true">
+          <template #append>
+            <el-button type="primary" @click="submitForm">Search</el-button>
+          </template>
+        </el-input>
+        <!-- <span v-if="v$.item_query.$error" class="error-text">Input is required and should be less than 20 words</span> -->
       </form>
     </div>
   </template>
@@ -12,7 +15,6 @@
   import { required, maxLength } from '@vuelidate/validators'
   import { useVuelidate } from '@vuelidate/core'
   import { useStore } from 'vuex'
-  import SearchButton from './SearchButton.vue';
   
   export default {
     setup() {
@@ -29,33 +31,34 @@
       return {
         item_query: {
           required,
-          maxLength: maxLength(20)
+          maxLength: maxLength(100)
         }
       }
     },
     components: {
-    SearchButton,
-    // other components go here
   },
     methods: {
       async submitForm() {
-        await this.v$.$validate()
-  
-        if (this.v$.item_query.$error) {
-          // Don't submit form if there's a validation error
-          return
-        }
-  
-        // call your backend API
-        this.store.dispatch('fetchSearchResults', this.item_query);
-      }
+    await this.v$.$validate()
+    if (!this.v$.item_query.$error) {
+      // call your backend API
+      this.store.dispatch('fetchSearchResults', this.item_query);
+      // emit 'submit' event
+      this.$emit('submit');
+    }
+  }
     }
   }
   </script>
   
   <style scoped>
-  .error-text {
+  .search-form {
+      text-align: center;
+      vertical-align: middle;
+      line-height: 1000%;
+    }
+  /* .error-text {
     color: red;
-  }
+  } */
   </style>
   
