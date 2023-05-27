@@ -11,9 +11,8 @@
             </el-image>
           </el-col>
           <el-col :xs="1" :sm="1" :md="1" :lg="1">
-            <GoogleLogin :callback="callback" class="google-login">
-              <el-button :icon="Avatar" circle />
-              </GoogleLogin>
+            <GoogleLogin :callback="callback" class="google-login" />
+              <!-- <el-button :icon="Avatar" circle /> -->
             </el-col>    
         </el-row>
       </el-header>
@@ -57,9 +56,9 @@ import defaultImage1 from '@/assets/images/undraw_Web_search_re_efla.png';
 import defaultImage2 from '@/assets/images/undraw_Faq_re_31cw.png';
 import defaultImage3 from '@/assets/images/undraw_shopping_app_flsj.png';
 
-import {
-  Avatar,
-} from '@element-plus/icons-vue'
+// import {
+//   Avatar,
+// } from '@element-plus/icons-vue'
 
 // Vuex store
 const store = useStore()
