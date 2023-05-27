@@ -51,15 +51,15 @@
       <el-footer height="10px">
         <el-row gutter="10" justify="center" class="footer-section">
           <el-col :xs="1" :sm="1" :md="6" :lg="6" class="centered-content"></el-col>
-          <el-col :xs="6" :sm="6" :md="3" :lg="3" class="centered-content">
+          <el-col :xs="8" :sm="8" :md="4" :lg="4" class="centered-content">
             <router-link to="/privacy-policy">
               <el-link type="info">Privacy Policy</el-link>
             </router-link>
           </el-col>
-          <el-col :xs="10" :sm="10" :md="6" :lg="6" class="centered-content">
+          <el-col :xs="5" :sm="5" :md="4" :lg="4" class="centered-content">
             <el-link type="info">ShopGPT&reg;</el-link>
           </el-col>
-          <el-col :xs="6" :sm="6" :md="3" :lg="3" class="centered-content">
+          <el-col :xs="9" :sm="9" :md="4" :lg="4" class="centered-content">
             <router-link to="/terms-of-service">
               <el-link type="info">Terms of Service</el-link>
             </router-link>
