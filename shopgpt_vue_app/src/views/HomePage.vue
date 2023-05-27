@@ -58,6 +58,7 @@ import ChoiceCard from '../components/ChoiceCard.vue'
 import QualityProperty from '../components/QualityProperty.vue'
 import SearchButton from '../components/SearchButton.vue'
 import { googleLogout } from "vue3-google-login"
+import { decodeCredential } from 'vue3-google-login'
 
 import defaultImage1 from '@/assets/images/undraw_Web_search_re_efla.png';
 import defaultImage2 from '@/assets/images/undraw_Faq_re_31cw.png';
@@ -150,7 +151,8 @@ const open = (askResponse) => {
 }
 
 const callback = (response) => {
-  console.log("Handle the response", response)
+  const userData = decodeCredential(response.credential)
+  console.log("Handle the userData", userData)
 }
 
 const gLogout = () => {
