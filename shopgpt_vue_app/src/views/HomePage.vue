@@ -3,17 +3,24 @@
     <el-container class="el-container">
       <el-header class="el-header">
         <el-row :gutter="20" justify="center">
-          <el-col :xs="23" :sm="23" :md="23" :lg="23">
+          <el-col :xs="22" :sm="22" :md="22" :lg="22">
             <el-image
               style="width: 150px; height: 50px"
               :src="require('@/assets/images/shopGPT_logo_noBG_banner.png')"
               :fit="contain" class="logo">
             </el-image>
           </el-col>
-          <el-col :xs="1" :sm="1" :md="1" :lg="1">
-            <GoogleLogin :callback="callback" class="google-login" />
-              <!-- <el-button :icon="Avatar" circle /> -->
-            </el-col>    
+          <el-col :xs="2" :sm="2" :md="2" :lg="2" class="google-login">
+            <el-dropdown>
+              <el-button :icon="Avatar" circle />
+              <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item><GoogleLogin :callback="callback" /></el-dropdown-item>
+                <el-dropdown-item><el-button @click="gLogout">Log Out</el-button></el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+            </el-dropdown>
+          </el-col>
         </el-row>
       </el-header>
       <el-main class="el-main" v-loading="loading" element-loading-text="Loading...">
@@ -45,20 +52,20 @@
   <script setup>
 import { ref, computed, reactive } from 'vue'
 import { useStore } from 'vuex'
-import { decodeCredential } from 'vue3-google-login'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import SearchForm from '../components/SearchForm.vue'
 import ChoiceCard from '../components/ChoiceCard.vue'
 import QualityProperty from '../components/QualityProperty.vue'
 import SearchButton from '../components/SearchButton.vue'
+import { googleLogout } from "vue3-google-login"
 
 import defaultImage1 from '@/assets/images/undraw_Web_search_re_efla.png';
 import defaultImage2 from '@/assets/images/undraw_Faq_re_31cw.png';
 import defaultImage3 from '@/assets/images/undraw_shopping_app_flsj.png';
 
-// import {
-//   Avatar,
-// } from '@element-plus/icons-vue'
+import {
+  Avatar,
+} from '@element-plus/icons-vue'
 
 // Vuex store
 const store = useStore()
@@ -128,12 +135,6 @@ const handleAskResponse = (response) => {
   open(askResponse.value)
 }
 
-const callback = (response) => {
-  // decodeCredential will retrive the JWT payload from the credential
-  const userData = decodeCredential(response.credential)
-  console.log("Handle the userData", userData)
-}
-
 const open = (askResponse) => {
   ElMessageBox.alert(askResponse.answer, 'I\'m Back', {
     // if you want to disable its autofocus
@@ -147,6 +148,17 @@ const open = (askResponse) => {
     },
   })
 }
+
+const callback = (response) => {
+  console.log("Handle the response", response)
+}
+
+const gLogout = () => {
+  // your logout logics
+  googleLogout()
+  console.log("logout")
+}
+
 </script>
 
 <style scoped>
@@ -199,7 +211,7 @@ const open = (askResponse) => {
   }
 
   .google-login{
-    padding-top: 5px;
+    padding-top: 10px;
   }
   
 </style>
