@@ -11,6 +11,7 @@ import './assets/global.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import vue3GoogleLogin from 'vue3-google-login'
 
+
 // Import your views
 import HomePage from './views/HomePage.vue'
 import PrivacyPolicy from './views/PrivacyPolicy.vue'

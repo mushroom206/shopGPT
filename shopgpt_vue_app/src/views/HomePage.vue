@@ -3,20 +3,25 @@
     <el-container class="el-container">
       <el-header class="el-header">
         <el-row :gutter="20" justify="center">
-          <el-col :xs="22" :sm="22" :md="22" :lg="22">
+          <el-col :xs="20" :sm="21" :md="22" :lg="23">
             <el-image
               style="width: 150px; height: 50px"
               :src="require('@/assets/images/shopGPT_logo_noBG_banner.png')"
               :fit="contain" class="logo">
             </el-image>
           </el-col>
-          <el-col :xs="2" :sm="2" :md="2" :lg="2" class="google-login">
+          <el-col :xs="4" :sm="3" :md="2" :lg="1" class="google-login">
             <el-dropdown>
-              <el-button :icon="Avatar" circle />
+              <el-avatar v-if="userPicture" :src="userPicture" />
+              <el-button v-else size="large" :icon=Avatar circle />
               <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item><GoogleLogin :callback="callback" /></el-dropdown-item>
-                <el-dropdown-item><el-button @click="gLogout">Log Out</el-button></el-dropdown-item>
+                <el-dropdown-item>
+                    <el-button @click="login">Log in by Gmail</el-button>
+                </el-dropdown-item>
+                <el-dropdown-item>
+                  <el-button @click="gLogout">Log Out</el-button>
+                </el-dropdown-item>
               </el-dropdown-menu>
             </template>
             </el-dropdown>
@@ -37,14 +42,31 @@
     <el-row :gutter="20" justify="center" class="fine-tune-section">
       <el-col :xs="24" :sm="18" :md="14" :lg="10">
         <el-card v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" shadow="hover" class="fine-tune-card">
-          <!-- <h2>Things to consider when shopping {{ searchResults.target }}</h2> -->
           <QualityProperty v-for="quality in searchResults['qualities-properties']" :key="quality.name" :quality="quality" @option-selected="updateQuality" />
           <SearchButton v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" @submit="submitQualities" label="Fine Tune Choices!" class="fine-tune-button" />
         </el-card>
       </el-col>
     </el-row>
     </el-main>
-      <!-- <el-footer>Footer</el-footer> -->
+      <el-footer height="10px">
+        <el-row gutter="10" justify="center" class="footer-section">
+          <el-col :xs="1" :sm="1" :md="6" :lg="6" class="centered-content"></el-col>
+          <el-col :xs="6" :sm="6" :md="3" :lg="3" class="centered-content">
+            <router-link to="/privacy-policy">
+              <el-link type="info">Privacy Policy</el-link>
+            </router-link>
+          </el-col>
+          <el-col :xs="10" :sm="10" :md="6" :lg="6" class="centered-content">
+            <el-link type="info">ShopGPT&reg;</el-link>
+          </el-col>
+          <el-col :xs="6" :sm="6" :md="3" :lg="3" class="centered-content">
+            <router-link to="/terms-of-service">
+              <el-link type="info">Terms of Service</el-link>
+            </router-link>
+          </el-col>
+          <el-col :xs="1" :sm="1" :md="6" :lg="6" class="centered-content"></el-col>
+        </el-row>
+      </el-footer>
     </el-container>
     </div>
   </template>
@@ -58,7 +80,9 @@ import ChoiceCard from '../components/ChoiceCard.vue'
 import QualityProperty from '../components/QualityProperty.vue'
 import SearchButton from '../components/SearchButton.vue'
 import { googleLogout } from "vue3-google-login"
-import { decodeCredential } from 'vue3-google-login'
+// import { decodeCredential } from 'vue3-google-login'
+import { googleTokenLogin } from "vue3-google-login"
+import { onMounted } from 'vue'
 
 import defaultImage1 from '@/assets/images/undraw_Web_search_re_efla.png';
 import defaultImage2 from '@/assets/images/undraw_Faq_re_31cw.png';
@@ -68,6 +92,7 @@ import {
   Avatar,
 } from '@element-plus/icons-vue'
 
+
 // Vuex store
 const store = useStore()
 
@@ -76,6 +101,7 @@ let item_query = ref(null)
 let selectedQualities = ref({})
 let askResponse = ref(null)
 let loading = computed(() => store.state.loading);
+let userPicture = ref(null);
 
 // Initialize default choices
 let defaultChoices = reactive([
@@ -150,16 +176,55 @@ const open = (askResponse) => {
   })
 }
 
-const callback = (response) => {
-  const userData = decodeCredential(response.credential)
-  console.log("Handle the userData", userData)
+const getUserData = async (accessToken) => {
+  try {
+    const response = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
+    }
+    const userData = await response.json();
+    console.log("User data: ", userData);
+    return userData;
+  } catch (error) {
+    console.error("Error fetching user data: ", error);
+  }
 }
+
+const login = () => {
+  googleTokenLogin().then((response) => {
+    console.log("Handle the response", response)
+    getUserData(response.access_token).then((data) => {
+      userPicture.value = data.picture
+      // Save user data to local storage
+      const userData = { ...response, picture: data.picture }
+      localStorage.setItem('userData', JSON.stringify(userData))
+    })
+  })
+}
+
 
 const gLogout = () => {
   // your logout logics
   googleLogout()
+  // Clear user data from local storage
+  localStorage.removeItem('userData')
+  // Reset userPicture
+  userPicture.value = null
   console.log("logout")
 }
+
+
+onMounted(() => {
+  // Check local storage for user data
+  const storedUserData = localStorage.getItem('userData')
+
+  if (storedUserData) {
+    // Parse the user data and update userPicture
+    const userData = JSON.parse(storedUserData)
+    userPicture.value = userData.picture
+  }
+})
+
 
 </script>
 
@@ -199,6 +264,13 @@ const gLogout = () => {
     margin-top: 10px;
   }
 
+  .centered-content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 5px;
+  }
+
   .el-container{
     background-color: #f5c4c9;
     padding-top: 10px;
@@ -213,7 +285,7 @@ const gLogout = () => {
   }
 
   .google-login{
-    padding-top: 10px;
+    padding-top: 5px;
   }
   
 </style>

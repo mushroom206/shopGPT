@@ -1,7 +1,7 @@
 <template>
     <div class="search-form">
       <form @submit.prevent="submitForm">
-        <el-input v-model="item_query" placeholder="Enter item or description" :prefix-icon="Search" clearable maxlength="30" show-word-limit size="large" :autofocus="true">
+        <el-input v-model="item_query" placeholder="Enter item or description" :prefix-icon="Search" clearable maxlength="50" show-word-limit size="large" :autofocus="true">
           <template #append>
             <el-button type="primary" @click="submitForm">Search</el-button>
           </template>
