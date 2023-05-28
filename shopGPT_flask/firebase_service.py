@@ -18,6 +18,7 @@ if service_account_key_json is None:
 
 # Parse the JSON string into a Python dictionary
 service_account_key = json.loads(service_account_key_json)
+print(service_account_key)
 
 # Use the service account key to initialize the Firebase Admin SDK
 cred = credentials.Certificate(service_account_key)
