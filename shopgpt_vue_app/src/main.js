@@ -59,10 +59,10 @@ const store = createStore({
     },
 },
 actions: {
-  async fetchSearchResults({ commit }, item_query) {
+  async fetchSearchResults({ commit }, payload) {
     try {
       commit('startLoading');  // Start loading before the API request
-      const response = await apiService.searchItems(item_query);
+      const response = await apiService.searchItems(payload);
       let results;
       try {
         results = JSON.parse(response);

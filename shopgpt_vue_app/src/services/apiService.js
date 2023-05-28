@@ -3,10 +3,10 @@
 import axios from 'axios';
 import { API_URL } from '@/config'
 
-async function searchItems(item_query) {
+async function searchItems(payload) {
   try {
-    console.log('Sending axios request with item_query: ', item_query);
-    const response = await axios.post(`${API_URL}search`, { item_query });
+    console.log('Sending axios request with payload: ', payload);
+    const response = await axios.post(`${API_URL}search`, payload);
     return response.data;
   } catch (error) {
     console.error('Error:', error);
@@ -31,8 +31,18 @@ async function askItemDetails(choice, question) {
   }
 }
 
+async function saveEmail(email) {
+  try {
+    const response = await axios.post(`${API_URL}saveEmail`, { email });
+    return response.data;
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
 export default {
   searchItems,
   refineSearchItems,
-  askItemDetails
+  askItemDetails,
+  saveEmail
 }

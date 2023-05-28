@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from gpt_service import callChatGPT, callChatGPT_refine, callChatGPT_ask
+from firebase_service import save_user_email, save_search_history
 
 app = Flask(__name__)
 CORS(app)
@@ -13,6 +14,9 @@ def default():
 def search():
     try:
         data = request.get_json()
+        # print("search()"+str(data))
+        if 'email' in data: # if user is logged in
+            save_search_history(data['email'], data['item_query'])
         result = callChatGPT(data)
         return jsonify(result), 200
     except Exception as e:
@@ -37,7 +41,17 @@ def ask():
         return jsonify(result), 200
     except Exception as e:
         print(e)
-        return jsonify({"error": "An error occurred while processing the request"}), 500    
+        return jsonify({"error": "An error occurred while processing the request"}), 500
+
+@app.route('/api/saveEmail', methods=['POST'])
+def saveEmail():
+    try:
+        data = request.get_json()
+        save_user_email(data['email'])
+        return jsonify({"message": "Email saved successfully"}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "An error occurred while processing the request"}), 500        
 
 if __name__ == '__main__':
     app.run(debug=True)

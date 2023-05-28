@@ -28,10 +28,10 @@
           </el-col>
         </el-row>
       </el-header>
-      <el-main class="el-main" v-loading="loading" element-loading-text="Loading...">
+      <el-main class="el-main" v-loading="loading" element-loading-text="Thinking...">
         <el-row :gutter="20" justify="center" class="search-form">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
-            <SearchForm @submit="initialSubmit" />
+            <SearchForm @submit="initialSubmit($event)" />
           </el-col>
         </el-row>
     <el-row :gutter="20" justify="center" class="card-container">
@@ -40,7 +40,7 @@
       </el-col>
     </el-row>
     <el-row :gutter="20" justify="center" class="fine-tune-section">
-      <el-col :xs="24" :sm="18" :md="14" :lg="10">
+      <el-col :xs="24" :sm="18" :md="14" :lg="6">
         <el-card v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" shadow="hover" class="fine-tune-card">
           <QualityProperty v-for="quality in searchResults['qualities-properties']" :key="quality.name" :quality="quality" @option-selected="updateQuality" />
           <SearchButton v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" @submit="submitQualities" label="Fine Tune Choices!" class="fine-tune-button" />
@@ -83,6 +83,7 @@ import { googleLogout } from "vue3-google-login"
 // import { decodeCredential } from 'vue3-google-login'
 import { googleTokenLogin } from "vue3-google-login"
 import { onMounted } from 'vue'
+import apiService from '@/services/apiService'  // Import the apiService here
 
 import defaultImage1 from '@/assets/images/undraw_Web_search_re_efla.png';
 import defaultImage2 from '@/assets/images/undraw_Faq_re_31cw.png';
@@ -128,17 +129,21 @@ let searchResults = computed(() => {
 
 
 // Methods
-const initialSubmit = () => {
+const initialSubmit = (query) => {
+  item_query.value = query;
   if (item_query.value != null) {
-    console.log('initialSubmit is called with item_query: ', item_query.value)
     loading.value = true;
-    store.dispatch('fetchSearchResults', item_query.value)
-      .then(() => {
-        loading.value = false;
-      })
-      .catch(() => {
-        loading.value = false;
-      });
+
+    // check if user is logged in
+    const storedUserData = localStorage.getItem('userData')
+    let payload = { item_query: item_query.value }
+
+    if (storedUserData) {
+      const userData = JSON.parse(storedUserData)
+      payload.email = userData.email // add email to payload
+    }
+
+    store.dispatch('fetchSearchResults', payload)
   }
 }
 
@@ -192,12 +197,16 @@ const getUserData = async (accessToken) => {
 
 const login = () => {
   googleTokenLogin().then((response) => {
-    console.log("Handle the response", response)
     getUserData(response.access_token).then((data) => {
       userPicture.value = data.picture
       // Save user data to local storage
-      const userData = { ...response, picture: data.picture }
+      const userData = { ...response, picture: data.picture, email: data.email }
       localStorage.setItem('userData', JSON.stringify(userData))
+
+      // send email to backend
+      apiService.saveEmail(data.email)  // Use apiService to save the email here
+        .then(response => console.log(response))
+        .catch(error => console.error(error))
     })
   })
 }

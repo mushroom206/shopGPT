@@ -1,7 +1,7 @@
 <template>
     <div class="search-form">
       <form @submit.prevent="submitForm">
-        <el-input v-model="item_query" placeholder="Enter item or description" :prefix-icon="Search" clearable maxlength="50" show-word-limit size="large">
+        <el-input v-model="item_query" placeholder="smart watch, yoga mat, gift for Christmas" :prefix-icon="Search" clearable maxlength="50" show-word-limit size="large">
           <template #append>
             <el-button type="primary" @click="submitForm">Search</el-button>
           </template>
@@ -41,10 +41,7 @@
       async submitForm() {
     await this.v$.$validate()
     if (!this.v$.item_query.$error) {
-      // call your backend API
-      this.store.dispatch('fetchSearchResults', this.item_query);
-      // emit 'submit' event
-      this.$emit('submit');
+      this.$emit('submit', this.item_query);
     }
   }
     }

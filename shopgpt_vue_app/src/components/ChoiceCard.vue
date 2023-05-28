@@ -27,9 +27,9 @@
         </el-main>
         <el-footer v-if="!choice.default">
           <div class="ask-question">
-            <el-input v-model="question" placeholder="Tell me more" :prefix-icon="Search" clearable>
+            <el-input v-model="question" placeholder="Tell me more about this item" :prefix-icon="Search" clearable>
               <template #append>
-                <el-button type="primary" @click="askQuestion">Ask AI</el-button>
+                <el-button type="primary" @click="askQuestion" :loading="$store.state.loading">Ask AI</el-button>
               </template>
             </el-input>
           </div>
@@ -56,15 +56,14 @@ export default {
   },
   methods: {
     async askQuestion() {
-      if (this.question !== '') {
-        // trigger the API call here
-        const response = await apiService.askItemDetails(this.choice, this.question);
-        // Emit the custom event with the response as payload
-        this.$emit('ask-response', response);
-        // clear the question field after submitting
-        this.question = '';
-      }
+    if (this.question !== '') {
+      this.$store.commit('startLoading');  // Start loading before the API request
+      const response = await apiService.askItemDetails(this.choice, this.question);
+      this.$emit('ask-response', response);
+      this.question = '';
+      this.$store.commit('endLoading');  // End loading after the API request and emitting the response
     }
+  }
   }
 };
 </script>

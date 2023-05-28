@@ -1,15 +1,9 @@
 <template>
   <div class="quality-property">
-    <el-row>
-      <el-col :xs="12" :sm="12" :md="12" :lg="12">
         <label for="quality-select">{{ quality.quality }}: </label>
-      </el-col>
-      <el-col :xs="12" :sm="12" :md="12" :lg="12">
         <select id="quality-select" @change="optionSelected">
           <option v-for="option in quality.options" :key="option" :selected="option === quality.options[0]">{{ option }}</option>
         </select>
-      </el-col>
-    </el-row>
   </div>
 </template>
 
