@@ -1,7 +1,7 @@
 <template>
     <div class="search-form">
       <form @submit.prevent="submitForm">
-        <el-input v-model="item_query" placeholder="Enter item or description" :prefix-icon="Search" clearable maxlength="50" show-word-limit size="large" :autofocus="true">
+        <el-input v-model="item_query" placeholder="Enter item or description" :prefix-icon="Search" clearable maxlength="50" show-word-limit size="large">
           <template #append>
             <el-button type="primary" @click="submitForm">Search</el-button>
           </template>
@@ -55,7 +55,7 @@
   .search-form {
       text-align: center;
       vertical-align: middle;
-      line-height: 400%;
+      line-height: 200%;
     }
   /* .error-text {
     color: red;
