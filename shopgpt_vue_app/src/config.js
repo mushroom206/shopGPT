@@ -1,5 +1,5 @@
 const API_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://shopgpt-cloudbuild-service-7bz57dofha-wl.a.run.app/api/' 
+  ? 'https://shopgpt.firebaseapp.com/api/' 
   : 'http://localhost:5000/api/';
 
 module.exports = { API_URL };
