@@ -2,6 +2,7 @@
 
 import axios from 'axios';
 import { API_URL } from '@/config'
+import { ElMessageBox } from 'element-plus'
 
 async function searchItems(payload) {
   try {
@@ -10,6 +11,11 @@ async function searchItems(payload) {
     return response.data;
   } catch (error) {
     console.error('Error:', error);
+    ElMessageBox.alert('network error, please try again', 'Info', {
+      // if you want to disable its autofocus
+      // autofocus: false,
+      confirmButtonText: 'OK'
+    })
   }
 }
 
@@ -19,6 +25,11 @@ async function refineSearchItems(queryObject) {
     return response.data;
   } catch (error) {
     console.error('Error:', error);
+    ElMessageBox.alert('network error, please try again', 'Info', {
+      // if you want to disable its autofocus
+      // autofocus: false,
+      confirmButtonText: 'OK'
+    })
   }
 }
 
@@ -28,6 +39,11 @@ async function askItemDetails(choice, question) {
     return response.data;
   } catch (error) {
     console.error('Error:', error);
+    ElMessageBox.alert('network error, please try again', 'Info', {
+      // if you want to disable its autofocus
+      // autofocus: false,
+      confirmButtonText: 'OK'
+    })
   }
 }
 
@@ -37,6 +53,11 @@ async function saveEmail(email) {
     return response.data;
   } catch (error) {
     console.error('Error:', error);
+    ElMessageBox.alert('network error, please try again', 'Info', {
+      // if you want to disable its autofocus
+      // autofocus: false,
+      confirmButtonText: 'OK'
+    })
   }
 }
 

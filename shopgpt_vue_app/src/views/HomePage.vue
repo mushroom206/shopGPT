@@ -6,8 +6,7 @@
           <el-col :xs="20" :sm="21" :md="22" :lg="23">
             <el-image
               style="width: 150px; height: 50px"
-              :src="require('@/assets/images/shopGPT_logo_noBG_banner.png')"
-              :fit="contain" class="logo">
+              :src="require('@/assets/images/shopGPT_logo_noBG_banner.png')">
             </el-image>
           </el-col>
           <el-col :xs="4" :sm="3" :md="2" :lg="1" class="google-login">
@@ -49,7 +48,7 @@
     </el-row>
     </el-main>
       <el-footer height="10px">
-        <el-row gutter="10" justify="center" class="footer-section">
+        <el-row :gutter="10" justify="center" class="footer-section">
           <el-col :xs="1" :sm="1" :md="6" :lg="6" class="centered-content"></el-col>
           <el-col :xs="8" :sm="8" :md="4" :lg="4" class="centered-content">
             <router-link to="/privacy-policy">
@@ -74,7 +73,7 @@
   <script setup>
 import { ref, computed, reactive } from 'vue'
 import { useStore } from 'vuex'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessageBox } from 'element-plus'
 import SearchForm from '../components/SearchForm.vue'
 import ChoiceCard from '../components/ChoiceCard.vue'
 import QualityProperty from '../components/QualityProperty.vue'
@@ -172,12 +171,12 @@ const open = (askResponse) => {
     // if you want to disable its autofocus
     // autofocus: false,
     confirmButtonText: 'OK',
-    callback: (action) => {  // Remove type annotation here
-      ElMessage({
-        type: 'info',
-        message: `action: ${action}`,
-      })
-    },
+    // callback: (action) => {  // Remove type annotation here
+    //   ElMessage({
+    //     type: 'info',
+    //     message: `action: ${action}`,
+    //   })
+    // },
   })
 }
 
