@@ -25,8 +25,11 @@ def callChatGPT(data):
               if {target} = rice cooker, the quality or properties that may affect your choices can be price, size, design, etc. 
               For each quality or property, provide 3 options so you can fine tune your choices accordingly, 
               provide numerical range for each option if applicable. 
-              Write your response in valid JSON and only valid JSON. Do not generate any symbol or content that may break a valid JSON. 
-              Validate your JSON and remedy any issue so I can utilize your whole response directly in my app. 
+              Write your response in valid JSON and only valid JSON. Do not generate any symbol or content that may break a valid JSON.
+              Do not write anything outside of the JSON structure. 
+              Validate your JSON and remedy any issue so I can utilize your whole response directly in my app.
+              Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
+              Keep the value of brand and model in english.
               The format is as follow: 
             {
             "target": "",
@@ -58,16 +61,16 @@ def callChatGPT(data):
             ],
             "qualities-properties": [
             {
-            quality:””,
-            options[]
+            "quality":””,
+            "options": []
             },
             {
-            quality:””,
-            options[]
+            "quality":””,
+            "options": []
             },
             {
-            quality:””,
-            options[]
+            "quality":””,
+            "options": []
             },
             ],
             }
@@ -94,7 +97,10 @@ def callChatGPT_refine(data):
             give a brief description and a list of 3 pros and cons of each of your choices,
               represented as [choice1[description, pro1, pro2,pro3,con1,con2,con3]]. 
               Write your response in valid JSON and only valid JSON. Do not generate any symbol or content that may break a valid JSON. 
+              Do not write anything outside of the JSON structure. 
               Validate your JSON and remedy any issue before return so I can utilize your whole response directly in my app. 
+              Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
+              Keep the value of brand and model in english.
               The format is as follow: 
             {
             "target": "",
@@ -141,10 +147,13 @@ def callChatGPT_ask(data):
     messages=[
             {"role": "user", "content": """you are my shopping advisor. 
             Answer my question about this item, represented as [brand, item_category, model]: 
-            ["""+ data['choice']['brand'] +""", """+ data['choice']['item_category'] +""", """+ data['choice']['model'] +"""].
-            The question is: """+ data['question'] +""". 
-              Write your response in valid JSON and only valid JSON, validate your JSON and remedy any issue so I can utilize your whole response directly in my app. 
-              The format is as follow: 
+            ["""+ data['queryObject']['choice']['brand'] +""", """+ data['queryObject']['choice']['item_category'] +""", """+ data['queryObject']['choice']['model'] +"""].
+            The question is: """+ data['queryObject']['question'] +""". 
+              Write your response in valid JSON and only valid JSON. Do not generate any symbol or content that may break a valid JSON. 
+              Do not write anything outside of the JSON structure. 
+              Validate your JSON and remedy any issue before return so I can utilize your whole response directly in my app.  
+              Write the Value of JSON in """+ data['queryObject']['language'] +""", Key of JSON in English. 
+              The format is as follow, the key must be the word "answer": 
             {
             "answer": ""
             }

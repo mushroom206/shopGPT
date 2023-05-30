@@ -33,9 +33,9 @@ async function refineSearchItems(queryObject) {
   }
 }
 
-async function askItemDetails(choice, question) {
+async function askItemDetails(queryObject) {
   try {
-    const response = await axios.post(`${API_URL}ask`, { choice, question });
+    const response = await axios.post(`${API_URL}ask`, { queryObject });
     return response.data;
   } catch (error) {
     console.error('Error:', error);

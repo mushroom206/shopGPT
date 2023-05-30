@@ -3,11 +3,29 @@
     <el-container class="el-container">
       <el-header class="el-header">
         <el-row :gutter="20" justify="center">
-          <el-col :xs="20" :sm="21" :md="22" :lg="23">
+          <el-col :xs="16" :sm="18" :md="20" :lg="22">
             <el-image
               style="width: 150px; height: 50px"
               :src="require('@/assets/images/shopGPT_logo_noBG_banner.png')">
             </el-image>
+          </el-col>
+          <el-col :xs="4" :sm="3" :md="2" :lg="1" class="language-icon">
+            <el-dropdown>
+              <el-image
+              style="width: 35px; height: 35px"
+              :src="require('@/assets/images/language_icon_144262.png')">
+            </el-image>
+              <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item>
+                  <el-button @click="changeLanguage('english')">English</el-button>
+                </el-dropdown-item>
+                <el-dropdown-item>
+                  <el-button @click="changeLanguage('chinese')">中文</el-button>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+            </el-dropdown>
           </el-col>
           <el-col :xs="4" :sm="3" :md="2" :lg="1" class="google-login">
             <el-dropdown>
@@ -16,10 +34,10 @@
               <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item>
-                    <el-button @click="login">Log in by Gmail</el-button>
+                  <el-button @click="login">{{$t('Log in by Gmail')}}</el-button>
                 </el-dropdown-item>
                 <el-dropdown-item>
-                  <el-button @click="gLogout">Log Out</el-button>
+                  <el-button @click="gLogout">{{$t('Log Out')}}</el-button>
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -27,7 +45,7 @@
           </el-col>
         </el-row>
       </el-header>
-      <el-main class="el-main" v-loading="loading" element-loading-text="Thinking...">
+      <el-main class="el-main" v-loading="loading" :element-loading-text="$t('Thinking...')">
         <el-row :gutter="20" justify="center" class="search-form">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
             <SearchForm @submit="initialSubmit($event)" />
@@ -35,14 +53,14 @@
         </el-row>
     <el-row :gutter="20" justify="center" class="card-container">
       <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="choice in searchResults.choices" :key="choice.brand">
-        <ChoiceCard :choice="choice" @ask-response="handleAskResponse" />
+        <ChoiceCard :choice="choice" @ask-question="askQuestion" />
       </el-col>
     </el-row>
     <el-row :gutter="20" justify="center" class="fine-tune-section">
       <el-col :xs="24" :sm="18" :md="14" :lg="6">
         <el-card v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" shadow="hover" class="fine-tune-card">
           <QualityProperty v-for="quality in searchResults['qualities-properties']" :key="quality.name" :quality="quality" @option-selected="updateQuality" />
-          <SearchButton v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" @submit="submitQualities" label="Fine Tune Choices!" class="fine-tune-button" />
+          <SearchButton v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" @submit="submitQualities" :label="$t('Fine Tune Choices!')" class="fine-tune-button" />
         </el-card>
       </el-col>
     </el-row>
@@ -52,7 +70,7 @@
           <el-col :xs="1" :sm="1" :md="6" :lg="6" class="centered-content"></el-col>
           <el-col :xs="8" :sm="8" :md="4" :lg="4" class="centered-content">
             <router-link to="/privacy-policy">
-              <el-link type="info">Privacy Policy</el-link>
+              <el-link type="info">{{$t('Privacy Policy')}}</el-link>
             </router-link>
           </el-col>
           <el-col :xs="5" :sm="5" :md="4" :lg="4" class="centered-content">
@@ -60,7 +78,7 @@
           </el-col>
           <el-col :xs="9" :sm="9" :md="4" :lg="4" class="centered-content">
             <router-link to="/terms-of-service">
-              <el-link type="info">Terms of Service</el-link>
+              <el-link type="info">{{$t('Terms of Service')}}</el-link>
             </router-link>
           </el-col>
           <el-col :xs="1" :sm="1" :md="6" :lg="6" class="centered-content"></el-col>
@@ -73,7 +91,7 @@
   <script setup>
 import { ref, computed, reactive } from 'vue'
 import { useStore } from 'vuex'
-import { ElMessageBox } from 'element-plus'
+// import { ElMessageBox } from 'element-plus'
 import SearchForm from '../components/SearchForm.vue'
 import ChoiceCard from '../components/ChoiceCard.vue'
 import QualityProperty from '../components/QualityProperty.vue'
@@ -84,9 +102,12 @@ import { googleTokenLogin } from "vue3-google-login"
 import { onMounted } from 'vue'
 import apiService from '@/services/apiService'  // Import the apiService here
 
-import defaultImage1 from '@/assets/images/undraw_Web_search_re_efla.png';
-import defaultImage2 from '@/assets/images/undraw_Faq_re_31cw.png';
-import defaultImage3 from '@/assets/images/undraw_shopping_app_flsj.png';
+import defaultImage1_en from '@/assets/images/undraw_Web_search_re_efla.png';
+import defaultImage2_en from '@/assets/images/undraw_Faq_re_31cw.png';
+import defaultImage3_en from '@/assets/images/undraw_shopping_app_flsj.png';
+import defaultImage1_zh from '@/assets/images/undraw_Search_app_flsj_zh.png';
+import defaultImage2_zh from '@/assets/images/undraw_ask_app_flsj_zh.png';
+import defaultImage3_zh from '@/assets/images/undraw_shopping_app_flsj_zh.png';
 
 import {
   Avatar,
@@ -99,9 +120,12 @@ const store = useStore()
 // Data
 let item_query = ref(null)
 let selectedQualities = ref({})
-let askResponse = ref(null)
+// let askResponse = ref(null)
 let loading = computed(() => store.state.loading);
 let userPicture = ref(null);
+let defaultImage1 = ref(defaultImage1_en);
+let defaultImage2 = ref(defaultImage2_en);
+let defaultImage3 = ref(defaultImage3_en);
 
 // Initialize default choices
 let defaultChoices = reactive([
@@ -135,7 +159,7 @@ const initialSubmit = (query) => {
 
     // check if user is logged in
     const storedUserData = localStorage.getItem('userData')
-    let payload = { item_query: item_query.value }
+    let payload = { item_query: String(item_query.value) }
 
     if (storedUserData) {
       const userData = JSON.parse(storedUserData)
@@ -154,30 +178,8 @@ const updateQuality = (selectedQuality) => {
   selectedQualities.value = { ...selectedQualities.value, ...selectedQuality }
 }
 
-const handleAskResponse = (response) => {
-  let parsedResponse
-  try {
-    parsedResponse = JSON.parse(response)
-  } catch (e) {
-    console.error('Error parsing response:', e)
-    parsedResponse = response  // Use the original response if parsing fails
-  }
-  askResponse.value = parsedResponse
-  open(askResponse.value)
-}
-
-const open = (askResponse) => {
-  ElMessageBox.alert(askResponse.answer, 'I\'m Back', {
-    // if you want to disable its autofocus
-    // autofocus: false,
-    confirmButtonText: 'OK',
-    // callback: (action) => {  // Remove type annotation here
-    //   ElMessage({
-    //     type: 'info',
-    //     message: `action: ${action}`,
-    //   })
-    // },
-  })
+const askQuestion = (choice, question) => {
+  store.dispatch('askQuestion', { choice: choice, question: String(question) })
 }
 
 const getUserData = async (accessToken) => {
@@ -219,6 +221,20 @@ const gLogout = () => {
   // Reset userPicture
   userPicture.value = null
   console.log("logout")
+}
+
+const changeLanguage = (language) => {
+  store.commit('setLanguage', language);
+  if(language == 'english'){
+    defaultChoices[0].image = defaultImage1_en;
+    defaultChoices[1].image = defaultImage2_en;
+    defaultChoices[2].image = defaultImage3_en;
+  }
+  if(language == 'chinese'){
+    defaultChoices[0].image = defaultImage1_zh;
+    defaultChoices[1].image = defaultImage2_zh;
+    defaultChoices[2].image = defaultImage3_zh;
+  }
 }
 
 
@@ -294,6 +310,10 @@ onMounted(() => {
 
   .google-login{
     padding-top: 5px;
+  }
+
+  .language-icon{
+    padding-top: 7px;
   }
   
 </style>

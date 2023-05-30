@@ -10,6 +10,8 @@ import apiService from './services/apiService'
 import './assets/global.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import vue3GoogleLogin from 'vue3-google-login'
+import { createI18n } from 'vue-i18n'
+import { ElMessageBox } from 'element-plus'
 
 
 // Import your views
@@ -32,6 +34,36 @@ const router = createRouter({
   routes,
 })
 
+const messages = {
+  english: {
+    'Log in by Gmail': 'Log in by Gmail',
+    'Log Out': 'Log Out',
+    'Privacy Policy': 'Privacy Policy',
+    'Terms of Service': 'Terms of Service',
+    'smart watch, Christmas gift, etc.' : 'smart watch, Christmas gift, etc.',
+    'Search' : 'Search',
+    'Thinking...' : 'Thinking...',
+    'Fine Tune Choices!' : 'Fine Tune Choices!',
+    'Tell me more about this item' : 'Tell me more about this item',
+    'Ask AI' : 'Ask AI',
+    // other translations...
+  },
+  chinese: {
+    'Log in by Gmail': '使用Gmail登入',
+    'Log Out': '登出',
+    'Privacy Policy': '隐私条例',
+    'Terms of Service': '服务声明',
+    'smart watch, Christmas gift, etc.': '蓝牙音箱，圣诞礼物，等',
+    'Search' : '搜索',
+    'Thinking...' : '思考中...',
+    'Fine Tune Choices!' : '优化搜索',
+    'Tell me more about this item' : '我想了解更多',
+    'Ask AI' : '问 AI',
+    // other translations...
+  }
+  // other languages...
+}
+
 const store = createStore({
   state() {
     return {
@@ -39,6 +71,7 @@ const store = createStore({
         choices: []
       },
       loading: false, 
+      lang: 'english',  // default language is English
     }
   },
   mutations: {
@@ -57,11 +90,16 @@ const store = createStore({
     endLoading(state) {  // Add this mutation
       state.loading = false;
     },
+    setLanguage(state, lang) {  // Add this mutation to change the language
+      state.lang = lang;
+      i18n.global.locale = store.state.lang; 
+    }
 },
 actions: {
   async fetchSearchResults({ commit }, payload) {
     try {
       commit('startLoading');  // Start loading before the API request
+      payload.language = store.state.lang;
       const response = await apiService.searchItems(payload);
       let results;
       try {
@@ -80,6 +118,7 @@ actions: {
   async fetchRefinedSearchResults({ commit }, queryObject) {
     try {
       commit('startLoading');  // Start loading before the API request
+      queryObject.language = store.state.lang;
       const response = await apiService.refineSearchItems(queryObject);
       let results;
       try {
@@ -94,8 +133,43 @@ actions: {
     } finally {
       commit('endLoading');  // End loading after the API request and committing the results or catching an error
     }
-  }
+  },
+  async askQuestion({ commit }, queryObject) {
+    try {
+      commit('startLoading');  // Start loading before the API request
+      queryObject.language = store.state.lang;
+      const response = await apiService.askItemDetails(queryObject);
+      let results;
+      try {
+        results = JSON.parse(response);
+      } catch (e) {
+        console.error('Error parsing ask question response:', e);
+        results = response; // Use the original response if parsing fails
+      }
+      ElMessageBox.alert(results['answer'], 'I\'m Back', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: 'OK',
+        // callback: (action) => {  // Remove type annotation here
+        //   ElMessage({
+        //     type: 'info',
+        //     message: `action: ${action}`,
+        //   })
+        // },
+      })
+    } catch (error) {
+      console.error('Error ask question results:', error);
+    } finally {
+      commit('endLoading');  // End loading after the API request and committing the results or catching an error
+    }
+  },
 }
+})
+
+const i18n = createI18n({
+  locale: store.state.lang, // use the language from the Vuex state
+  fallbackLocale: 'en', // set fallback locale
+  messages, // set locale messages
 })
 
 const app = createApp(App)
@@ -109,4 +183,5 @@ app.use(ElementPlus)
 app.use(vue3GoogleLogin, {
   clientId: '386372323157-34tj0kthjhnbcgb9jl9msamk33fi27ad.apps.googleusercontent.com'
 })
+app.use(i18n)
 app.mount('#app')

@@ -1,9 +1,9 @@
 <template>
     <div class="search-form">
       <form @submit.prevent="submitForm">
-        <el-input v-model="item_query" placeholder="smart watch, Christmas gift, etc." clearable maxlength="50" show-word-limit size="large">
+        <el-input v-model="item_query" :placeholder="$t('smart watch, Christmas gift, etc.')"  clearable maxlength="50" show-word-limit size="large">
           <template #append>
-            <el-button type="primary" @click="submitForm">Search</el-button>
+            <el-button type="primary" @click="submitForm">{{$t('Search')}}</el-button>
           </template>
         </el-input>
         <!-- <span v-if="v$.item_query.$error" class="error-text">Input is required and should be less than 20 words</span> -->

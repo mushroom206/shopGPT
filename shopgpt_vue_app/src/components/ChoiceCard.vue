@@ -27,9 +27,9 @@
         </el-main>
         <el-footer v-if="!choice.default">
           <div class="ask-question">
-            <el-input v-model="question" placeholder="Tell me more about this item" :prefix-icon="Search" clearable>
+            <el-input v-model="question" :placeholder="$t('Tell me more about this item')" :prefix-icon="Search" clearable>
               <template #append>
-                <el-button type="primary" @click="askQuestion" :loading="$store.state.loading">Ask AI</el-button>
+                <el-button type="primary" @click="askQuestion" :loading="$store.state.loading">{{$t('Ask AI')}}</el-button>
               </template>
             </el-input>
           </div>
@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import apiService from '../services/apiService'
+// import apiService from '../services/apiService'
 
 export default {
   props: {
@@ -57,11 +57,7 @@ export default {
   methods: {
     async askQuestion() {
     if (this.question !== '') {
-      this.$store.commit('startLoading');  // Start loading before the API request
-      const response = await apiService.askItemDetails(this.choice, this.question);
-      this.$emit('ask-response', response);
-      this.question = '';
-      this.$store.commit('endLoading');  // End loading after the API request and emitting the response
+      this.$emit('ask-question', this.choice, this.question);
     }
   }
   }
