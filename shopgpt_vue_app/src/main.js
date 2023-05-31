@@ -46,6 +46,8 @@ const messages = {
     'Fine Tune Choices!' : 'Fine Tune Choices!',
     'Tell me more about this item' : 'Tell me more about this item',
     'Ask AI' : 'Ask AI',
+    'Pros': 'Pros',
+    'Cons': 'Cons',
     // other translations...
   },
   chinese: {
@@ -59,6 +61,8 @@ const messages = {
     'Fine Tune Choices!' : '优化搜索',
     'Tell me more about this item' : '我想了解更多',
     'Ask AI' : '问 AI',
+    'Pros': '优点',
+    'Cons': '缺点',
     // other translations...
   }
   // other languages...

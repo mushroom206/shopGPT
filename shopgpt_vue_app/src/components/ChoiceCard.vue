@@ -12,13 +12,13 @@
             </div>
             <div class="description" v-if="!choice.default">{{ choice.description }}</div>
             <div class="pros" v-if="choice.pros">
-              <h3>Pros:</h3>
+              <h3>{{$t('Pros')}}:</h3>
               <ul class="check-list">
                 <li v-for="(pro, index) in choice.pros" :key="index">{{ pro }}</li>
               </ul>
             </div>
             <div class="cons" v-if="choice.cons">
-              <h3>Cons:</h3>
+              <h3>{{$t('Cons')}}:</h3>
               <ul class="cross-list">
                 <li v-for="(con, index) in choice.cons" :key="index">{{ con }}</li>
               </ul>
