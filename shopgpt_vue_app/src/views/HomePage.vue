@@ -34,7 +34,8 @@
               <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item>
-                  <el-button @click="login">{{$t('Log in by Gmail')}}</el-button>
+                  <!-- <el-button @click="login"></el-button> -->
+                  <el-image style="width: 160px; height: 40px" :src="require('@/assets/images/btn_google_signin.png')" :fit="contain" @click="login" />
                 </el-dropdown-item>
                 <el-dropdown-item>
                   <el-button @click="gLogout">{{$t('Log Out')}}</el-button>

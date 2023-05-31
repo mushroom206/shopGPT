@@ -36,7 +36,6 @@ const router = createRouter({
 
 const messages = {
   english: {
-    'Log in by Gmail': 'Log in by Gmail',
     'Log Out': 'Log Out',
     'Privacy Policy': 'Privacy Policy',
     'Terms of Service': 'Terms of Service',
@@ -51,7 +50,6 @@ const messages = {
     // other translations...
   },
   chinese: {
-    'Log in by Gmail': '使用Gmail登入',
     'Log Out': '登出',
     'Privacy Policy': '隐私条例',
     'Terms of Service': '服务声明',
