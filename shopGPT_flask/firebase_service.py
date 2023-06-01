@@ -27,6 +27,7 @@ default_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 def save_user_email(email):
+    print('save_user_email')
     # Validate that email is not None
     if email is None:
         raise ValueError("Invalid email. Email should not be None.")

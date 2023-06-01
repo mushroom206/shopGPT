@@ -13,6 +13,7 @@ def default():
 @app.route('/api/search', methods=['POST'])
 def search():
     try:
+        print('search try')
         data = request.get_json()
         # print("search()"+str(data))
         if 'email' in data: # if user is logged in
@@ -20,6 +21,7 @@ def search():
         result = callChatGPT(data)
         return jsonify(result), 200
     except Exception as e:
+        print('search error')
         print(e)
         return jsonify({"error": "An error occurred while processing the request"}), 500
 
