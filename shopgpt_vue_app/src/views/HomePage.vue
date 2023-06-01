@@ -49,7 +49,7 @@
       <el-main class="el-main" v-loading="loading" :element-loading-text="$t('Thinking...')">
         <el-row :gutter="20" justify="center" class="search-form">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
-            <SearchForm @submit="initialSubmit($event)" />
+            <SearchForm @keydown.enter.prevent @submit="initialSubmit($event)" />
           </el-col>
         </el-row>
     <el-row :gutter="20" justify="center" class="card-container">
