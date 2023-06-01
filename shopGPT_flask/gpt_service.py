@@ -15,22 +15,22 @@ def callChatGPT(data):
     model="gpt-3.5-turbo",
     messages=[
             {"role": "user", "content": """you are my shopping advisor. 
-            I will provide an item category or a concept of an item defined as {target}, 
-            you will give me a list of 3 specific items, represented as [choice1, choice2, choice3] and breakdown each choice into [brand, 
-            item category, and model], that fits the description of {target}, 
-            detailed enough so I can use your response to query for the items on a shopping site like Amazon, 
-            give a brief description and a list of 3 pros and cons of each of your choices,
-              represented as [choice1[description, pro1, pro2,pro3,con1,con2,con3]]. 
-              You will also give me 3 most common and important quality or properties specific to {target} that may affect your choices. for example, 
+            Define {target} as an item category or a concept of an item. 
+            Generate a list of 3 specific items that fits the description of {target} as [choice1, choice2, choice3], 
+            breakdown each choice into [brand, item category, and model], 
+            detailed enough so I can use your response to query for the items on a shopping site like Amazon. 
+            Generate a brief description and a list of 3 pros and cons of each of your choices 
+            as [choice1[description, pro1, pro2,pro3,con1,con2,con3]]. 
+              In addition, generate 3 most common and important quality or properties specific to {target} that may affect your choices. 
+              for example, 
               if {target} = rice cooker, the quality or properties that may affect your choices can be price, size, design, etc. 
-              For each quality or property, provide 3 options so you can fine tune your choices accordingly, 
+              For each quality or property, generate 3 options so fine tune choices is possible, 
               provide numerical range for each option if applicable. 
-              Write your response in valid JSON and only valid JSON. Do not generate any symbol or content that may break a valid JSON.
+              Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
               Do not write anything outside of the JSON structure. 
-              Validate your JSON and remedy any issue so I can utilize your whole response directly in my app.
               Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
               Keep the value of brand and model in english.
-              The format is as follow: 
+              The structure is as follow: 
             {
             "target": "",
             "choices": [
@@ -89,19 +89,17 @@ def callChatGPT_refine(data):
     model="gpt-3.5-turbo",
     messages=[
             {"role": "user", "content": """you are my shopping advisor. 
-            I will provide an item category or a concept of an item defined as {target}, 
-            I will also provide some qualities or properties I value when choose {target}, defined as {qualities}, please respect these.
-            you will give me a list of 3 specific items, represented as [choice1, choice2, choice3] and breakdown each choice into [brand, 
-            item category, and model], that fits the description of {target}, 
-            detailed enough so I can use your response to query for the items on a shopping site like Amazon, 
-            give a brief description and a list of 3 pros and cons of each of your choices,
-              represented as [choice1[description, pro1, pro2,pro3,con1,con2,con3]]. 
-              Write your response in valid JSON and only valid JSON. Do not generate any symbol or content that may break a valid JSON. 
+            Define {target} as an item category or a concept of an item. 
+            Some qualities and properties I value when I choose {target} are presented as {qualities}, please respect these.
+            Generate a list of 3 specific items that fits the description of {target} as [choice1, choice2, choice3], 
+            breakdown each choice into [brand, item category, and model], 
+            Generate a brief description and a list of 3 pros and cons of each of your choices 
+            as [choice1[description, pro1, pro2,pro3,con1,con2,con3]].
+              Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
               Do not write anything outside of the JSON structure. 
-              Validate your JSON and remedy any issue before return so I can utilize your whole response directly in my app. 
               Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
               Keep the value of brand and model in english.
-              The format is as follow: 
+              The structure is as follow: 
             {
             "target": "",
             "choices": [
@@ -149,11 +147,11 @@ def callChatGPT_ask(data):
             Answer my question about this item, represented as [brand, item_category, model]: 
             ["""+ data['queryObject']['choice']['brand'] +""", """+ data['queryObject']['choice']['item_category'] +""", """+ data['queryObject']['choice']['model'] +"""].
             The question is: """+ data['queryObject']['question'] +""". 
-              Write your response in valid JSON and only valid JSON. Do not generate any symbol or content that may break a valid JSON. 
+              Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
               Do not write anything outside of the JSON structure. 
-              Validate your JSON and remedy any issue before return so I can utilize your whole response directly in my app.  
               Write the Value of JSON in """+ data['queryObject']['language'] +""", Key of JSON in English. 
-              The format is as follow, the key must be the word "answer": 
+              Keep the value of brand and model in english. 
+              The structure is as follow, the key must be the word "answer": 
             {
             "answer": ""
             }
