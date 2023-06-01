@@ -128,7 +128,7 @@ let defaultImage1 = ref(defaultImage1_en);
 let defaultImage2 = ref(defaultImage2_en);
 let defaultImage3 = ref(defaultImage3_en);
 
-// Initialize default choices
+// initialize default choices
 let defaultChoices = reactive([
   {
     default: true,
