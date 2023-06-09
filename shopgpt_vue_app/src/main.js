@@ -1,7 +1,7 @@
 // main.js
 
 import { createStore } from 'vuex'
-import { createApp } from 'vue'
+import { createApp, reactive } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
@@ -39,7 +39,7 @@ const messages = {
     'Log Out': 'Log Out',
     'Privacy Policy': 'Privacy Policy',
     'Terms of Service': 'Terms of Service',
-    'smart watch, Christmas gift, etc.' : 'smart watch, Christmas gift, etc.',
+    'smart watch, yoga mat, etc.' : 'smart watch, yoga mat, etc.',
     'Search' : 'Search',
     'Thinking...' : 'Thinking...',
     'Fine Tune Choices!' : 'Fine Tune Choices!',
@@ -53,7 +53,7 @@ const messages = {
     'Log Out': '登出',
     'Privacy Policy': '隐私条例',
     'Terms of Service': '服务声明',
-    'smart watch, Christmas gift, etc.': '蓝牙音箱，圣诞礼物，等',
+    'smart watch, yoga mat, etc.': '智能手表，瑜伽垫，等',
     'Search' : '搜索',
     'Thinking...' : '思考中...',
     'Fine Tune Choices!' : '优化搜索',
@@ -69,6 +69,9 @@ const messages = {
 const store = createStore({
   state() {
     return {
+      generateListResults: {
+        itemList: []
+      },
       searchResults: {
         choices: []
       },
@@ -77,6 +80,9 @@ const store = createStore({
     }
   },
   mutations: {
+    setGenerateListResults(state, results) {
+      state.generateListResults = results;
+    },
     setSearchResults(state, results) {
         // Check if 'qualities-properties' exists in results
         if (!Object.prototype.hasOwnProperty.call(results, 'qualities-properties')) {
@@ -85,6 +91,9 @@ const store = createStore({
         }
 
         state.searchResults = results;
+    },
+    setSearchPropertiesResults(state, results) {
+      state.searchResults['qualities-properties'] = results['qualities-properties'];
     },
     startLoading(state) {  // Add this mutation
       state.loading = true;
@@ -98,6 +107,25 @@ const store = createStore({
     }
 },
 actions: {
+  async fetchGenerateListResults({ commit }, payload) {
+    try {
+      commit('startLoading');  // Start loading before the API request
+      payload.language = store.state.lang;
+      const response = await apiService.generateList(payload);
+      let results;
+      try {
+        results = JSON.parse(response);
+      } catch (e) {
+        console.error('Error parsing response:', e);
+        results = response;  // Use the original response if parsing fails
+      }
+      commit('setGenerateListResults', results);
+    } catch (error) {
+      console.error('Error fetching search results:', error);
+    } finally {
+      commit('endLoading');  // End loading after the API request and committing the results or catching an error
+    }
+  },
   async fetchSearchResults({ commit }, payload) {
     try {
       commit('startLoading');  // Start loading before the API request
@@ -115,6 +143,22 @@ actions: {
       console.error('Error fetching search results:', error);
     } finally {
       commit('endLoading');  // End loading after the API request and committing the results or catching an error
+    }
+  },
+  async fetchPropertiesResults({ commit }, payload) {
+    try {
+      payload.language = store.state.lang;
+      const response = await apiService.searchProperties(payload);
+      let results;
+      try {
+        results = JSON.parse(response);
+      } catch (e) {
+        console.error('Error parsing response:', e);
+        results = response;  // Use the original response if parsing fails
+      }
+      commit('setSearchPropertiesResults', results);
+    } catch (error) {
+      console.error('Error fetching properties results:', error);
     }
   },
   async fetchRefinedSearchResults({ commit }, queryObject) {
@@ -175,6 +219,7 @@ const i18n = createI18n({
 })
 
 const app = createApp(App)
+app.provide('globalState', reactive({ itemQuery: '' }))
 
 app.use(store)
 app.use(router)

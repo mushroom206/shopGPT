@@ -49,6 +49,42 @@
       <el-main class="el-main" v-loading="loading" :element-loading-text="$t('Thinking...')">
         <el-row :gutter="20" justify="center" class="search-form">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
+            <el-button round @click="fillInputbox($event)">Just moved, fill my living room</el-button>
+            <el-button round @click="fillInputbox($event)">Fisrt day at college</el-button>
+            <el-button round @click="fillInputbox($event)">Hosting a birthday party</el-button>
+            <el-button round @click="fillInputbox($event)">Need office supplies</el-button>
+            <el-button round @click="fillInputbox($event)">Going camping this weekend</el-button>
+            <el-button round @click="fillInputbox($event)">Expecting a cat</el-button>
+            <el-button round @click="fillInputbox($event)">Daily hair care set</el-button>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" justify="center" class="search-form">
+          <el-col ::xs="24" :sm="16" :md="12" :lg="8">
+            <el-input
+              v-model="userInputInputbox"
+              :autosize="{ minRows: 3, maxRows: 10 }"
+              type="textarea"
+              placeholder="what's in your mind"
+            /> 
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" justify="center" class="search-form">
+          <el-col :xs="24" :sm="16" :md="12" :lg="8" class="generate-button">
+              <el-button type="info" plain @click="generateEssentials">Generate List of Essentials</el-button>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" justify="center" class="card-container">
+          <el-col :xs="24" :sm="12" :md="8" :lg="6">
+            <el-card shadow="hover" class="card">
+              <el-card v-if="store.state.generateListResults.itemList.length === 0">
+                    <el-image :src="defaultListImage" fit="cover"/>
+              </el-card>
+              <el-button round v-else v-for="item in store.state.generateListResults.itemList" :key="item" @click="setItemQuery($event)">{{ item }}</el-button>
+            </el-card>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" justify="center" class="search-form">
+          <el-col ::xs="24" :sm="16" :md="12" :lg="8">
             <SearchForm @keydown.enter.prevent @submit="initialSubmit($event)" />
           </el-col>
         </el-row>
@@ -61,7 +97,9 @@
       <el-col :xs="24" :sm="18" :md="14" :lg="6">
         <el-card v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" shadow="hover" class="fine-tune-card">
           <QualityProperty v-for="quality in searchResults['qualities-properties']" :key="quality.name" :quality="quality" @option-selected="updateQuality" />
-          <SearchButton v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" @submit="submitQualities" :label="$t('Fine Tune Choices!')" class="fine-tune-button" />
+          <div class="fine-tune-button-div">
+            <SearchButton v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" @submit="submitQualities" :label="$t('Fine Tune Choices!')" class="fine-tune-button" />
+          </div>
         </el-card>
       </el-col>
     </el-row>
@@ -90,7 +128,7 @@
   </template>
   
   <script setup>
-import { ref, computed, reactive } from 'vue'
+import { ref, computed, reactive, inject } from 'vue'
 import { useStore } from 'vuex'
 // import { ElMessageBox } from 'element-plus'
 import SearchForm from '../components/SearchForm.vue'
@@ -109,6 +147,7 @@ import defaultImage3_en from '@/assets/images/undraw_shopping_app_flsj.png';
 import defaultImage1_zh from '@/assets/images/undraw_Search_app_flsj_zh.png';
 import defaultImage2_zh from '@/assets/images/undraw_ask_app_flsj_zh.png';
 import defaultImage3_zh from '@/assets/images/undraw_shopping_app_flsj_zh.png';
+import defaultListImage from '@/assets/images/thinking.png';
 
 import {
   Avatar,
@@ -119,8 +158,10 @@ import {
 const store = useStore()
 
 // Data
+const globalState = inject('globalState')
 let item_query = ref(null)
 let selectedQualities = ref({})
+let userInputInputbox = ref('')
 // let askResponse = ref(null)
 let loading = computed(() => store.state.loading);
 let userPicture = ref(null);
@@ -168,6 +209,24 @@ const initialSubmit = (query) => {
     }
 
     store.dispatch('fetchSearchResults', payload)
+    store.dispatch('fetchPropertiesResults', payload)
+  }
+}
+
+const generateEssentials = () => {
+  if (userInputInputbox.value != null && userInputInputbox.value != '') {
+    loading.value = true;
+
+    // check if user is logged in
+    const storedUserData = localStorage.getItem('userData')
+    let payload = { list_query: String(userInputInputbox.value) }
+
+    if (storedUserData) {
+      const userData = JSON.parse(storedUserData)
+      payload.email = userData.email // add email to payload
+    }
+
+    store.dispatch('fetchGenerateListResults', payload)
   }
 }
 
@@ -238,6 +297,15 @@ const changeLanguage = (language) => {
   }
 }
 
+const fillInputbox = (event) => {
+      userInputInputbox.value += event.target.innerText;
+}
+
+const setItemQuery = (event) => {
+  console.log("setItemQuery", event.target.innerText)
+  globalState.itemQuery = event.target.innerText;
+}    
+
 
 onMounted(() => {
   // Check local storage for user data
@@ -268,8 +336,8 @@ onMounted(() => {
   }
   .search-form{
     background-color: honeydew;
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding-top: 5px;
+    padding-bottom: 5px;
   }
 
   .fine-tune-section{
@@ -287,6 +355,10 @@ onMounted(() => {
 
   .fine-tune-button{
     margin-top: 10px;
+  }
+
+  .fine-tune-button-div{
+    text-align: center;
   }
 
   .centered-content{
@@ -317,6 +389,10 @@ onMounted(() => {
     padding-top: 7px;
   }
   
+  .generate-button{
+    text-align: center;
+  }
+
 </style>
 
   

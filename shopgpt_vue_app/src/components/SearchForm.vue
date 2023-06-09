@@ -1,7 +1,7 @@
 <template>
     <div class="search-form">
       <form @submit.prevent="submitForm">
-        <el-input v-model="item_query" :placeholder="$t('smart watch, Christmas gift, etc.')"  clearable maxlength="50" show-word-limit size="large">
+        <el-input v-model="globalState.itemQuery" :placeholder="$t('smart watch, yoga mat, etc.')"  clearable maxlength="50" show-word-limit size="large">
           <template #append>
             <el-button type="primary" @click="submitForm">{{$t('Search')}}</el-button>
           </template>
@@ -12,38 +12,30 @@
   </template>
   
   <script>
-  import { required, maxLength } from '@vuelidate/validators'
-  import { useVuelidate } from '@vuelidate/core'
   import { useStore } from 'vuex'
+  import { inject } from 'vue'
   
   export default {
     setup() {
-      const v$ = useVuelidate()
+      const globalState = inject('globalState')
       const store = useStore()
-      return { v$, store }
+
+      return { store, globalState }
     },
     data() {
-      return {
-        item_query: ''
-      }
+
     },
     validations() {
-      return {
-        item_query: {
-          required,
-          maxLength: maxLength(100)
-        }
-      }
+
     },
     components: {
   },
     methods: {
       async submitForm() {
-    await this.v$.$validate()
-    if (!this.v$.item_query.$error) {
-      this.$emit('submit', this.item_query);
-    }
-  }
+        if(this.globalState.itemQuery != null && this.globalState.itemQuery != ''){
+          this.$emit('submit', this.globalState.itemQuery);
+        }
+      }
     }
   }
   </script>

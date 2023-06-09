@@ -53,3 +53,12 @@ body {
     height: 11px;
     color: red;
 }
+
+.card{
+    background-color: #fff5d8;
+    border-radius: 30px;
+  }
+
+.quality-property{
+  margin-top: 10px;
+}

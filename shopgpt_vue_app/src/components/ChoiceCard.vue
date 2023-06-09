@@ -8,7 +8,8 @@
           </div>
           <el-card>
             <div class="image-description">
-              <el-image :src="choice.image || placeholderImageUrl" fit="cover"></el-image>
+              <el-image :src="choice.image || null" fit="cover"></el-image>
+              <!-- <el-image :src="choice.image || placeholderImageUrl" fit="cover"></el-image> -->
             </div>
             <div class="description" v-if="!choice.default">{{ choice.description }}</div>
             <div class="pros" v-if="choice.pros">
@@ -22,6 +23,11 @@
               <ul class="cross-list">
                 <li v-for="(con, index) in choice.cons" :key="index">{{ con }}</li>
               </ul>
+            </div>
+            <div class="amazon-link" v-if="choice.pros">
+            <el-link href="https://amzn.to/3oY50us" target="_blank">
+              <el-image :src="require('@/assets/images/amazon_button.png')" :fit="contain" />
+            </el-link>
             </div>
           </el-card>
         </el-main>
@@ -63,12 +69,6 @@ export default {
   }
 };
 </script>
-<style scoped>
-.card{
-    background-color: #fff5d8;
-    border-radius: 30px;
-  }
-</style>
 
 <script setup>
 import { Search } from '@element-plus/icons-vue'
