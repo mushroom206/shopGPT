@@ -132,12 +132,12 @@ actions: {
       payload.language = store.state.lang;
       const response = await apiService.searchItems(payload);
       let results;
-      try {
-        results = JSON.parse(response);
-      } catch (e) {
-        console.error('Error parsing response:', e);
-        results = response;  // Use the original response if parsing fails
-      }
+      // try {
+        results = response;
+      // } catch (e) {
+      //   console.error('Error parsing response:', e);
+      //   results = response;  // Use the original response if parsing fails
+      // }
       commit('setSearchResults', results);
     } catch (error) {
       console.error('Error fetching search results:', error);

@@ -298,7 +298,7 @@ const changeLanguage = (language) => {
 }
 
 const fillInputbox = (event) => {
-      userInputInputbox.value += event.target.innerText;
+      userInputInputbox.value = event.target.innerText;
 }
 
 const setItemQuery = (event) => {

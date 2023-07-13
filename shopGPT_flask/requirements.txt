@@ -24,3 +24,4 @@ Werkzeug==2.2.3
 yarl==1.9.2
 gunicorn
 firebase-admin==6.1.0
+./pa_api

@@ -4,12 +4,18 @@
         <!-- <el-header>HEAD</el-header> -->
         <el-main>
           <div class="header" v-if="!choice.default">
-            <h2>{{ choice.brand }} - {{ choice.item_category }} - {{ choice.model }}</h2>
+            <h3>{{ choice.target }}</h3>
           </div>
           <el-card>
             <div class="image-description">
-              <el-image :src="choice.image || null" fit="cover"></el-image>
-              <!-- <el-image :src="choice.image || placeholderImageUrl" fit="cover"></el-image> -->
+              <el-image
+                style="width: 200px; height: 200px"
+                :src="choice.image || choice.image_urls"
+                :zoom-rate="1.2"
+                :preview-src-list="choice.image_urls"
+                fit="contain"
+              />
+              <h4>click image to view more</h4>
             </div>
             <div class="description" v-if="!choice.default">{{ choice.description }}</div>
             <div class="pros" v-if="choice.pros">
@@ -25,9 +31,12 @@
               </ul>
             </div>
             <div class="amazon-link" v-if="choice.pros">
-            <el-link href="https://amzn.to/3oY50us" target="_blank">
+            <el-link :href="choice.url" target="_blank">
               <el-image :src="require('@/assets/images/amazon_button.png')" :fit="contain" />
             </el-link>
+            </div>
+            <div class="amazon-price" v-if="choice.pros"> 
+              <h4>On Amazon for: {{ choice.price }}</h4>
             </div>
           </el-card>
         </el-main>
@@ -35,7 +44,7 @@
           <div class="ask-question">
             <el-input v-model="question" :placeholder="$t('Tell me more about this item')" :prefix-icon="Search" clearable>
               <template #append>
-                <el-button type="primary" @click="askQuestion" :loading="$store.state.loading">{{$t('Ask us')}}</el-button>
+                <el-button type="primary" @click="askQuestion" :loading="$store.state.loading">{{$t('Ask AI')}}</el-button>
               </template>
             </el-input>
           </div>
@@ -56,8 +65,7 @@ export default {
   },
   data() {
     return {
-      placeholderImageUrl: 'https://via.placeholder.com/150',
-      question: '',
+      question: ''
     };
   },
   methods: {

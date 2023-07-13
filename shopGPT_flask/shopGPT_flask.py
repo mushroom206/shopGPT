@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from gpt_service import callChatGPT, callChatGPT_refine, callChatGPT_ask, callChatGPT_list, callChatGPT_properties
+from gpt_service import callChatGPT_async, callChatGPT_refine, callChatGPT_ask, callChatGPT_list, callChatGPT_properties
+from paapi_service import search_items 
 from firebase_service import save_user_email, save_search_history
 
 app = Flask(__name__)
@@ -31,9 +32,10 @@ def search():
         print('search try')
         data = request.get_json()
         # print("search()"+str(data))
+        search_results = search_items(data['item_query']).search_result.items
         if 'email' in data: # if user is logged in
-            save_search_history(data['email'], data['item_query'])
-        result = callChatGPT(data)
+            save_search_history(data['email'], data['item_query'])            
+        result = callChatGPT_async(data['language'], search_results)
         return jsonify(result), 200
     except Exception as e:
         print('search error')

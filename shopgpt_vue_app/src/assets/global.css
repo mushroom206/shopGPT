@@ -62,3 +62,15 @@ body {
 .quality-property{
   margin-top: 10px;
 }
+
+.image-description{
+  text-align: center;
+}
+
+.amazon-link{
+  text-align: center;
+}
+
+.amazon-price{
+  text-align: center;
+}
