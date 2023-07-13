@@ -9,13 +9,13 @@
           <el-card>
             <div class="image-description">
               <el-image
-                style="width: 200px; height: 200px"
+                style="width: 250px; height: 250px"
                 :src="choice.image || choice.image_urls"
                 :zoom-rate="1.2"
                 :preview-src-list="choice.image_urls"
                 fit="contain"
               />
-              <h4>click image to view more</h4>
+              <h4 v-if="!choice.default">click image to view more</h4>
             </div>
             <div class="description" v-if="!choice.default">{{ choice.description }}</div>
             <div class="pros" v-if="choice.pros">

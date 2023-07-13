@@ -43,12 +43,16 @@ def callChatGPT_async(language, search_results):
     result1 = [None]*1
     result2 = [None]*1
     result3 = [None]*1
-    results = [result1, result2, result3]
+    result4 = [None]*1
+    result5 = [None]*1
+    result6 = [None]*1
+    results = [result1, result2, result3, result4, result5, result6]
     image_urls = [[],[],[]]
     for i, search_result in enumerate(search_results):
         data = {
             "language": language,
-            "item_query": search_result.item_info.title.display_value
+            "item_query": search_result.item_info.title.display_value,
+            "details": search_result.detail_page_url
         }
         image_urls[i].append(search_result.images.primary.large.url)
         for url in search_result.images.variants:
@@ -56,6 +60,10 @@ def callChatGPT_async(language, search_results):
         thread = threading.Thread(target=callChatGPT, args=(data, results[i]))
         thread.start()
         threads.append(thread)
+        thread = threading.Thread(target=callChatGPT_description, args=(data, results[i+3]))
+        thread.start()
+        threads.append(thread)
+
 
     # Wait for all threads to finish.
     for thread in threads:
@@ -65,12 +73,15 @@ def callChatGPT_async(language, search_results):
     response1 = json.loads(results[0][0])
     response2 = json.loads(results[1][0])
     response3 = json.loads(results[2][0])
+    response4 = json.loads(results[3][0])
+    response5 = json.loads(results[4][0])
+    response6 = json.loads(results[5][0])
 
     response = {
             "choices": [
                 {
                 "target": response1['target'],
-                "description": response1['description'],
+                "description": response4['description'],
                 "pros": response1['pros'],
                 "cons": response1['cons'],
                 "url": search_results[0].detail_page_url,
@@ -79,7 +90,7 @@ def callChatGPT_async(language, search_results):
                 },
                 {
                 "target": response2['target'],
-                "description": response2['description'],
+                "description": response5['description'],
                 "pros": response2['pros'],
                 "cons": response2['cons'],
                 "url": search_results[1].detail_page_url,
@@ -88,7 +99,7 @@ def callChatGPT_async(language, search_results):
                 },
                 {
                 "target": response3['target'],
-                "description": response3['description'],
+                "description": response6['description'],
                 "pros": response3['pros'],
                 "cons": response3['cons'],
                 "url": search_results[2].detail_page_url,
@@ -110,21 +121,47 @@ def callChatGPT(data, result):
     model="gpt-3.5-turbo",
     messages=[
             {"role": "user", "content": """you are my shopping advisor. 
-            Define {target} as an item category or a concept of an item. 
-            Generate a brief description use first person angle, speak as if you have used the product and the description is from personal use experience.
+            Define {target} as an item category or a concept of an item.
             Generate a list of 3 pros and cons of {target}.
-              Generate your response in valid JSON format, check and fix symbols in your response that may invalidate JSON format. 
+              Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format. 
               Do not write anything outside of the JSON structure. 
               Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
               Keep the value of brand and model in english.
               The structure is as follow: 
             {
               "target": "",
-              "description": "",
               "pros": [],
               "cons": []
             }
             now {target} =""" + data['item_query']
+            }
+    ]
+    )
+    response = completion.choices[0].message.content
+    result[0] = response
+
+def callChatGPT_description(data, result):
+    print("callChatGPT_description")
+    print(data)
+    # Generate a list of 3 specific items that fits the description of {target} as [choice1, choice2, choice3], 
+    # breakdown each choice into [brand, item category, and model], 
+    # detailed enough so I can use your response to query for the items on a shopping site like Amazon. 
+    completion = openai.ChatCompletion.create(
+    model="gpt-3.5-turbo",
+    messages=[
+            {"role": "user", "content": """you are my shopping advisor. 
+            Define {target} as an item category or a concept of an item. 
+            Define {details} as your product reference link.
+            Generate a brief description use first person angle, speak as if you have used the product and the description is from personal use experience.
+              Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format. 
+              Do not write anything outside of the JSON structure. 
+              Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
+              Keep the value of brand and model in english.
+              The structure is as follow: 
+            {
+              "description": ""
+            }
+            now {target} =""" + data['item_query'] + """. {details} = """ + data['details']
             }
     ]
     )
@@ -239,8 +276,10 @@ def callChatGPT_ask(data):
     messages=[
             {"role": "user", "content": """you are my shopping advisor. 
             Answer my {question} about {target}, try to be specific and informative.
+            Define {details} as your product reference link.
             {target} = """ + data['queryObject']['choice']['target'] + """.
             {question} = """+ data['queryObject']['question'] + """. 
+            {details} = """+ data['queryObject']['choice']['url'] + """. 
               Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
               Do not write anything outside of the JSON structure. 
               Write the Value of JSON in """+ data['queryObject']['language'] +""", Key of JSON in English. 
