@@ -47,7 +47,7 @@
         </el-row>
       </el-header>
       <el-main class="el-main" v-loading="loading" :element-loading-text="$t('Thinking...')">
-        <el-row :gutter="20" justify="center" class="search-form">
+        <el-row :gutter="10" justify="center" class="search-form">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
             <el-button round @click="fillInputbox($event)">Just moved, fill my living room</el-button>
             <el-button round @click="fillInputbox($event)">Fisrt day at college</el-button>
