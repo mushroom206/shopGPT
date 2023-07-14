@@ -35,7 +35,7 @@ const router = createRouter({
 })
 
 const messages = {
-  english: {
+  English: {
     'Log Out': 'Log Out',
     'Privacy Policy': 'Privacy Policy',
     'Terms of Service': 'Terms of Service',
@@ -47,20 +47,46 @@ const messages = {
     'Ask AI' : 'Ask AI',
     'Pros': 'Pros',
     'Cons': 'Cons',
+    'Generate List of Essentials': 'Generate List of Essentials',
+    'what\'s in your mind': 'what\'s in your mind',
+    'Just moved, fill my living room': 'Just moved, fill my living room',
+    'Fisrt day at college': 'Fisrt day at college',
+    'Going camping this weekend': 'Going camping this weekend',
+    'Hosting a birthday party': 'Hosting a birthday party',
+    'Need office supplies': 'Need office supplies',
+    'Expecting a cat': 'Expecting a cat',
+    'Daily hair care set': 'Daily hair care set',
+    'click image to view more': 'click image to view more',
+    'more': 'more',
+    'Min Price': 'Min Price',
+    'Max Price': 'Max Price',
     // other translations...
   },
-  chinese: {
+  Simplified_Chinese: {
     'Log Out': '登出',
     'Privacy Policy': '隐私条例',
     'Terms of Service': '服务声明',
     'smart watch, yoga mat, etc.': '智能手表，瑜伽垫，等',
     'Search' : '搜索',
     'Thinking...' : '思考中...',
-    'Fine Tune Choices!' : '优化搜索',
+    'Fine Tune Choices!' : '优化结果',
     'Tell me more about this item' : '我想了解更多',
     'Ask AI' : '问 AI',
     'Pros': '优点',
     'Cons': '缺点',
+    'Generate List of Essentials': '生成必需品列表',
+    'what\'s in your mind': '帮你计划',
+    'Just moved, fill my living room': '刚搬家，需要客厅用的家具',
+    'Fisrt day at college': '大学开学第一天',
+    'Going camping this weekend': '周末要去露营',
+    'Hosting a birthday party': '办生日会',
+    'Need office supplies': '需要办公用品',
+    'Expecting a cat': '准备养一只猫',
+    'Daily hair care set': '每日护发用品',
+    'click image to view more': '点击图片查看更多',
+    'more': '更多',
+    'Min Price': '最低价',
+    'Max Price': '最高价',
     // other translations...
   }
   // other languages...
@@ -76,7 +102,8 @@ const store = createStore({
         choices: []
       },
       loading: false, 
-      lang: 'english',  // default language is English
+      lang: 'English',  // default language is English
+      userSearchHistory: []
     }
   },
   mutations: {
@@ -104,7 +131,10 @@ const store = createStore({
     setLanguage(state, lang) {  // Add this mutation to change the language
       state.lang = lang;
       i18n.global.locale = store.state.lang; 
-    }
+    },
+    setUserSearchHistory(state, searchHistory) {
+      state.userSearchHistory = searchHistory;
+    },
 },
 actions: {
   async fetchGenerateListResults({ commit }, payload) {
@@ -167,12 +197,12 @@ actions: {
       queryObject.language = store.state.lang;
       const response = await apiService.refineSearchItems(queryObject);
       let results;
-      try {
-        results = JSON.parse(response);
-      } catch (e) {
-        console.error('Error parsing refined search response:', e);
+      // try {
+      //   results = JSON.parse(response);
+      // } catch (e) {
+      //   console.error('Error parsing refined search response:', e);
         results = response; // Use the original response if parsing fails
-      }
+      // }
       commit('setSearchResults', results);
     } catch (error) {
       console.error('Error refining search results:', error);
@@ -207,6 +237,14 @@ actions: {
       console.error('Error ask question results:', error);
     } finally {
       commit('endLoading');  // End loading after the API request and committing the results or catching an error
+    }
+  },
+  async fetchUserSearchHistory({ commit }, userId) {
+    try {
+      const searchHistory = await apiService.getUserSearchHistory(userId);
+      commit('setUserSearchHistory', searchHistory);
+    } catch (error) {
+      console.error('Error fetching user search history:', error);
     }
   },
 }

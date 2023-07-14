@@ -91,11 +91,17 @@ async function saveEmail(email) {
   }
 }
 
+async function getUserSearchHistory(userId) {
+  const response = await axios.get(`${API_URL}search-history/${userId}`);
+  return response.data;
+}
+
 export default {
   generateList,
   searchItems,
   searchProperties,
   refineSearchItems,
   askItemDetails,
-  saveEmail
+  saveEmail,
+  getUserSearchHistory
 }

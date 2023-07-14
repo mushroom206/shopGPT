@@ -74,3 +74,13 @@ body {
 .amazon-price{
   text-align: center;
 }
+
+.price-inputs {
+  display: flex;
+  justify-content: space-between;
+}
+
+.price-input {
+  display: flex;
+  flex-direction: column;
+}

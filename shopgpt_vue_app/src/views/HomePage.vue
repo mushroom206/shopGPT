@@ -18,10 +18,10 @@
               <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item>
-                  <el-button @click="changeLanguage('english')">English</el-button>
+                  <el-button @click="changeLanguage('English')">English</el-button>
                 </el-dropdown-item>
                 <el-dropdown-item>
-                  <el-button @click="changeLanguage('chinese')">中文</el-button>
+                  <el-button @click="changeLanguage('Simplified_Chinese')">中文</el-button>
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -47,15 +47,30 @@
         </el-row>
       </el-header>
       <el-main class="el-main" v-loading="loading" :element-loading-text="$t('Thinking...')">
-        <el-row :gutter="10" justify="center" class="search-form">
+        <el-row :gutter="20" justify="center" class="search-form">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
-            <el-button round @click="fillInputbox($event)">Just moved, fill my living room</el-button>
-            <el-button round @click="fillInputbox($event)">Fisrt day at college</el-button>
-            <el-button round @click="fillInputbox($event)">Hosting a birthday party</el-button>
-            <el-button round @click="fillInputbox($event)">Need office supplies</el-button>
-            <el-button round @click="fillInputbox($event)">Going camping this weekend</el-button>
-            <el-button round @click="fillInputbox($event)">Expecting a cat</el-button>
-            <el-button round @click="fillInputbox($event)">Daily hair care set</el-button>
+            <el-button round @click="fillInputbox($event)">{{$t('Just moved, fill my living room')}}</el-button>
+            <el-button round @click="fillInputbox($event)">{{$t('Fisrt day at college')}}</el-button>
+            <el-button round @click="fillInputbox($event)">{{$t('Going camping this weekend')}}</el-button>
+            <el-dropdown>
+              <el-button primary>{{$t('more')}}<el-icon><arrow-down /></el-icon></el-button>
+              <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item>
+                  <el-button round @click="fillInputbox($event)">{{$t('Hosting a birthday party')}}</el-button>
+                </el-dropdown-item>
+                <el-dropdown-item>
+                  <el-button round @click="fillInputbox($event)">{{$t('Need office supplies')}}</el-button>
+                </el-dropdown-item>
+                <el-dropdown-item>
+                  <el-button round @click="fillInputbox($event)">{{$t('Expecting a cat')}}</el-button>
+                </el-dropdown-item>
+                <el-dropdown-item>
+                  <el-button round @click="fillInputbox($event)">{{$t('Daily hair care set')}}</el-button>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+            </el-dropdown>
           </el-col>
         </el-row>
         <el-row :gutter="20" justify="center" class="search-form">
@@ -64,13 +79,13 @@
               v-model="userInputInputbox"
               :autosize="{ minRows: 3, maxRows: 10 }"
               type="textarea"
-              placeholder="what's in your mind"
+              :placeholder="$t('what\'s in your mind')"
             /> 
           </el-col>
         </el-row>
         <el-row :gutter="20" justify="center" class="search-form">
           <el-col :xs="24" :sm="16" :md="12" :lg="8" class="generate-button">
-              <el-button type="info" plain @click="generateEssentials">Generate List of Essentials</el-button>
+              <el-button type="info" plain @click="generateEssentials">{{$t('Generate List of Essentials')}}</el-button>
           </el-col>
         </el-row>
         <el-row :gutter="20" justify="center" class="card-container">
@@ -79,7 +94,40 @@
               <el-card v-if="store.state.generateListResults.itemList.length === 0">
                     <el-image :src="defaultListImage" fit="cover"/>
               </el-card>
-              <el-button round v-else v-for="item in store.state.generateListResults.itemList" :key="item" @click="setItemQuery($event)">{{ item }}</el-button>
+              <el-button 
+                round 
+                v-for="(item, index) in store.state.generateListResults.itemList.slice(0, 5)" 
+                :key="'first-' + index"
+                @click="setItemQuery($event)"
+              >
+                {{ item }}
+              </el-button>
+              <el-dropdown v-if="store.state.generateListResults.itemList.length > 5">
+                <el-button primary>{{$t('more')}}<el-icon><arrow-down /></el-icon></el-button>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item 
+                      v-for="(item, index) in store.state.generateListResults.itemList.slice(5)" 
+                      :key="'rest-' + index"
+                    >
+                      <el-button round @click="setItemQuery($event)">{{ item }}</el-button>
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </el-card>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" justify="center" class="card-container" v-if="store.state.userSearchHistory.length != 0">
+          <el-col :xs="24" :sm="12" :md="8" :lg="6">
+            <el-card shadow="hover" class="card">
+              <el-button 
+                round 
+                v-for="(item, index) in store.state.userSearchHistory.searchHistory" :key="index"
+                @click="setItemQuery($event)"
+              >
+                {{ item['search_query'] }}
+              </el-button>
             </el-card>
           </el-col>
         </el-row>
@@ -97,6 +145,16 @@
       <el-col :xs="24" :sm="18" :md="14" :lg="6">
         <el-card v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" shadow="hover" class="fine-tune-card">
           <QualityProperty v-for="quality in searchResults['qualities-properties']" :key="quality.name" :quality="quality" @option-selected="updateQuality" />
+          <div class="price-inputs">
+            <div class="price-input">
+              <label for="min-price">{{$t('Min Price')}}: </label>
+              <el-input id="min-price" v-model="minPrice"></el-input>
+            </div>
+            <div class="price-input">
+              <label for="max-price">{{$t('Max Price')}}: </label>
+              <el-input id="max-price" v-model="maxPrice"></el-input>
+            </div>
+          </div>
           <div class="fine-tune-button-div">
             <SearchButton v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" @submit="submitQualities" :label="$t('Fine Tune Choices!')" class="fine-tune-button" />
           </div>
@@ -150,7 +208,7 @@ import defaultImage3_zh from '@/assets/images/undraw_shopping_app_flsj_zh.png';
 import defaultListImage from '@/assets/images/thinking.png';
 
 import {
-  Avatar,
+  Avatar, ArrowDown
 } from '@element-plus/icons-vue'
 
 
@@ -162,6 +220,8 @@ const globalState = inject('globalState')
 let item_query = ref(null)
 let selectedQualities = ref({})
 let userInputInputbox = ref('')
+let minPrice = ref('')
+let maxPrice = ref('')
 // let askResponse = ref(null)
 let loading = computed(() => store.state.loading);
 let userPicture = ref(null);
@@ -231,7 +291,7 @@ const generateEssentials = () => {
 }
 
 const submitQualities = () => {
-    store.dispatch('fetchRefinedSearchResults', { target: searchResults.value.target, qualities: selectedQualities.value })
+    store.dispatch('fetchRefinedSearchResults', { target: searchResults.value.target, qualities: selectedQualities.value, minPrice: minPrice.value, maxPrice: maxPrice.value })
 }
 
 const updateQuality = (selectedQuality) => {
@@ -268,6 +328,8 @@ const login = () => {
       apiService.saveEmail(data.email)  // Use apiService to save the email here
         .then(response => console.log(response))
         .catch(error => console.error(error))
+
+      store.dispatch('fetchUserSearchHistory', data.email) 
     })
   })
 }
@@ -285,12 +347,12 @@ const gLogout = () => {
 
 const changeLanguage = (language) => {
   store.commit('setLanguage', language);
-  if(language == 'english'){
+  if(language == 'English'){
     defaultChoices[0].image = defaultImage1_en;
     defaultChoices[1].image = defaultImage2_en;
     defaultChoices[2].image = defaultImage3_en;
   }
-  if(language == 'chinese'){
+  if(language == 'Simplified_Chinese'){
     defaultChoices[0].image = defaultImage1_zh;
     defaultChoices[1].image = defaultImage2_zh;
     defaultChoices[2].image = defaultImage3_zh;
@@ -315,6 +377,7 @@ onMounted(() => {
     // Parse the user data and update userPicture
     const userData = JSON.parse(storedUserData)
     userPicture.value = userData.picture
+    store.dispatch('fetchUserSearchHistory', userData.email)    
   }
 })
 

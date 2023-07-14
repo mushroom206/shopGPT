@@ -18,7 +18,7 @@ def callChatGPT_list(data):
     messages=[
             {"role": "user", "content": """Generate a list of items essential to {context} as [item1,item2,item3...], so I can shop and prepare for {context}.
               Generate items specific to {context}, eliminate ambiguity.
-              Only generate items normally available for purchase in online store. Do not generate desciption of items. Max 15 most important items. 
+              Only generate items normally available for purchase in online store. Do not generate desciption of items. Max 15 most important items, Min 10 items. 
               Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
               Do not write anything outside of the JSON structure. 
               Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
@@ -35,7 +35,7 @@ def callChatGPT_list(data):
     print(response)
     return response
 
-def callChatGPT_async(language, search_results):
+def callChatGPT_async(target, language, search_results):
     print("search_results")
     print(search_results)
     # Create three threads to call ChatGPT simultaneously.
@@ -48,15 +48,22 @@ def callChatGPT_async(language, search_results):
     result6 = [None]*1
     results = [result1, result2, result3, result4, result5, result6]
     image_urls = [[],[],[]]
+    prices = []
     for i, search_result in enumerate(search_results):
         data = {
             "language": language,
             "item_query": search_result.item_info.title.display_value,
             "details": search_result.detail_page_url
         }
+
         image_urls[i].append(search_result.images.primary.large.url)
         for url in search_result.images.variants:
             image_urls[i].append(url.large.url)
+        try:
+            prices.append(search_result.offers.listings[0].price.display_amount)
+        except AttributeError:
+            prices.append("view on item details page")
+
         thread = threading.Thread(target=callChatGPT, args=(data, results[i]))
         thread.start()
         threads.append(thread)
@@ -78,6 +85,7 @@ def callChatGPT_async(language, search_results):
     response6 = json.loads(results[5][0])
 
     response = {
+            "target" : target,
             "choices": [
                 {
                 "target": response1['target'],
@@ -85,7 +93,7 @@ def callChatGPT_async(language, search_results):
                 "pros": response1['pros'],
                 "cons": response1['cons'],
                 "url": search_results[0].detail_page_url,
-                "price": search_results[0].offers.listings[0].price.display_amount,
+                "price": prices[0],
                 "image_urls": image_urls[0]
                 },
                 {
@@ -94,7 +102,7 @@ def callChatGPT_async(language, search_results):
                 "pros": response2['pros'],
                 "cons": response2['cons'],
                 "url": search_results[1].detail_page_url,
-                "price": search_results[1].offers.listings[0].price.display_amount,
+                "price": prices[1],
                 "image_urls": image_urls[1]
                 },
                 {
@@ -103,7 +111,7 @@ def callChatGPT_async(language, search_results):
                 "pros": response3['pros'],
                 "cons": response3['cons'],
                 "url": search_results[2].detail_page_url,
-                "price": search_results[2].offers.listings[0].price.display_amount,
+                "price": prices[2],
                 "image_urls": image_urls[2]
                 }
             ]
@@ -126,7 +134,7 @@ def callChatGPT(data, result):
               Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format. 
               Do not write anything outside of the JSON structure. 
               Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
-              Keep the value of brand and model in english.
+              Keep the value of {target} in english.
               The structure is as follow: 
             {
               "target": "",
@@ -152,11 +160,10 @@ def callChatGPT_description(data, result):
             {"role": "user", "content": """you are my shopping advisor. 
             Define {target} as an item category or a concept of an item. 
             Define {details} as your product reference link.
-            Generate a brief description use first person angle, speak as if you have used the product and the description is from personal use experience.
-              Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format. 
+            Generate a brief one paragrapg description using first person angle, speak as if you have used the product and the description is from personal use experience.
+              Generate your response in valid JSON format, watch for symbols, new lines and contents that may break valid JSON format. 
               Do not write anything outside of the JSON structure. 
               Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
-              Keep the value of brand and model in english.
               The structure is as follow: 
             {
               "description": ""
@@ -166,7 +173,10 @@ def callChatGPT_description(data, result):
     ]
     )
     response = completion.choices[0].message.content
+    if not response.endswith('}'):
+      response += '}'
     result[0] = response
+    print(result[0])
 
 def callChatGPT_properties(data):
     print("callChatGPT_properties")
@@ -176,8 +186,8 @@ def callChatGPT_properties(data):
     messages=[
             {"role": "user", "content": """you are my shopping advisor. 
             Define {target} as an item category or a concept of an item. 
-              Generate 3 most common and important quality or properties specific to {target} that affect how consumers compare {target}. 
-              for example, 
+              In """+ data['language'] +""", generate 3 most common and important quality or properties specific to {target} that affect how consumers compare {target}, but do not include price. 
+              For example, 
               if {target} = rice cooker, the quality or properties that may affect your choices can be price, size, design, etc. 
               For each quality or property, generate 3 options 
               Options should be specific enough to help further filtering possible results on site like Amazon.
@@ -185,7 +195,7 @@ def callChatGPT_properties(data):
               Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
               Do not write anything outside of the JSON structure. 
               Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
-              Keep the value of brand and model in english.
+              Keep the value of {target} in english.
               The structure is as follow: 
             {
             "target": "",
@@ -212,61 +222,61 @@ def callChatGPT_properties(data):
     print(response)
     return response
 
-def callChatGPT_refine(data):
-    print("callChatGPT_refine")
-    print(data)
-    completion = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
-    messages=[
-            {"role": "user", "content": """you are my shopping advisor. 
-            Define {target} as an item category or a concept of an item. 
-            Some qualities and properties I value when I choose {target} are presented as {qualities}, please respect these.
-            Generate a list of 3 specific items that fits the description of {target} as [choice1, choice2, choice3], 
-            breakdown each choice into [brand, item category, and model], 
-            Generate a brief description use first person angle, speak as if you have used the product and the description is from personal use experience. 
-            Generate a list of 3 pros and cons of each of your choices 
-            as [choice1[description, pro1, pro2,pro3,con1,con2,con3]].
-              Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
-              Do not write anything outside of the JSON structure. 
-              Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
-              Keep the value of brand and model in english.
-              The structure is as follow: 
-            {
-            "target": "",
-            "choices": [
-                {
-                "brand": "",
-                "item_category": "",
-                "model": "",
-                "description": "",
-                "pros": [],
-                "cons": []
-                },
-                {
-                "brand": "",
-                "item_category": "",
-                "model": "",
-                "description": "",
-                "pros": [],
-                "cons": []
-                },
-                {
-                "brand": "",
-                "item_category": "",
-                "model": "",
-                "description": "",
-                "pros": [],
-                "cons": []
-                }
-            ]
-            }
-            now {target} =""" + data['target'] + """, and {qialities} =""" + str(data['qualities'])
-            }
-    ]
-    )
-    response = completion.choices[0].message.content
-    print(response)
-    return response
+# def callChatGPT_refine(data):
+#     print("callChatGPT_refine")
+#     print(data)
+#     completion = openai.ChatCompletion.create(
+#     model="gpt-3.5-turbo",
+#     messages=[
+#             {"role": "user", "content": """you are my shopping advisor. 
+#             Define {target} as an item category or a concept of an item. 
+#             Some qualities and properties I value when I choose {target} are presented as {qualities}, please respect these.
+#             Generate a list of 3 specific items that fits the description of {target} as [choice1, choice2, choice3], 
+#             breakdown each choice into [brand, item category, and model], 
+#             Generate a brief description use first person angle, speak as if you have used the product and the description is from personal use experience. 
+#             Generate a list of 3 pros and cons of each of your choices 
+#             as [choice1[description, pro1, pro2,pro3,con1,con2,con3]].
+#               Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
+#               Do not write anything outside of the JSON structure. 
+#               Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
+#               Keep the value of brand and model in english.
+#               The structure is as follow: 
+#             {
+#             "target": "",
+#             "choices": [
+#                 {
+#                 "brand": "",
+#                 "item_category": "",
+#                 "model": "",
+#                 "description": "",
+#                 "pros": [],
+#                 "cons": []
+#                 },
+#                 {
+#                 "brand": "",
+#                 "item_category": "",
+#                 "model": "",
+#                 "description": "",
+#                 "pros": [],
+#                 "cons": []
+#                 },
+#                 {
+#                 "brand": "",
+#                 "item_category": "",
+#                 "model": "",
+#                 "description": "",
+#                 "pros": [],
+#                 "cons": []
+#                 }
+#             ]
+#             }
+#             now {target} =""" + data['target'] + """, and {qialities} =""" + str(data['qualities'])
+#             }
+#     ]
+#     )
+#     response = completion.choices[0].message.content
+#     print(response)
+#     return response
 
 def callChatGPT_ask(data):
     print("callChatGPT_ask")

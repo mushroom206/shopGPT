@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from gpt_service import callChatGPT_async, callChatGPT_refine, callChatGPT_ask, callChatGPT_list, callChatGPT_properties
-from paapi_service import search_items 
-from firebase_service import save_user_email, save_search_history
+from gpt_service import callChatGPT_async, callChatGPT_ask, callChatGPT_list, callChatGPT_properties
+from paapi_service import search_items, search_items_with_price 
+from firebase_service import save_user_email, save_search_history, retrieve_search_history
 
 app = Flask(__name__)
 CORS(app)
@@ -17,8 +17,8 @@ def generateList():
         print('generateList try')
         data = request.get_json()
         # print("search()"+str(data))
-        if 'email' in data: # if user is logged in
-            save_search_history(data['email'], data['list_query'])
+        # if 'email' in data: # if user is logged in
+        #     save_search_history(data['email'], data['list_query'])
         result = callChatGPT_list(data)
         return jsonify(result), 200
     except Exception as e:
@@ -35,7 +35,7 @@ def search():
         search_results = search_items(data['item_query']).search_result.items
         if 'email' in data: # if user is logged in
             save_search_history(data['email'], data['item_query'])            
-        result = callChatGPT_async(data['language'], search_results)
+        result = callChatGPT_async(data['item_query'], data['language'], search_results)
         return jsonify(result), 200
     except Exception as e:
         print('search error')
@@ -59,7 +59,11 @@ def searchProperties():
 def refineSearch():
     try:
         data = request.get_json()
-        result = callChatGPT_refine(data)
+        qualities = list(data['qualities'].values())      
+        item_query = ', '.join([data['target']] + qualities)
+        # print("item_query"+ item_query)
+        search_results = search_items_with_price(item_query, data['minPrice'], data['maxPrice']).search_result.items
+        result = callChatGPT_async(data['target'], data['language'], search_results)
         return jsonify(result), 200
     except Exception as e:
         print(e)
@@ -83,7 +87,17 @@ def saveEmail():
         return jsonify({"message": "Email saved successfully"}), 200
     except Exception as e:
         print(e)
-        return jsonify({"error": "An error occurred while processing the request"}), 500        
+        return jsonify({"error": "An error occurred while processing the request"}), 500
+
+@app.route('/api/search-history/<email>', methods=['GET'])
+def getUserSearchHistory(email):
+    try:
+        # Fetch user's search history from the database
+        search_history = retrieve_search_history(email)
+        return jsonify({"searchHistory": search_history}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({"error": "An error occurred while processing the request"}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

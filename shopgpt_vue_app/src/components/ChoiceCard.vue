@@ -15,7 +15,7 @@
                 :preview-src-list="choice.image_urls"
                 fit="contain"
               />
-              <h4 v-if="!choice.default">click image to view more</h4>
+              <h4 v-if="!choice.default">{{$t('click image to view more')}}</h4>
             </div>
             <div class="description" v-if="!choice.default">{{ choice.description }}</div>
             <div class="pros" v-if="choice.pros">
