@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 import threading
 import json
+import random
 
 # Load environment variables
 load_dotenv()
@@ -32,12 +33,10 @@ def callChatGPT_list(data):
     ]
     )
     response = completion.choices[0].message.content
-    print(response)
+    # print(response)
     return response
 
 def callChatGPT_async(target, language, search_results):
-    print("search_results")
-    print(search_results)
     # Create three threads to call ChatGPT simultaneously.
     threads = []
     result1 = [None]*1
@@ -49,6 +48,7 @@ def callChatGPT_async(target, language, search_results):
     results = [result1, result2, result3, result4, result5, result6]
     image_urls = [[],[],[]]
     prices = []
+    search_results = random.sample(search_results, min(3, len(search_results)))
     for i, search_result in enumerate(search_results):
         data = {
             "language": language,
@@ -77,51 +77,31 @@ def callChatGPT_async(target, language, search_results):
         thread.join()
 
     # Get the results for each thread.
-    response1 = json.loads(results[0][0])
-    response2 = json.loads(results[1][0])
-    response3 = json.loads(results[2][0])
-    response4 = json.loads(results[3][0])
-    response5 = json.loads(results[4][0])
-    response6 = json.loads(results[5][0])
-
     response = {
             "target" : target,
-            "choices": [
-                {
-                "target": response1['target'],
-                "description": response4['description'],
-                "pros": response1['pros'],
-                "cons": response1['cons'],
-                "url": search_results[0].detail_page_url,
-                "price": prices[0],
-                "image_urls": image_urls[0]
-                },
-                {
-                "target": response2['target'],
-                "description": response5['description'],
-                "pros": response2['pros'],
-                "cons": response2['cons'],
-                "url": search_results[1].detail_page_url,
-                "price": prices[1],
-                "image_urls": image_urls[1]
-                },
-                {
-                "target": response3['target'],
-                "description": response6['description'],
-                "pros": response3['pros'],
-                "cons": response3['cons'],
-                "url": search_results[2].detail_page_url,
-                "price": prices[2],
-                "image_urls": image_urls[2]
-                }
-            ]
+            "choices": []
             }
-    print(response)
+    for x in range(3):
+        if results[x][0] is not None:
+          temp1 = json.loads(results[x][0])
+          temp2 = json.loads(results[x+3][0])
+          tempJSON = {
+                  "target": temp1['target'],
+                  "description": temp2['description'],
+                  "pros": temp1['pros'],
+                  "cons": temp1['cons'],
+                  "url": search_results[x].detail_page_url,
+                  "price": prices[x],
+                  "image_urls": image_urls[x]
+                  }
+          response['choices'].append(tempJSON)
+
+    # print(response)
     return response 
 
 def callChatGPT(data, result):
-    print("callChatGPT")
-    print(data)
+    # print("callChatGPT")
+    # print(data)
     # Generate a list of 3 specific items that fits the description of {target} as [choice1, choice2, choice3], 
     # breakdown each choice into [brand, item category, and model], 
     # detailed enough so I can use your response to query for the items on a shopping site like Amazon. 
@@ -130,11 +110,11 @@ def callChatGPT(data, result):
     messages=[
             {"role": "user", "content": """you are my shopping advisor. 
             Define {target} as an item category or a concept of an item.
-            Generate a list of 3 pros and cons of {target}.
+            In """+ data['language'] +""", generate a list of 3 pros and cons of {target}.
               Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format. 
               Do not write anything outside of the JSON structure. 
               Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
-              Keep the value of {target} in english.
+              Keep the Value of {target} in english.
               The structure is as follow: 
             {
               "target": "",
@@ -149,18 +129,18 @@ def callChatGPT(data, result):
     result[0] = response
 
 def callChatGPT_description(data, result):
-    print("callChatGPT_description")
-    print(data)
+    # print("callChatGPT_description")
+    # print(data)
     # Generate a list of 3 specific items that fits the description of {target} as [choice1, choice2, choice3], 
     # breakdown each choice into [brand, item category, and model], 
     # detailed enough so I can use your response to query for the items on a shopping site like Amazon. 
     completion = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
     messages=[
-            {"role": "user", "content": """you are my shopping advisor. 
+            {"role": "user", "content": """you are my shopping advisor. But do not mention you are my shopping advisor.
             Define {target} as an item category or a concept of an item. 
             Define {details} as your product reference link.
-            Generate a brief one paragrapg description using first person angle, speak as if you have used the product and the description is from personal use experience.
+            In """+ data['language'] +""", generate a brief one paragrapg description using first person angle, speak as if you have used the product and the description is from personal use experience.
               Generate your response in valid JSON format, watch for symbols, new lines and contents that may break valid JSON format. 
               Do not write anything outside of the JSON structure. 
               Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
@@ -176,7 +156,7 @@ def callChatGPT_description(data, result):
     if not response.endswith('}'):
       response += '}'
     result[0] = response
-    print(result[0])
+    # print(result[0])
 
 def callChatGPT_properties(data):
     print("callChatGPT_properties")
@@ -195,7 +175,7 @@ def callChatGPT_properties(data):
               Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
               Do not write anything outside of the JSON structure. 
               Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
-              Keep the value of {target} in english.
+              Keep the Value of {target} in english.
               The structure is as follow: 
             {
             "target": "",
@@ -219,7 +199,7 @@ def callChatGPT_properties(data):
     ]
     )
     response = completion.choices[0].message.content
-    print(response)
+    # print(response)
     return response
 
 # def callChatGPT_refine(data):

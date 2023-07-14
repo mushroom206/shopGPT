@@ -136,7 +136,7 @@
             <SearchForm @keydown.enter.prevent @submit="initialSubmit($event)" />
           </el-col>
         </el-row>
-    <el-row :gutter="20" justify="center" class="card-container">
+    <el-row :gutter="20" justify="center" class="card-container" ref="choice_card_container">
       <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="choice in searchResults.choices" :key="choice.brand">
         <ChoiceCard :choice="choice" @ask-question="askQuestion" />
       </el-col>
@@ -222,6 +222,7 @@ let selectedQualities = ref({})
 let userInputInputbox = ref('')
 let minPrice = ref('')
 let maxPrice = ref('')
+let choice_card_container = ref(null);
 // let askResponse = ref(null)
 let loading = computed(() => store.state.loading);
 let userPicture = ref(null);
@@ -270,6 +271,9 @@ const initialSubmit = (query) => {
 
     store.dispatch('fetchSearchResults', payload)
     store.dispatch('fetchPropertiesResults', payload)
+
+    // Scroll to the position
+    window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
   }
 }
 
@@ -287,11 +291,15 @@ const generateEssentials = () => {
     }
 
     store.dispatch('fetchGenerateListResults', payload)
+    // Scroll to the position
+    window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
   }
 }
 
 const submitQualities = () => {
     store.dispatch('fetchRefinedSearchResults', { target: searchResults.value.target, qualities: selectedQualities.value, minPrice: minPrice.value, maxPrice: maxPrice.value })
+    // Scroll to the position
+    window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
 }
 
 const updateQuality = (selectedQuality) => {

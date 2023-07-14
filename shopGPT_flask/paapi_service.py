@@ -43,7 +43,7 @@ def search_items(item_query):
     search_index = "All"
 
     """ Specify item count to be returned in search result """
-    item_count = 3
+    item_count = 10
 
     """ Choose resources you want from SearchItemsResource enum """
     """ For more details, refer: https://webservices.amazon.com/paapi5/documentation/search-items.html#resources-parameter """
@@ -74,7 +74,7 @@ def search_items(item_query):
         response = default_api.search_items(search_items_request)
 
         print("API called Successfully")
-        print("Complete Response:", response)
+        # print("Complete Response:", response)
         return response
 
         """ Parse response """
@@ -200,7 +200,7 @@ def search_items_with_price(item_query, minPrice, maxPrice):
         response = default_api.search_items(search_items_request)
 
         print("API called Successfully")
-        print("Complete Response:", response)
+        # print("Complete Response:", response)
         return response
 
         """ Parse response """

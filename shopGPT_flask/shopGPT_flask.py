@@ -60,8 +60,8 @@ def refineSearch():
     try:
         data = request.get_json()
         qualities = list(data['qualities'].values())      
-        item_query = ', '.join([data['target']] + qualities)
-        # print("item_query"+ item_query)
+        item_query = ' '.join([data['target']] + qualities)
+        print("item_query"+ item_query)
         search_results = search_items_with_price(item_query, data['minPrice'], data['maxPrice']).search_result.items
         result = callChatGPT_async(data['target'], data['language'], search_results)
         return jsonify(result), 200
