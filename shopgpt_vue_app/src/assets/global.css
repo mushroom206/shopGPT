@@ -88,3 +88,8 @@ body {
 .next-button{
   background-color: honeydew;
 }
+
+.expand-button{
+  background-color: honeydew;
+  padding: 10px;
+}

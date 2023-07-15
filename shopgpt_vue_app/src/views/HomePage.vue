@@ -1,18 +1,18 @@
 <template>
   <div class="common-layout">
     <el-container class="el-container">
-      <el-header class="el-header">
+      <el-header height="50px" class="el-header">
         <el-row :gutter="20" justify="center">
-          <el-col :xs="16" :sm="18" :md="20" :lg="22">
+          <el-col :xs="20" :sm="20" :md="22" :lg="22">
             <el-image
-              style="width: 150px; height: 50px"
+              style="width: 120px; height: 40px"
               :src="require('@/assets/images/shopGPT_logo_noBG_banner.png')">
             </el-image>
           </el-col>
-          <el-col :xs="4" :sm="3" :md="2" :lg="1" class="language-icon">
+          <el-col :xs="2" :sm="2" :md="1" :lg="1" class="language-icon">
             <el-dropdown>
               <el-image
-              style="width: 35px; height: 35px"
+              style="width: 25px; height: 25px"
               :src="require('@/assets/images/language_icon_144262.png')">
             </el-image>
               <template #dropdown>
@@ -27,10 +27,14 @@
             </template>
             </el-dropdown>
           </el-col>
-          <el-col :xs="4" :sm="3" :md="2" :lg="1" class="google-login">
+          <el-col :xs="2" :sm="2" :md="1" :lg="1" class="google-login">
             <el-dropdown>
               <el-avatar v-if="userPicture" :src="userPicture" />
-              <el-button v-else size="large" :icon=Avatar circle />
+              <el-button v-else size="medium" circle>
+                <el-icon :size="15">
+                  <Avatar />
+                </el-icon>
+              </el-button>
               <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item>
@@ -47,7 +51,7 @@
         </el-row>
       </el-header>
       <el-main class="el-main" v-loading="loading" :element-loading-text="$t('Thinking...')">
-        <el-row :gutter="20" justify="center" class="search-form">
+        <el-row :gutter="20" justify="center" class="search-form" v-show="isVisible">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
             <el-button round @click="fillInputbox($event)">{{$t('Just moved, fill my living room')}}</el-button>
             <el-button round @click="fillInputbox($event)">{{$t('Fisrt day at college')}}</el-button>
@@ -81,7 +85,7 @@
             </el-dropdown>
           </el-col>
         </el-row>
-        <el-row :gutter="20" justify="center" class="search-form">
+        <el-row :gutter="20" justify="center" class="search-form" v-show="isVisible">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
             <el-input v-model="userInputInputbox" :placeholder="$t('what\'s in your mind')"  clearable size="large">
               <template #append>
@@ -133,10 +137,20 @@
             </el-card>
           </el-col>
         </el-row>
-        <el-row :gutter="20" justify="center" class="search-form" ref="choice_card_container">
+        <el-row :gutter="20" justify="center" class="search-form" ref="choice_card_container" v-show="isVisible">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
             <SearchForm @keydown.enter.prevent @submit="initialSubmit($event)" />
           </el-col>
+        </el-row>
+        <el-row justify="center" class="expand-button" v-if="store.state.generateListResults.itemList.length != 0">
+          <el-button @click="isVisible = !isVisible">
+            <el-icon v-if="isVisible" :size="25">
+              <Remove />
+            </el-icon>
+            <el-icon v-else :size="25">
+              <CirclePlus />
+            </el-icon>
+          </el-button>
         </el-row>
         <el-row :gutter="20" justify="center" class="next-button">
           <el-button-group>
@@ -153,7 +167,8 @@
               @click="nextItem" 
               v-if="store.state.listResults[globalState.itemQuery] 
               && store.state.listResults[globalState.itemQuery].next 
-              && store.state.listResults[store.state.listResults[globalState.itemQuery].next].choices.length != 0"
+              && (store.state.listResults[store.state.listResults[globalState.itemQuery].next].choices.length != 0 
+                || store.state.listResults[store.state.listResults[globalState.itemQuery].next].empty)"
             >
               Next: {{store.state.listResults[globalState.itemQuery].next}}
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
@@ -188,7 +203,7 @@
           </el-button-group>
         </el-row>
     <el-row :gutter="20" justify="center" class="fine-tune-section">
-      <el-col :xs="24" :sm="18" :md="14" :lg="6">
+      <el-col :xs="24" :sm="18" :md="14" :lg="14">
         <el-card v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" shadow="hover" class="fine-tune-card">
           <QualityProperty v-for="quality in searchResults['qualities-properties']" :key="quality.name" :quality="quality" @option-selected="updateQuality" />
           <div class="price-inputs">
@@ -254,7 +269,7 @@ import defaultImage3_zh from '@/assets/images/undraw_shopping_app_flsj_zh.png';
 import defaultListImage from '@/assets/images/thinking.png';
 
 import {
-  Avatar, ArrowDown, ArrowLeft, ArrowRight,
+  Avatar, ArrowDown, ArrowLeft, ArrowRight, CirclePlus, Remove, 
 } from '@element-plus/icons-vue'
 
 
@@ -271,6 +286,7 @@ let maxPrice = ref('')
 let choice_card_container = ref(null);
 // let askResponse = ref(null)
 let loading = computed(() => store.state.loading);
+let isVisible = ref(true);
 let userPicture = ref(null);
 let defaultImage1 = ref(defaultImage1_en);
 // let defaultImage2 = ref(defaultImage2_en);
@@ -320,6 +336,7 @@ const initialSubmit = (query) => {
 
     // Scroll to the position
     window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
+    isVisible.value = false;
   }
 }
 
@@ -342,6 +359,7 @@ const generateEssentials = () => {
 
     // Scroll to the position
     window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
+    isVisible.value = false;
   }
 }
 

@@ -138,7 +138,12 @@ const store = createStore({
       let {results1, results2} = payload
       if (Object.prototype.hasOwnProperty.call(state.listResults, results1.target)) {
         state.listResults[results1.target].choices = results1.choices;
-        state.listResults[results1.target]['qualities-properties'] = results2['qualities-properties'];
+        if(results1.empty){
+          state.listResults[results1.target].empty = true
+        }else{
+          state.listResults[results1.target].empty = false
+          state.listResults[results1.target]['qualities-properties'] = results2['qualities-properties'];
+        }
       }
       console.log(state.listResults)
     },
@@ -148,8 +153,26 @@ const store = createStore({
             // If it does not exist, copy it from state.searchResults
             results['qualities-properties'] = state.searchResults['qualities-properties'];
         }
-
-        state.searchResults = results;
+        if(!results.empty){
+          state.searchResults = results;
+        }else{
+          state.searchResults = {
+            "target": results.target,
+            "choices": [],
+            "empty": results.empty
+          }
+          ElMessageBox.alert("We did not find anything for "+results.target, 'Sorry!', {
+            // if you want to disable its autofocus
+            // autofocus: false,
+            confirmButtonText: 'OK',
+            // callback: (action) => {  // Remove type annotation here
+            //   ElMessage({
+            //     type: 'info',
+            //     message: `action: ${action}`,
+            //   })
+            // },
+          })
+        }
     },
     setSearchPropertiesResults(state, results) {
       state.searchResults['qualities-properties'] = results['qualities-properties'];
@@ -235,7 +258,9 @@ actions: {
       }
       if(payload.commit_flag){
         commit('setSearchResults', results1);
-        commit('setSearchPropertiesResults', results2);
+        if(!results1.empty){
+          commit('setSearchPropertiesResults', results2);
+        }
       }
       commit('setListResultsItem', {results1, results2});
     } catch (error) {

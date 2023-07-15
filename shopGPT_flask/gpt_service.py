@@ -113,19 +113,18 @@ def callChatGPT(data, result):
     messages=[
             {"role": "user", "content": """you are my shopping advisor. 
             Define {target} as a product.
-            Define {details} as product reference link to help you generate response.
             In """+ data['language'] +""", generate a list of 3 pros and cons of {target}.
               Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format. 
               Do not write anything outside of the JSON structure. 
-              Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
-              Keep the Value of {target} in english, make it concise max 5 words.
+              Write the Value of JSON in """+ data['language'] +""", Key of JSON in English.
+              Make {target} concise, 5 words max.
               The structure is as follow: 
             {
               "target": "",
               "pros": [],
               "cons": []
             }
-            now {target} =""" + data['item_query'] + """. {details} = """ + data['details']
+            now {target} =""" + data['item_query']
             }
     ]
     )
@@ -173,7 +172,7 @@ def callChatGPT_properties(data):
               In """+ data['language'] +""", generate 3 most common and important quality or properties specific to {target} that affect how consumers compare {target}, but do not include price. 
               For example, 
               if {target} = rice cooker, the quality or properties that may affect your choices can be price, size, design, etc. 
-              For each quality or property, generate 3 options,the options should by itself reflect the quality or property of {target}. 
+              For each quality or property, generate 3 options. 
               Options should be specific enough to help further filtering possible results on site like Amazon.
               For search accuracy, use only numerical value in options if applicable.
               Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.

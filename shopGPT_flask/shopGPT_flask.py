@@ -32,10 +32,18 @@ def search():
         print('search try')
         data = request.get_json()
         # print("search()"+str(data))
-        search_results = search_items(data['item_query']).search_result.items
+        search_results = search_items(data['item_query']).search_result
+        if search_results is None:
+            result = {
+                "target": data['item_query'],
+                "choices":[],
+                "empty": True
+            }
+            return jsonify(result), 200
+        search_results_items = search_results.items
         if 'email' in data: # if user is logged in
             save_search_history(data['email'], data['item_query'])            
-        result = callChatGPT_async(data['item_query'], data['language'], search_results)
+        result = callChatGPT_async(data['item_query'], data['language'], search_results_items)
         return jsonify(result), 200
     except Exception as e:
         print('search error')
@@ -62,8 +70,16 @@ def refineSearch():
         qualities = list(data['qualities'].values())      
         item_query = ' '.join([data['target']] + qualities)
         print("item_query"+ item_query)
-        search_results = search_items_with_price(item_query, data['minPrice'], data['maxPrice']).search_result.items
-        result = callChatGPT_async(data['target'], data['language'], search_results)
+        search_results = search_items_with_price(item_query, data['minPrice'], data['maxPrice']).search_result
+        if search_results is None:
+            result = {
+                "target": data['target'],
+                "choices":[],
+                "empty": True
+            }
+            return jsonify(result), 200
+        search_results_items = search_results.items
+        result = callChatGPT_async(data['target'], data['language'], search_results_items)
         return jsonify(result), 200
     except Exception as e:
         print(e)

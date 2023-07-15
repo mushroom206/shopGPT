@@ -1,12 +1,12 @@
 <template>
-  <el-card shadow="hover" class="card">
+  <el-card :body-style="{ padding: '0px' }" shadow="hover" class="card">
       <el-container>
         <!-- <el-header>HEAD</el-header> -->
         <el-main>
-          <div class="header" v-if="!choice.default">
-            <h3>{{ choice.target }}</h3>
-          </div>
           <el-card>
+            <div class="header" v-if="!choice.default">
+              <h3>{{ choice.target }}</h3>
+            </div>
             <div class="image-description">
               <el-image
                 style="width: 250px; height: 250px"
