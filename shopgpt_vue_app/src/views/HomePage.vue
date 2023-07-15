@@ -3,13 +3,13 @@
     <el-container class="el-container">
       <el-header height="50px" class="el-header">
         <el-row :gutter="20" justify="center">
-          <el-col :xs="16" :sm="18" :md="20" :lg="22">
+          <el-col :xs="18" :sm="18" :md="20" :lg="22">
             <el-image
               style="width: 120px; height: 40px"
               :src="require('@/assets/images/shopGPT_logo_noBG_banner.png')">
             </el-image>
           </el-col>
-          <el-col :xs="4" :sm="3" :md="2" :lg="1" class="language-icon">
+          <el-col :xs="3" :sm="3" :md="2" :lg="1" class="language-icon">
             <el-dropdown>
               <el-image
               style="width: 25px; height: 25px"
@@ -27,7 +27,7 @@
             </template>
             </el-dropdown>
           </el-col>
-          <el-col :xs="4" :sm="3" :md="2" :lg="1" class="google-login">
+          <el-col :xs="3" :sm="3" :md="2" :lg="1" class="google-login">
             <el-dropdown>
               <el-avatar v-if="userPicture" :src="userPicture" />
               <el-button v-else size="medium" circle>
@@ -94,7 +94,7 @@
             </el-input>
           </el-col>
         </el-row>
-        <el-row :gutter="20" justify="center" class="card-container">
+        <el-row :gutter="20" justify="center" class="card-container" ref="choice_card_container">
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
             <el-card shadow="hover" class="card">
               <el-card v-if="store.state.generateListResults.itemList.length === 0">
@@ -137,7 +137,7 @@
             </el-card>
           </el-col>
         </el-row>
-        <el-row :gutter="20" justify="center" class="search-form" ref="choice_card_container" v-show="isVisible">
+        <el-row :gutter="20" justify="center" class="search-form" v-show="isVisible">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
             <SearchForm @keydown.enter.prevent @submit="initialSubmit($event)" />
           </el-col>
