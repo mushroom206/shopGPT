@@ -133,12 +133,12 @@
             </el-card>
           </el-col>
         </el-row>
-        <el-row :gutter="20" justify="center" class="search-form">
+        <el-row :gutter="20" justify="center" class="search-form" ref="choice_card_container">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
             <SearchForm @keydown.enter.prevent @submit="initialSubmit($event)" />
           </el-col>
         </el-row>
-        <el-row :gutter="20" justify="center" class="next-button" ref="choice_card_container">
+        <el-row :gutter="20" justify="center" class="next-button">
           <el-button-group>
             <el-button 
               type="primary" 
