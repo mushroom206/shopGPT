@@ -339,6 +339,9 @@ const generateEssentials = () => {
     store.dispatch('fetchGenerateListResults', payload).then(() => {
       globalState.itemQuery = store.state.generateListResults.itemList[0]
     })
+
+    // Scroll to the position
+    window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
   }
 }
 
