@@ -52,6 +52,8 @@
             <el-button round @click="fillInputbox($event)">{{$t('Just moved, fill my living room')}}</el-button>
             <el-button round @click="fillInputbox($event)">{{$t('Fisrt day at college')}}</el-button>
             <el-button round @click="fillInputbox($event)">{{$t('Going camping this weekend')}}</el-button>
+            <el-button round @click="fillInputbox($event)">{{$t('Workout in Gym')}}</el-button>
+            <el-button round @click="fillInputbox($event)">{{$t('First time making Pasta')}}</el-button>
             <el-dropdown>
               <el-button primary>{{$t('more')}}<el-icon><arrow-down /></el-icon></el-button>
               <template #dropdown>
@@ -68,6 +70,12 @@
                 <el-dropdown-item>
                   <el-button round @click="fillInputbox($event)">{{$t('Daily hair care set')}}</el-button>
                 </el-dropdown-item>
+                <el-dropdown-item>
+                  <el-button round @click="fillInputbox($event)">{{$t('Facial care set')}}</el-button>
+                </el-dropdown-item>
+                <el-dropdown-item>
+                  <el-button round @click="fillInputbox($event)">{{$t('BBQ weekend')}}</el-button>
+                </el-dropdown-item>
               </el-dropdown-menu>
             </template>
             </el-dropdown>
@@ -75,17 +83,11 @@
         </el-row>
         <el-row :gutter="20" justify="center" class="search-form">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
-            <el-input
-              v-model="userInputInputbox"
-              :autosize="{ minRows: 3, maxRows: 10 }"
-              type="textarea"
-              :placeholder="$t('what\'s in your mind')"
-            /> 
-          </el-col>
-        </el-row>
-        <el-row :gutter="20" justify="center" class="search-form">
-          <el-col :xs="24" :sm="16" :md="12" :lg="8" class="generate-button">
-              <el-button type="info" plain @click="generateEssentials">{{$t('Generate List of Essentials')}}</el-button>
+            <el-input v-model="userInputInputbox" :placeholder="$t('what\'s in your mind')"  clearable size="large">
+              <template #append>
+                <el-button type="info" plain @click="generateEssentials">{{$t('Generate Essentials')}}</el-button>
+              </template>
+            </el-input>
           </el-col>
         </el-row>
         <el-row :gutter="20" justify="center" class="card-container">
@@ -136,11 +138,55 @@
             <SearchForm @keydown.enter.prevent @submit="initialSubmit($event)" />
           </el-col>
         </el-row>
-    <el-row :gutter="20" justify="center" class="card-container" ref="choice_card_container">
+        <el-row :gutter="20" justify="center" class="next-button" ref="choice_card_container">
+          <el-button-group>
+            <el-button 
+              type="primary" 
+              :icon="ArrowLeft"
+              @click="preItem" 
+              v-if="store.state.listResults[globalState.itemQuery] && store.state.listResults[globalState.itemQuery].pre"
+            >
+              Previous: {{store.state.listResults[globalState.itemQuery].pre}}
+            </el-button>
+            <el-button 
+              type="primary" 
+              @click="nextItem" 
+              v-if="store.state.listResults[globalState.itemQuery] 
+              && store.state.listResults[globalState.itemQuery].next 
+              && store.state.listResults[store.state.listResults[globalState.itemQuery].next].choices.length != 0"
+            >
+              Next: {{store.state.listResults[globalState.itemQuery].next}}
+              <el-icon class="el-icon--right"><ArrowRight /></el-icon>
+            </el-button>
+          </el-button-group>
+        </el-row>
+    <el-row :gutter="20" justify="center" class="card-container">
       <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="choice in searchResults.choices" :key="choice.brand">
         <ChoiceCard :choice="choice" @ask-question="askQuestion" />
       </el-col>
     </el-row>
+    <el-row :gutter="20" justify="center" class="next-button">
+      <el-button-group>
+            <el-button 
+              type="primary" 
+              :icon="ArrowLeft"
+              @click="preItem" 
+              v-if="store.state.listResults[globalState.itemQuery] && store.state.listResults[globalState.itemQuery].pre"
+            >
+              Previous: {{store.state.listResults[globalState.itemQuery].pre}}
+            </el-button>
+            <el-button 
+              type="primary"
+              @click="nextItem" 
+              v-if="store.state.listResults[globalState.itemQuery] 
+              && store.state.listResults[globalState.itemQuery].next
+              && store.state.listResults[store.state.listResults[globalState.itemQuery].next].choices.length != 0"
+            >
+              Next: {{store.state.listResults[globalState.itemQuery].next}}
+              <el-icon class="el-icon--right"><ArrowRight /></el-icon>
+            </el-button>
+          </el-button-group>
+        </el-row>
     <el-row :gutter="20" justify="center" class="fine-tune-section">
       <el-col :xs="24" :sm="18" :md="14" :lg="6">
         <el-card v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" shadow="hover" class="fine-tune-card">
@@ -200,15 +246,15 @@ import { onMounted } from 'vue'
 import apiService from '@/services/apiService'  // Import the apiService here
 
 import defaultImage1_en from '@/assets/images/undraw_Web_search_re_efla.png';
-import defaultImage2_en from '@/assets/images/undraw_Faq_re_31cw.png';
+// import defaultImage2_en from '@/assets/images/undraw_Faq_re_31cw.png';
 import defaultImage3_en from '@/assets/images/undraw_shopping_app_flsj.png';
 import defaultImage1_zh from '@/assets/images/undraw_Search_app_flsj_zh.png';
-import defaultImage2_zh from '@/assets/images/undraw_ask_app_flsj_zh.png';
+// import defaultImage2_zh from '@/assets/images/undraw_ask_app_flsj_zh.png';
 import defaultImage3_zh from '@/assets/images/undraw_shopping_app_flsj_zh.png';
 import defaultListImage from '@/assets/images/thinking.png';
 
 import {
-  Avatar, ArrowDown
+  Avatar, ArrowDown, ArrowLeft, ArrowRight,
 } from '@element-plus/icons-vue'
 
 
@@ -227,7 +273,7 @@ let choice_card_container = ref(null);
 let loading = computed(() => store.state.loading);
 let userPicture = ref(null);
 let defaultImage1 = ref(defaultImage1_en);
-let defaultImage2 = ref(defaultImage2_en);
+// let defaultImage2 = ref(defaultImage2_en);
 let defaultImage3 = ref(defaultImage3_en);
 
 // initialize default choices
@@ -237,11 +283,11 @@ let defaultChoices = reactive([
     image: defaultImage1,
     description: 'Find and compare items',
   },
-  {
-    default: true,
-    description: 'Ask AI anything about the items',
-    image: defaultImage2,
-  },
+  // {
+  //   default: true,
+  //   description: 'Ask AI anything about the items',
+  //   image: defaultImage2,
+  // },
   {
     default: true,
     description: 'Happy shopping!',
@@ -258,8 +304,6 @@ let searchResults = computed(() => {
 const initialSubmit = (query) => {
   item_query.value = query;
   if (item_query.value != null) {
-    loading.value = true;
-
     // check if user is logged in
     const storedUserData = localStorage.getItem('userData')
     let payload = { item_query: String(item_query.value) }
@@ -269,8 +313,10 @@ const initialSubmit = (query) => {
       payload.email = userData.email // add email to payload
     }
 
+    payload.loading_flag = true;
+    payload.commit_flag = true;
+
     store.dispatch('fetchSearchResults', payload)
-    store.dispatch('fetchPropertiesResults', payload)
 
     // Scroll to the position
     window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
@@ -290,10 +336,37 @@ const generateEssentials = () => {
       payload.email = userData.email // add email to payload
     }
 
-    store.dispatch('fetchGenerateListResults', payload)
+    store.dispatch('fetchGenerateListResults', payload).then(() => {
+      globalState.itemQuery = store.state.generateListResults.itemList[0]
+    })
+  }
+}
+
+const preItem = () => {
+  store.dispatch('setPreItem', store.state.listResults[globalState.itemQuery].pre)
+  globalState.itemQuery = store.state.listResults[globalState.itemQuery].pre
+  window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
+}
+
+const nextItem = () => {
+  store.dispatch('setNextItem', store.state.listResults[globalState.itemQuery].next)
+  globalState.itemQuery = store.state.listResults[globalState.itemQuery].next
+  if(store.state.listResults[store.state.listResults[globalState.itemQuery].next].choices.length == 0){
+    const storedUserData = localStorage.getItem('userData')
+      let payload = { item_query: store.state.listResults[globalState.itemQuery].next }
+
+      if (storedUserData) {
+        const userData = JSON.parse(storedUserData)
+        payload.email = userData.email // add email to payload
+      }
+
+      payload.loading_flag = false;
+      payload.commit_flag = false;
+
+      store.dispatch('fetchSearchResults', payload)
+  }  
     // Scroll to the position
     window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
-  }
 }
 
 const submitQualities = () => {
@@ -357,23 +430,25 @@ const changeLanguage = (language) => {
   store.commit('setLanguage', language);
   if(language == 'English'){
     defaultChoices[0].image = defaultImage1_en;
-    defaultChoices[1].image = defaultImage2_en;
-    defaultChoices[2].image = defaultImage3_en;
+    // defaultChoices[1].image = defaultImage2_en;
+    defaultChoices[1].image = defaultImage3_en;
   }
   if(language == 'Simplified_Chinese'){
     defaultChoices[0].image = defaultImage1_zh;
-    defaultChoices[1].image = defaultImage2_zh;
-    defaultChoices[2].image = defaultImage3_zh;
+    // defaultChoices[1].image = defaultImage2_zh;
+    defaultChoices[1].image = defaultImage3_zh;
   }
 }
 
 const fillInputbox = (event) => {
       userInputInputbox.value = event.target.innerText;
+      generateEssentials()
 }
 
 const setItemQuery = (event) => {
   console.log("setItemQuery", event.target.innerText)
   globalState.itemQuery = event.target.innerText;
+  initialSubmit(globalState.itemQuery)
 }    
 
 

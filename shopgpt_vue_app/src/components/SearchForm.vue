@@ -1,7 +1,7 @@
 <template>
     <div class="search-form">
       <form @submit.prevent="submitForm">
-        <el-input v-model="globalState.itemQuery" :placeholder="$t('smart watch, yoga mat, etc.')"  clearable maxlength="50" show-word-limit size="large">
+        <el-input v-model="globalState.itemQuery" :placeholder="$t('smart watch, yoga mat, etc.')"  clearable size="large">
           <template #append>
             <el-button type="primary" @click="submitForm">{{$t('Search')}}</el-button>
           </template>

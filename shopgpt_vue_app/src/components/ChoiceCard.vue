@@ -17,7 +17,7 @@
               />
               <h4 v-if="!choice.default">{{$t('click image to view more')}}</h4>
             </div>
-            <div class="description" v-if="!choice.default">{{ choice.description }}</div>
+            <!-- <div class="description" v-if="!choice.default">{{ choice.description }}</div> -->
             <div class="pros" v-if="choice.pros">
               <h3>{{$t('Pros')}}:</h3>
               <ul class="check-list">

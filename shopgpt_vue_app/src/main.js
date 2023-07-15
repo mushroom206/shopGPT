@@ -47,15 +47,19 @@ const messages = {
     'Ask AI' : 'Ask AI',
     'Pros': 'Pros',
     'Cons': 'Cons',
-    'Generate List of Essentials': 'Generate List of Essentials',
+    'Generate Essentials': 'Generate Essentials',
     'what\'s in your mind': 'what\'s in your mind',
     'Just moved, fill my living room': 'Just moved, fill my living room',
     'Fisrt day at college': 'Fisrt day at college',
     'Going camping this weekend': 'Going camping this weekend',
+    'Workout in Gym': 'Workout in Gym',
+    'First time making Pasta': 'First time making Pasta',
     'Hosting a birthday party': 'Hosting a birthday party',
     'Need office supplies': 'Need office supplies',
     'Expecting a cat': 'Expecting a cat',
     'Daily hair care set': 'Daily hair care set',
+    'Facial care set': 'Facial care set',
+    'BBQ weekend': 'BBQ weekend',
     'click image to view more': 'click image to view more',
     'more': 'more',
     'Min Price': 'Min Price',
@@ -74,15 +78,19 @@ const messages = {
     'Ask AI' : '问 AI',
     'Pros': '优点',
     'Cons': '缺点',
-    'Generate List of Essentials': '生成必需品列表',
+    'Generate Essentials': '生成必需品',
     'what\'s in your mind': '帮你计划',
     'Just moved, fill my living room': '刚搬家，需要客厅用的家具',
     'Fisrt day at college': '大学开学第一天',
     'Going camping this weekend': '周末要去露营',
+    'Workout in Gym': '去健身',
+    'First time making Pasta': '第一次煮通心粉',
     'Hosting a birthday party': '办生日会',
     'Need office supplies': '需要办公用品',
     'Expecting a cat': '准备养一只猫',
     'Daily hair care set': '每日护发用品',
+    'Facial care set': '面部护理用品',
+    'BBQ weekend': '周末烧烤',
     'click image to view more': '点击图片查看更多',
     'more': '更多',
     'Min Price': '最低价',
@@ -98,6 +106,7 @@ const store = createStore({
       generateListResults: {
         itemList: []
       },
+      listResults: {},
       searchResults: {
         choices: []
       },
@@ -109,6 +118,29 @@ const store = createStore({
   mutations: {
     setGenerateListResults(state, results) {
       state.generateListResults = results;
+    },
+    setListResults(state, results) {
+      state.listResults = {};
+      results.forEach((result, index) => {
+        let pre = index > 0 ? results[index - 1] : '';
+        let next = index < results.length - 1 ? results[index + 1] : '';
+        state.listResults[result] = {
+          "target": result,
+          "choices": [],
+          "qualities-properties": [],
+          "pre": pre,
+          "next": next,
+        };
+      });
+      console.log(state.listResults)
+    },
+    setListResultsItem(state, payload) {
+      let {results1, results2} = payload
+      if (Object.prototype.hasOwnProperty.call(state.listResults, results1.target)) {
+        state.listResults[results1.target].choices = results1.choices;
+        state.listResults[results1.target]['qualities-properties'] = results2['qualities-properties'];
+      }
+      console.log(state.listResults)
     },
     setSearchResults(state, results) {
         // Check if 'qualities-properties' exists in results
@@ -137,10 +169,12 @@ const store = createStore({
     },
 },
 actions: {
-  async fetchGenerateListResults({ commit }, payload) {
+  async fetchGenerateListResults({ commit, dispatch }, payload) {
     try {
       commit('startLoading');  // Start loading before the API request
       payload.language = store.state.lang;
+      payload.loading_flag = false;
+      payload.commit_flag = true;
       const response = await apiService.generateList(payload);
       let results;
       try {
@@ -150,6 +184,25 @@ actions: {
         results = response;  // Use the original response if parsing fails
       }
       commit('setGenerateListResults', results);
+      commit('setListResults', results.itemList);
+      ElMessageBox.alert(results['tip'], 'tip', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: 'OK',
+        // callback: (action) => {  // Remove type annotation here
+        //   ElMessage({
+        //     type: 'info',
+        //     message: `action: ${action}`,
+        //   })
+        // },
+      })
+      payload.item_query = results.itemList[0]
+      await dispatch('fetchSearchResults', payload),
+
+      payload.item_query = results.itemList[1]
+      payload.commit_flag = false;
+      dispatch('fetchSearchResults', payload)
+
     } catch (error) {
       console.error('Error fetching search results:', error);
     } finally {
@@ -158,39 +211,57 @@ actions: {
   },
   async fetchSearchResults({ commit }, payload) {
     try {
-      commit('startLoading');  // Start loading before the API request
+      if(payload.loading_flag){
+        commit('startLoading');  // Start loading before the API request
+      }
       payload.language = store.state.lang;
-      const response = await apiService.searchItems(payload);
-      let results;
+      const [response1, response2] = await Promise.all([
+        apiService.searchItems(payload),
+        apiService.searchProperties(payload),
+      ]);
+      let results1;
+      let results2;
       // try {
-        results = response;
+        results1 = response1;
       // } catch (e) {
       //   console.error('Error parsing response:', e);
       //   results = response;  // Use the original response if parsing fails
       // }
-      commit('setSearchResults', results);
+      try {
+        results2 = JSON.parse(response2);
+      } catch (e) {
+        console.error('Error parsing response:', e);
+        results2 = response2;  // Use the original response if parsing fails
+      }
+      if(payload.commit_flag){
+        commit('setSearchResults', results1);
+        commit('setSearchPropertiesResults', results2);
+      }
+      commit('setListResultsItem', {results1, results2});
     } catch (error) {
       console.error('Error fetching search results:', error);
     } finally {
-      commit('endLoading');  // End loading after the API request and committing the results or catching an error
-    }
-  },
-  async fetchPropertiesResults({ commit }, payload) {
-    try {
-      payload.language = store.state.lang;
-      const response = await apiService.searchProperties(payload);
-      let results;
-      try {
-        results = JSON.parse(response);
-      } catch (e) {
-        console.error('Error parsing response:', e);
-        results = response;  // Use the original response if parsing fails
+      if(payload.loading_flag){
+        commit('endLoading');  // End loading after the API request and committing the results or catching an error
       }
-      commit('setSearchPropertiesResults', results);
-    } catch (error) {
-      console.error('Error fetching properties results:', error);
     }
   },
+  // async fetchPropertiesResults({ commit }, payload) {
+  //   try {
+  //     payload.language = store.state.lang;
+  //     const response = await apiService.searchProperties(payload);
+  //     let results;
+  //     try {
+  //       results = JSON.parse(response);
+  //     } catch (e) {
+  //       console.error('Error parsing response:', e);
+  //       results = response;  // Use the original response if parsing fails
+  //     }
+  //     commit('setSearchPropertiesResults', results);
+  //   } catch (error) {
+  //     console.error('Error fetching properties results:', error);
+  //   }
+  // },
   async fetchRefinedSearchResults({ commit }, queryObject) {
     try {
       commit('startLoading');  // Start loading before the API request
@@ -246,6 +317,12 @@ actions: {
     } catch (error) {
       console.error('Error fetching user search history:', error);
     }
+  },
+  async setPreItem({ commit }, item) {
+    commit('setSearchResults', store.state.listResults[item]);
+  },
+  async setNextItem({ commit }, item) {
+    commit('setSearchResults', store.state.listResults[item]);
   },
 }
 })

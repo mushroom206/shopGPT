@@ -43,7 +43,7 @@ def search_items(item_query):
     search_index = "All"
 
     """ Specify item count to be returned in search result """
-    item_count = 10
+    item_count = 5
 
     """ Choose resources you want from SearchItemsResource enum """
     """ For more details, refer: https://webservices.amazon.com/paapi5/documentation/search-items.html#resources-parameter """

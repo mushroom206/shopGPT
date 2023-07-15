@@ -84,3 +84,7 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+.next-button{
+  background-color: honeydew;
+}
