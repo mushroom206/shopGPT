@@ -3,13 +3,13 @@
     <el-container class="el-container">
       <el-header height="50px" class="el-header">
         <el-row :gutter="20" justify="center">
-          <el-col :xs="20" :sm="20" :md="22" :lg="22">
+          <el-col :xs="16" :sm="18" :md="20" :lg="22">
             <el-image
               style="width: 120px; height: 40px"
               :src="require('@/assets/images/shopGPT_logo_noBG_banner.png')">
             </el-image>
           </el-col>
-          <el-col :xs="2" :sm="2" :md="1" :lg="1" class="language-icon">
+          <el-col :xs="4" :sm="3" :md="2" :lg="1" class="language-icon">
             <el-dropdown>
               <el-image
               style="width: 25px; height: 25px"
@@ -27,7 +27,7 @@
             </template>
             </el-dropdown>
           </el-col>
-          <el-col :xs="2" :sm="2" :md="1" :lg="1" class="google-login">
+          <el-col :xs="4" :sm="3" :md="2" :lg="1" class="google-login">
             <el-dropdown>
               <el-avatar v-if="userPicture" :src="userPicture" />
               <el-button v-else size="medium" circle>
