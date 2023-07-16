@@ -246,6 +246,7 @@ actions: {
       let results2;
       // try {
         results1 = response1;
+        console.log(results1)
       // } catch (e) {
       //   console.error('Error parsing response:', e);
       //   results = response;  // Use the original response if parsing fails

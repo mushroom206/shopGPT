@@ -3,29 +3,34 @@
       <el-container>
         <!-- <el-header>HEAD</el-header> -->
         <el-main>
-          <el-card>
+          <el-card :body-style="{ 'padding-top': '0px', 'padding-bottom': '0px' }">
             <div class="header" v-if="!choice.default">
               <h3>{{ choice.target }}</h3>
             </div>
             <div class="image-description">
-              <el-image
-                style="width: 250px; height: 250px"
-                :src="choice.image || choice.image_urls"
+              <el-image v-if="!choice.default"
+                style="width: 150px; height: 150px"
+                :src="choice.image_urls"
                 :zoom-rate="1.2"
                 :preview-src-list="choice.image_urls"
                 fit="contain"
               />
-              <h4 v-if="!choice.default">{{$t('click image to view more')}}</h4>
+              <el-image v-else
+                style="width: 250px; height: 250px"
+                :src="choice.image"
+                fit="contain"
+              />
+              <h5 v-if="!choice.default">{{$t('click image to view more')}}</h5>
             </div>
             <!-- <div class="description" v-if="!choice.default">{{ choice.description }}</div> -->
             <div class="pros" v-if="choice.pros">
-              <h3>{{$t('Pros')}}:</h3>
+              <h4>{{$t('Pros')}}:</h4>
               <ul class="check-list">
                 <li v-for="(pro, index) in choice.pros" :key="index">{{ pro }}</li>
               </ul>
             </div>
             <div class="cons" v-if="choice.cons">
-              <h3>{{$t('Cons')}}:</h3>
+              <h4>{{$t('Cons')}}:</h4>
               <ul class="cross-list">
                 <li v-for="(con, index) in choice.cons" :key="index">{{ con }}</li>
               </ul>

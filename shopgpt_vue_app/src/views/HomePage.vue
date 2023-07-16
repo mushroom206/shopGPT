@@ -11,10 +11,15 @@
           </el-col>
           <el-col :xs="3" :sm="3" :md="2" :lg="1" class="language-icon">
             <el-dropdown>
-              <el-image
-              style="width: 25px; height: 25px"
-              :src="require('@/assets/images/language_icon_144262.png')">
-            </el-image>
+              <el-button size="medium" circle>
+                  <!-- <el-image
+                    style="width: 25px; height: 25px"
+                    :src="require('@/assets/images/language_icon_144262.png')">
+                  </el-image> -->
+                <el-icon :size="15">
+                  <Tools />
+                </el-icon>  
+              </el-button>
               <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item>
@@ -29,7 +34,7 @@
           </el-col>
           <el-col :xs="3" :sm="3" :md="2" :lg="1" class="google-login">
             <el-dropdown>
-              <el-avatar v-if="userPicture" :src="userPicture" />
+              <el-avatar v-if="userPicture" :src="userPicture" :size="30"/>
               <el-button v-else size="medium" circle>
                 <el-icon :size="15">
                   <Avatar />
@@ -96,7 +101,7 @@
         </el-row>
         <el-row :gutter="20" justify="center" class="card-container" ref="choice_card_container">
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-card shadow="hover" class="card">
+            <el-card shadow="hover" class="card" :body-style="{ padding: '10px' }">
               <el-card v-if="store.state.generateListResults.itemList.length === 0">
                     <el-image :src="defaultListImage" fit="cover"/>
               </el-card>
@@ -124,9 +129,10 @@
             </el-card>
           </el-col>
         </el-row>
-        <el-row :gutter="20" justify="center" class="card-container" v-if="store.state.userSearchHistory.length != 0">
+        <el-row :gutter="20" justify="center" class="card-container" v-if="store.state.userSearchHistory.searchHistory && store.state.userSearchHistory.searchHistory
+.length != 0">
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-card shadow="hover" class="card">
+            <el-card shadow="hover" class="card" :body-style="{ padding: '10px' }">
               <el-button 
                 round 
                 v-for="(item, index) in store.state.userSearchHistory.searchHistory" :key="index"
@@ -142,14 +148,21 @@
             <SearchForm @keydown.enter.prevent @submit="initialSubmit($event)" />
           </el-col>
         </el-row>
-        <el-row justify="center" class="expand-button" v-if="store.state.generateListResults.itemList.length != 0">
+        <el-row :gutter="20" justify="center" class="expand-button" v-if="store.state.generateListResults.itemList.length != 0">
           <el-button @click="isVisible = !isVisible">
-            <el-icon v-if="isVisible" :size="25">
-              <Remove />
-            </el-icon>
-            <el-icon v-else :size="25">
-              <CirclePlus />
-            </el-icon>
+            <template v-if="isVisible">
+              <el-icon :size="25">
+                <Remove />
+              </el-icon>
+              <span>Hide</span>
+            </template>
+
+            <template v-else>
+              <el-icon :size="25">
+                <CirclePlus />
+              </el-icon>
+              <span>Show</span>
+            </template>
           </el-button>
         </el-row>
         <el-row :gutter="20" justify="center" class="next-button">
@@ -160,7 +173,7 @@
               @click="preItem" 
               v-if="store.state.listResults[globalState.itemQuery] && store.state.listResults[globalState.itemQuery].pre"
             >
-              Previous: {{store.state.listResults[globalState.itemQuery].pre}}
+              {{store.state.listResults[globalState.itemQuery].pre}}
             </el-button>
             <el-button 
               type="primary" 
@@ -170,13 +183,21 @@
               && (store.state.listResults[store.state.listResults[globalState.itemQuery].next].choices.length != 0 
                 || store.state.listResults[store.state.listResults[globalState.itemQuery].next].empty)"
             >
-              Next: {{store.state.listResults[globalState.itemQuery].next}}
+              {{store.state.listResults[globalState.itemQuery].next}}
+              <el-icon class="el-icon--right"><ArrowRight /></el-icon>
+            </el-button>
+            <el-button 
+              type="primary" 
+              v-else-if="store.state.listResults[globalState.itemQuery]
+                      && store.state.listResults[globalState.itemQuery].next"
+            >
+              Next item loading...
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
           </el-button-group>
         </el-row>
     <el-row :gutter="20" justify="center" class="card-container">
-      <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="choice in searchResults.choices" :key="choice.brand">
+      <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="choice in searchResults.choices" :key="choice.target">
         <ChoiceCard :choice="choice" @ask-question="askQuestion" />
       </el-col>
     </el-row>
@@ -188,7 +209,7 @@
               @click="preItem" 
               v-if="store.state.listResults[globalState.itemQuery] && store.state.listResults[globalState.itemQuery].pre"
             >
-              Previous: {{store.state.listResults[globalState.itemQuery].pre}}
+              {{store.state.listResults[globalState.itemQuery].pre}}
             </el-button>
             <el-button 
               type="primary"
@@ -197,25 +218,29 @@
               && store.state.listResults[globalState.itemQuery].next
               && store.state.listResults[store.state.listResults[globalState.itemQuery].next].choices.length != 0"
             >
-              Next: {{store.state.listResults[globalState.itemQuery].next}}
+              {{store.state.listResults[globalState.itemQuery].next}}
+              <el-icon class="el-icon--right"><ArrowRight /></el-icon>
+            </el-button>
+            <el-button 
+              type="primary" 
+              v-else-if="store.state.listResults[globalState.itemQuery]
+                      && store.state.listResults[globalState.itemQuery].next"
+            >
+              Next item loading...
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
           </el-button-group>
         </el-row>
     <el-row :gutter="20" justify="center" class="fine-tune-section">
-      <el-col :xs="24" :sm="18" :md="14" :lg="14">
+      <el-col :xs="24" :sm="18" :md="10" :lg="8">
         <el-card v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" shadow="hover" class="fine-tune-card">
           <QualityProperty v-for="quality in searchResults['qualities-properties']" :key="quality.name" :quality="quality" @option-selected="updateQuality" />
-          <div class="price-inputs">
-            <div class="price-input">
+            <div class="price-inputs">
               <label for="min-price">{{$t('Min Price')}}: </label>
               <el-input id="min-price" v-model="minPrice"></el-input>
-            </div>
-            <div class="price-input">
               <label for="max-price">{{$t('Max Price')}}: </label>
               <el-input id="max-price" v-model="maxPrice"></el-input>
             </div>
-          </div>
           <div class="fine-tune-button-div">
             <SearchButton v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" @submit="submitQualities" :label="$t('Fine Tune Choices!')" class="fine-tune-button" />
           </div>
@@ -269,7 +294,7 @@ import defaultImage3_zh from '@/assets/images/undraw_shopping_app_flsj_zh.png';
 import defaultListImage from '@/assets/images/thinking.png';
 
 import {
-  Avatar, ArrowDown, ArrowLeft, ArrowRight, CirclePlus, Remove, 
+  Avatar, ArrowDown, ArrowLeft, ArrowRight, CirclePlus, Remove, Tools,
 } from '@element-plus/icons-vue'
 
 
@@ -357,8 +382,6 @@ const generateEssentials = () => {
       globalState.itemQuery = store.state.generateListResults.itemList[0]
     })
 
-    // Scroll to the position
-    window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
     isVisible.value = false;
   }
 }
@@ -411,7 +434,7 @@ const getUserData = async (accessToken) => {
       throw new Error(`HTTP error ${response.status}`);
     }
     const userData = await response.json();
-    console.log("User data: ", userData);
+    // console.log("User data: ", userData);
     return userData;
   } catch (error) {
     console.error("Error fetching user data: ", error);
@@ -428,10 +451,12 @@ const login = () => {
 
       // send email to backend
       apiService.saveEmail(data.email)  // Use apiService to save the email here
-        .then(response => console.log(response))
+        .then((response) => {
+          if(response.message && response.message == "Email saved successfully"){
+            store.dispatch('fetchUserSearchHistory', userData.email)
+          }  
+        })
         .catch(error => console.error(error))
-
-      store.dispatch('fetchUserSearchHistory', data.email) 
     })
   })
 }
@@ -498,8 +523,8 @@ onMounted(() => {
 
   .card-container{
     background-color: honeydew;
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
   .search-form{
     background-color: honeydew;
@@ -509,12 +534,12 @@ onMounted(() => {
 
   .fine-tune-section{
     background-color: honeydew;
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
 
   .fine-tune-card{
-    border-radius: 30px;
+    border-radius: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -553,7 +578,7 @@ onMounted(() => {
   }
 
   .language-icon{
-    padding-top: 7px;
+    padding-top: 5px;
   }
   
   .generate-button{

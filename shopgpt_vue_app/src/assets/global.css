@@ -56,11 +56,12 @@ body {
 
 .card{
     background-color: #fff5d8;
-    border-radius: 30px;
+    border-radius: 20px;
   }
 
 .quality-property{
   margin-top: 10px;
+  text-align: center;
 }
 
 .image-description{
@@ -77,12 +78,8 @@ body {
 
 .price-inputs {
   display: flex;
-  justify-content: space-between;
-}
-
-.price-input {
-  display: flex;
   flex-direction: column;
+  padding-top: 10px;
 }
 
 .next-button{
@@ -92,4 +89,8 @@ body {
 .expand-button{
   background-color: honeydew;
   padding: 10px;
+}
+
+h4 {
+  margin: 5px; /* or any other value you wish */
 }

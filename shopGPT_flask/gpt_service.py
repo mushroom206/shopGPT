@@ -60,8 +60,9 @@ def callChatGPT_async(target, language, search_results):
         }
 
         image_urls[i].append(search_result.images.primary.large.url)
-        for url in search_result.images.variants:
-            image_urls[i].append(url.large.url)
+        if search_result.images.variants:
+            for url in search_result.images.variants:
+                image_urls[i].append(url.large.url)
         try:
             prices.append(search_result.offers.listings[0].price.display_amount)
         except AttributeError:
@@ -113,11 +114,11 @@ def callChatGPT(data, result):
     messages=[
             {"role": "user", "content": """you are my shopping advisor. 
             Define {target} as a product.
-            In """+ data['language'] +""", generate a list of 3 pros and cons of {target}.
+            In """+ data['language'] +""", generate a list of at most 3 pros and cons of {target}.
               Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format. 
               Do not write anything outside of the JSON structure. 
               Write the Value of JSON in """+ data['language'] +""", Key of JSON in English.
-              Make {target} concise, 5 words max.
+              Make {target} concise, 5 words max , include brand.
               The structure is as follow: 
             {
               "target": "",
@@ -171,10 +172,10 @@ def callChatGPT_properties(data):
             Define {target} as an item category or a concept of an item. 
               In """+ data['language'] +""", generate 3 most common and important quality or properties specific to {target} that affect how consumers compare {target}, but do not include price. 
               For example, 
-              if {target} = rice cooker, the quality or properties that may affect your choices can be price, size, design, etc. 
+              if {target} = rice cooker, the quality or properties that may affect your choices can be material, size, design, etc. 
               For each quality or property, generate 3 options. 
               Options should be specific enough to help further filtering possible results on site like Amazon.
-              For search accuracy, use only numerical value in options if applicable.
+              For search accuracy, use numerical value in options if applicable.
               Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
               Do not write anything outside of the JSON structure. 
               Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
@@ -184,15 +185,15 @@ def callChatGPT_properties(data):
             "target": "",
             "qualities-properties": [
             {
-            "quality":””,
+            "quality":"",
             "options": []
             },
             {
-            "quality":””,
+            "quality":"",
             "options": []
             },
             {
-            "quality":””,
+            "quality":"",
             "options": []
             }
             ]
