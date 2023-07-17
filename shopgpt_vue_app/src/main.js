@@ -64,6 +64,10 @@ const messages = {
     'more': 'more',
     'Min Price': 'Min Price',
     'Max Price': 'Max Price',
+    'Hide Menu': 'Hide Menu',
+    'Show Menu': 'Show Menu',
+    'Pre item loading...': 'Pre item loading...',
+    'Next item loading...': 'Next item loading...',
     // other translations...
   },
   Simplified_Chinese: {
@@ -95,6 +99,10 @@ const messages = {
     'more': '更多',
     'Min Price': '最低价',
     'Max Price': '最高价',
+    'Hide Menu': '隐藏菜单',
+    'Show Menu': '打开菜单',
+    'Pre item loading...': '正加载前项...',
+    'Next item loading...': '正加载后项...',
     // other translations...
   }
   // other languages...
@@ -224,7 +232,9 @@ actions: {
 
       payload.item_query = results.itemList[1]
       payload.commit_flag = false;
-      dispatch('fetchSearchResults', payload)
+      setTimeout(() => {
+        dispatch('fetchSearchResults', payload)
+      }, 1000); 
 
     } catch (error) {
       console.error('Error fetching search results:', error);
@@ -238,10 +248,11 @@ actions: {
         commit('startLoading');  // Start loading before the API request
       }
       payload.language = store.state.lang;
-      const [response1, response2] = await Promise.all([
-        apiService.searchItems(payload),
-        apiService.searchProperties(payload),
-      ]);
+      const response1Promise = apiService.searchItems(payload);
+      const response2Promise = new Promise(resolve => setTimeout(resolve, 1000))
+        .then(() => apiService.searchProperties(payload));
+      
+      const [response1, response2] = await Promise.all([response1Promise, response2Promise]);
       let results1;
       let results2;
       // try {

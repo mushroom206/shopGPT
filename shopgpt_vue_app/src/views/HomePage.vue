@@ -3,11 +3,49 @@
     <el-container class="el-container">
       <el-header height="50px" class="el-header">
         <el-row :gutter="20" justify="center">
-          <el-col :xs="18" :sm="18" :md="20" :lg="22">
+          <el-col :xs="15" :sm="15" :md="18" :lg="21">
             <el-image
               style="width: 120px; height: 40px"
               :src="require('@/assets/images/shopGPT_logo_noBG_banner.png')">
             </el-image>
+          </el-col>
+          <el-col :xs="3" :sm="3" :md="2" :lg="1" class="cart-icon">
+            <el-dropdown>
+              <el-button size="medium" circle>
+                  <!-- <el-image
+                    style="width: 25px; height: 25px"
+                    :src="require('@/assets/images/language_icon_144262.png')">
+                  </el-image> -->
+                <el-icon :size="15">
+                  <ShoppingCart />
+                </el-icon>  
+              </el-button>
+              <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item v-if="cartDropdownItems.length == 0">cart is empty</el-dropdown-item>
+                <el-dropdown-item v-for="(item, index) in cartDropdownItems" :key="index">
+                  <el-card :body-style="{ padding: '15px'}">
+                    <el-badge :value=item.price class="item" type="warning">
+                      <el-image
+                        style="width: 50px; height: 50px"
+                        :src="item.image_urls"
+                        :title="item.target"
+                        fit="contain"
+                      />
+                    </el-badge>
+                    <el-input-number class="el-input-number" :min="1" :max="10" size="small" v-model="item.quantity" @click.prevent.self/>
+                    <el-icon class="el-icon-delete" @click="deleteCartItem(item.target, index)">
+                      <Delete />
+                    </el-icon>
+                    <div>{{ item.target }}</div>
+                  </el-card>
+                </el-dropdown-item>
+                <el-dropdown-item v-if="cartDropdownItems.length != 0" class="check-out-button-dropdown-item">
+                  <el-button type="primary" @click="checkoutOnAmazon">Check out on Amazon</el-button>                
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+            </el-dropdown>
           </el-col>
           <el-col :xs="3" :sm="3" :md="2" :lg="1" class="language-icon">
             <el-dropdown>
@@ -58,36 +96,38 @@
       <el-main class="el-main" v-loading="loading" :element-loading-text="$t('Thinking...')">
         <el-row :gutter="20" justify="center" class="search-form" v-show="isVisible">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
-            <el-button round @click="fillInputbox($event)">{{$t('Just moved, fill my living room')}}</el-button>
-            <el-button round @click="fillInputbox($event)">{{$t('Fisrt day at college')}}</el-button>
-            <el-button round @click="fillInputbox($event)">{{$t('Going camping this weekend')}}</el-button>
-            <el-button round @click="fillInputbox($event)">{{$t('Workout in Gym')}}</el-button>
-            <el-button round @click="fillInputbox($event)">{{$t('First time making Pasta')}}</el-button>
-            <el-dropdown>
-              <el-button primary>{{$t('more')}}<el-icon><arrow-down /></el-icon></el-button>
-              <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item>
-                  <el-button round @click="fillInputbox($event)">{{$t('Hosting a birthday party')}}</el-button>
-                </el-dropdown-item>
-                <el-dropdown-item>
-                  <el-button round @click="fillInputbox($event)">{{$t('Need office supplies')}}</el-button>
-                </el-dropdown-item>
-                <el-dropdown-item>
-                  <el-button round @click="fillInputbox($event)">{{$t('Expecting a cat')}}</el-button>
-                </el-dropdown-item>
-                <el-dropdown-item>
-                  <el-button round @click="fillInputbox($event)">{{$t('Daily hair care set')}}</el-button>
-                </el-dropdown-item>
-                <el-dropdown-item>
-                  <el-button round @click="fillInputbox($event)">{{$t('Facial care set')}}</el-button>
-                </el-dropdown-item>
-                <el-dropdown-item>
-                  <el-button round @click="fillInputbox($event)">{{$t('BBQ weekend')}}</el-button>
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-            </el-dropdown>
+            <el-card shadow="hover" class="card" :body-style="{ padding: '10px' }">
+              <el-button round @click="fillInputbox($event)">{{$t('Just moved, fill my living room')}}</el-button>
+              <el-button round @click="fillInputbox($event)">{{$t('Fisrt day at college')}}</el-button>
+              <el-button round @click="fillInputbox($event)">{{$t('Going camping this weekend')}}</el-button>
+              <el-button round @click="fillInputbox($event)">{{$t('Workout in Gym')}}</el-button>
+              <el-button round @click="fillInputbox($event)">{{$t('First time making Pasta')}}</el-button>
+              <el-dropdown>
+                <el-button primary>{{$t('more')}}<el-icon><arrow-down /></el-icon></el-button>
+                <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item>
+                    <el-button round @click="fillInputbox($event)">{{$t('Hosting a birthday party')}}</el-button>
+                  </el-dropdown-item>
+                  <el-dropdown-item>
+                    <el-button round @click="fillInputbox($event)">{{$t('Need office supplies')}}</el-button>
+                  </el-dropdown-item>
+                  <el-dropdown-item>
+                    <el-button round @click="fillInputbox($event)">{{$t('Expecting a cat')}}</el-button>
+                  </el-dropdown-item>
+                  <el-dropdown-item>
+                    <el-button round @click="fillInputbox($event)">{{$t('Daily hair care set')}}</el-button>
+                  </el-dropdown-item>
+                  <el-dropdown-item>
+                    <el-button round @click="fillInputbox($event)">{{$t('Facial care set')}}</el-button>
+                  </el-dropdown-item>
+                  <el-dropdown-item>
+                    <el-button round @click="fillInputbox($event)">{{$t('BBQ weekend')}}</el-button>
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+              </el-dropdown>
+            </el-card>
           </el-col>
         </el-row>
         <el-row :gutter="20" justify="center" class="search-form" v-show="isVisible">
@@ -101,7 +141,7 @@
         </el-row>
         <el-row :gutter="20" justify="center" class="card-container" ref="choice_card_container">
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-card shadow="hover" class="card" :body-style="{ padding: '10px' }">
+            <el-card shadow="hover" class="card" :body-style="{ padding: '10px' }" v-show="isVisible || store.state.generateListResults.itemList.length !== 0">
               <el-card v-if="store.state.generateListResults.itemList.length === 0">
                     <el-image :src="defaultListImage" fit="cover"/>
               </el-card>
@@ -148,20 +188,20 @@
             <SearchForm @keydown.enter.prevent @submit="initialSubmit($event)" />
           </el-col>
         </el-row>
-        <el-row :gutter="20" justify="center" class="expand-button" v-if="store.state.generateListResults.itemList.length != 0">
-          <el-button @click="isVisible = !isVisible">
+        <el-row :gutter="20" justify="center" class="expand-button" v-if="store.state.generateListResults.itemList.length != 0 || searchResults.target">
+          <el-button @click="toggleVisibility">
             <template v-if="isVisible">
               <el-icon :size="25">
                 <Remove />
               </el-icon>
-              <span>Hide</span>
+              <span>{{$t('Hide Menu')}}</span>
             </template>
 
             <template v-else>
               <el-icon :size="25">
                 <CirclePlus />
               </el-icon>
-              <span>Show</span>
+              <span>{{$t('Show Menu')}}</span>
             </template>
           </el-button>
         </el-row>
@@ -171,34 +211,45 @@
               type="primary" 
               :icon="ArrowLeft"
               @click="preItem" 
-              v-if="store.state.listResults[globalState.itemQuery] && store.state.listResults[globalState.itemQuery].pre"
+              v-if="store.state.listResults[store.state.searchResults.target] 
+              && store.state.listResults[store.state.searchResults.target].pre
+              && (store.state.listResults[store.state.listResults[store.state.searchResults.target].pre].choices.length != 0 
+                || store.state.listResults[store.state.listResults[store.state.searchResults.target].pre].empty)"
             >
-              {{store.state.listResults[globalState.itemQuery].pre}}
+              {{store.state.listResults[store.state.searchResults.target].pre}}
             </el-button>
             <el-button 
               type="primary" 
-              @click="nextItem" 
-              v-if="store.state.listResults[globalState.itemQuery] 
-              && store.state.listResults[globalState.itemQuery].next 
-              && (store.state.listResults[store.state.listResults[globalState.itemQuery].next].choices.length != 0 
-                || store.state.listResults[store.state.listResults[globalState.itemQuery].next].empty)"
+              v-else-if="store.state.listResults[store.state.searchResults.target]
+                      && store.state.listResults[store.state.searchResults.target].pre"
             >
-              {{store.state.listResults[globalState.itemQuery].next}}
+            {{$t('Pre item loading...')}}
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
             <el-button 
               type="primary" 
-              v-else-if="store.state.listResults[globalState.itemQuery]
-                      && store.state.listResults[globalState.itemQuery].next"
+              @click="nextItem" 
+              v-if="store.state.listResults[store.state.searchResults.target] 
+              && store.state.listResults[store.state.searchResults.target].next 
+              && (store.state.listResults[store.state.listResults[store.state.searchResults.target].next].choices.length != 0 
+                || store.state.listResults[store.state.listResults[store.state.searchResults.target].next].empty)"
             >
-              Next item loading...
+              {{store.state.listResults[store.state.searchResults.target].next}}
+              <el-icon class="el-icon--right"><ArrowRight /></el-icon>
+            </el-button>
+            <el-button 
+              type="primary" 
+              v-else-if="store.state.listResults[store.state.searchResults.target]
+                      && store.state.listResults[store.state.searchResults.target].next"
+            >
+            {{$t('Next item loading...')}}
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
           </el-button-group>
         </el-row>
     <el-row :gutter="20" justify="center" class="card-container">
       <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="choice in searchResults.choices" :key="choice.target">
-        <ChoiceCard :choice="choice" @ask-question="askQuestion" />
+        <ChoiceCard :choice="choice" @ask-question="askQuestion" @add-to-cart="addToCart" />
       </el-col>
     </el-row>
     <el-row :gutter="20" justify="center" class="next-button">
@@ -207,30 +258,58 @@
               type="primary" 
               :icon="ArrowLeft"
               @click="preItem" 
-              v-if="store.state.listResults[globalState.itemQuery] && store.state.listResults[globalState.itemQuery].pre"
+              v-if="store.state.listResults[store.state.searchResults.target] 
+              && store.state.listResults[store.state.searchResults.target].pre
+              && (store.state.listResults[store.state.listResults[store.state.searchResults.target].pre].choices.length != 0 
+                || store.state.listResults[store.state.listResults[store.state.searchResults.target].pre].empty)"
             >
-              {{store.state.listResults[globalState.itemQuery].pre}}
+              {{store.state.listResults[store.state.searchResults.target].pre}}
+            </el-button>
+            <el-button 
+              type="primary" 
+              v-else-if="store.state.listResults[store.state.searchResults.target]
+                      && store.state.listResults[store.state.searchResults.target].pre"
+            >
+            {{$t('Pre item loading...')}}
+              <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
             <el-button 
               type="primary"
               @click="nextItem" 
-              v-if="store.state.listResults[globalState.itemQuery] 
-              && store.state.listResults[globalState.itemQuery].next
-              && store.state.listResults[store.state.listResults[globalState.itemQuery].next].choices.length != 0"
+              v-if="store.state.listResults[store.state.searchResults.target] 
+              && store.state.listResults[store.state.searchResults.target].next
+              && store.state.listResults[store.state.listResults[store.state.searchResults.target].next].choices.length != 0"
             >
-              {{store.state.listResults[globalState.itemQuery].next}}
+              {{store.state.listResults[store.state.searchResults.target].next}}
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
             <el-button 
               type="primary" 
-              v-else-if="store.state.listResults[globalState.itemQuery]
-                      && store.state.listResults[globalState.itemQuery].next"
+              v-else-if="store.state.listResults[store.state.searchResults.target]
+                      && store.state.listResults[store.state.searchResults.target].next"
             >
-              Next item loading...
+            {{$t('Next item loading...')}}
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
           </el-button-group>
         </el-row>
+        <el-row :gutter="20" justify="center" class="expand-button" v-if="store.state.generateListResults.itemList.length != 0 || searchResults.target">
+          <el-button @click="toggleVisibility">
+            <template v-if="isVisible">
+              <el-icon :size="25">
+                <Remove />
+              </el-icon>
+              <span>{{$t('Hide Menu')}}</span>
+            </template>
+
+            <template v-else>
+              <el-icon :size="25">
+                <CirclePlus />
+              </el-icon>
+              <span>{{$t('Show Menu')}}</span>
+            </template>
+          </el-button>
+        </el-row>    
     <el-row :gutter="20" justify="center" class="fine-tune-section">
       <el-col :xs="24" :sm="18" :md="10" :lg="8">
         <el-card v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" shadow="hover" class="fine-tune-card">
@@ -247,6 +326,17 @@
         </el-card>
       </el-col>
     </el-row>
+    <template>
+      <div>
+        <form id="amazon-form" method="GET" action="https://www.amazon.com/gp/aws/cart/add.html" style="display:none" target="_blank">
+          <input type="hidden" name="AssociateTag" value="rei042-20" />
+          <div v-for="(item, index) in cartDropdownItems" :key="index">
+            <input type="hidden" :name="`ASIN.${index+1}`" :value="item.asin" />
+            <input type="hidden" :name="`Quantity.${index+1}`" :value="item.quantity" />
+          </div>
+        </form>
+      </div>
+    </template>
     </el-main>
       <el-footer height="10px">
         <el-row :gutter="10" justify="center" class="footer-section">
@@ -274,7 +364,7 @@
   <script setup>
 import { ref, computed, reactive, inject } from 'vue'
 import { useStore } from 'vuex'
-// import { ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import SearchForm from '../components/SearchForm.vue'
 import ChoiceCard from '../components/ChoiceCard.vue'
 import QualityProperty from '../components/QualityProperty.vue'
@@ -294,7 +384,7 @@ import defaultImage3_zh from '@/assets/images/undraw_shopping_app_flsj_zh.png';
 import defaultListImage from '@/assets/images/thinking.png';
 
 import {
-  Avatar, ArrowDown, ArrowLeft, ArrowRight, CirclePlus, Remove, Tools,
+  Avatar, ArrowDown, ArrowLeft, ArrowRight, CirclePlus, Remove, Tools, ShoppingCart, Delete
 } from '@element-plus/icons-vue'
 
 
@@ -309,6 +399,7 @@ let userInputInputbox = ref('')
 let minPrice = ref('')
 let maxPrice = ref('')
 let choice_card_container = ref(null);
+let cartDropdownItems= ref([]);
 // let askResponse = ref(null)
 let loading = computed(() => store.state.loading);
 let isVisible = ref(true);
@@ -362,6 +453,44 @@ const initialSubmit = (query) => {
     // Scroll to the position
     window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
     isVisible.value = false;
+
+  setTimeout(() => {  
+    if(store.state.listResults[item_query.value]
+      && store.state.listResults[item_query.value].next 
+      && store.state.listResults[store.state.listResults[item_query.value].next].choices.length == 0)
+      {
+        const storedUserData = localStorage.getItem('userData')
+          let payload = { item_query: store.state.listResults[item_query.value].next }
+
+          if (storedUserData) {
+            const userData = JSON.parse(storedUserData)
+            payload.email = userData.email // add email to payload
+          }
+
+          payload.loading_flag = false;
+          payload.commit_flag = false;
+          store.dispatch('fetchSearchResults', payload)
+      }
+    }, 2000);  
+
+    setTimeout(() => {
+    if(store.state.listResults[item_query.value]
+      && store.state.listResults[item_query.value].pre 
+      && store.state.listResults[store.state.listResults[item_query.value].pre].choices.length == 0)
+      {
+        const storedUserData = localStorage.getItem('userData')
+          let payload = { item_query: store.state.listResults[item_query.value].pre }
+
+          if (storedUserData) {
+            const userData = JSON.parse(storedUserData)
+            payload.email = userData.email // add email to payload
+          }
+
+          payload.loading_flag = false;
+          payload.commit_flag = false;
+          store.dispatch('fetchSearchResults', payload)
+      }
+    }, 4000);    
   }
 }
 
@@ -387,17 +516,34 @@ const generateEssentials = () => {
 }
 
 const preItem = () => {
-  store.dispatch('setPreItem', store.state.listResults[globalState.itemQuery].pre)
-  globalState.itemQuery = store.state.listResults[globalState.itemQuery].pre
+  store.dispatch('setPreItem', store.state.listResults[store.state.searchResults.target].pre)
+  globalState.itemQuery = store.state.listResults[store.state.searchResults.target].pre
+  if(store.state.listResults[store.state.searchResults.target].pre 
+  && store.state.listResults[store.state.listResults[store.state.searchResults.target].pre].choices.length == 0){
+    const storedUserData = localStorage.getItem('userData')
+      let payload = { item_query: store.state.listResults[store.state.searchResults.target].pre }
+
+      if (storedUserData) {
+        const userData = JSON.parse(storedUserData)
+        payload.email = userData.email // add email to payload
+      }
+
+      payload.loading_flag = false;
+      payload.commit_flag = false;
+
+      store.dispatch('fetchSearchResults', payload)
+  }  
+    // Scroll to the position
   window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
 }
 
 const nextItem = () => {
-  store.dispatch('setNextItem', store.state.listResults[globalState.itemQuery].next)
-  globalState.itemQuery = store.state.listResults[globalState.itemQuery].next
-  if(store.state.listResults[store.state.listResults[globalState.itemQuery].next].choices.length == 0){
+  store.dispatch('setNextItem', store.state.listResults[store.state.searchResults.target].next)
+  globalState.itemQuery = store.state.listResults[store.state.searchResults.target].next
+  if(store.state.listResults[store.state.searchResults.target].next 
+  && store.state.listResults[store.state.listResults[store.state.searchResults.target].next].choices.length == 0){
     const storedUserData = localStorage.getItem('userData')
-      let payload = { item_query: store.state.listResults[globalState.itemQuery].next }
+      let payload = { item_query: store.state.listResults[store.state.searchResults.target].next }
 
       if (storedUserData) {
         const userData = JSON.parse(storedUserData)
@@ -495,7 +641,53 @@ const setItemQuery = (event) => {
   console.log("setItemQuery", event.target.innerText)
   globalState.itemQuery = event.target.innerText;
   initialSubmit(globalState.itemQuery)
-}    
+}
+
+const toggleVisibility = () => {
+    isVisible.value = !isVisible.value;
+    window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
+  }
+
+  const addToCart = (choice) => {
+  // Check if the item is already in the array
+  const exists = cartDropdownItems.value.find(item => item.target === choice.target);
+
+  if (!exists) {
+    // If the item doesn't exist, add it to the array
+    cartDropdownItems.value.push({
+      target: choice.target, 
+      asin: choice.asin, 
+      image_urls: choice.image_urls, 
+      price: choice.price, 
+      quantity: "1" 
+    });
+
+    ElMessage({
+      message: choice.target + ' added to cart',
+      type: 'success',
+      duration: 2000, // Duration is in milliseconds, so 2000 ms = 2 seconds
+    });
+  } else {
+    ElMessage({
+      message: choice.target + ' is already in the cart',
+      type: 'info',
+      duration: 2000,
+    });
+  }
+}
+
+const deleteCartItem = (target, index) => {
+  cartDropdownItems.value.splice(index, 1);
+  ElMessage({
+  message: target + ' Deleted',
+  type: 'success',
+  duration: 2000, // Duration is in milliseconds, so 2000 ms = 2 seconds
+  });
+}
+
+const checkoutOnAmazon = () => {
+      document.getElementById('amazon-form').submit();
+    }
 
 
 onMounted(() => {
@@ -508,6 +700,7 @@ onMounted(() => {
     userPicture.value = userData.picture
     store.dispatch('fetchUserSearchHistory', userData.email)    
   }
+
 })
 
 
@@ -578,6 +771,10 @@ onMounted(() => {
   }
 
   .language-icon{
+    padding-top: 5px;
+  }
+
+  .cart-icon{
     padding-top: 5px;
   }
   

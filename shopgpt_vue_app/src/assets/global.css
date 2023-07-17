@@ -91,6 +91,20 @@ body {
   padding: 10px;
 }
 
+.el-input-number{
+  margin-left: 10px;
+}
+
+.el-icon-delete{
+  margin-left: 10px;
+}
+
+.check-out-button-dropdown-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 h4 {
   margin: 5px; /* or any other value you wish */
 }

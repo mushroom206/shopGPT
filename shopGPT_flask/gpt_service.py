@@ -19,7 +19,7 @@ def callChatGPT_list(data):
     messages=[
             {"role": "user", "content": """Generate a list of items essential to {context} as [item1,item2,item3...], so I can shop and prepare for {context}.
               Generate items specific to {context}, eliminate ambiguity.
-              Generate a brief tip specific to {context}.
+              Generate a very brief tip specific to {context}.
               Do not generate items relates to subcriptions or memberships.
               Do not generate desciption of items. Max 15 most important items, Min 10 items. 
               Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
@@ -95,6 +95,7 @@ def callChatGPT_async(target, language, search_results):
                   "pros": temp1['pros'],
                   "cons": temp1['cons'],
                   "url": search_results[x].detail_page_url,
+                  "asin": search_results[x].asin,
                   "price": prices[x],
                   "image_urls": image_urls[x]
                   }

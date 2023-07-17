@@ -74,7 +74,7 @@ def search_items(item_query):
         response = default_api.search_items(search_items_request)
 
         print("API called Successfully")
-        # print("Complete Response:", response)
+        print("Complete Response:", response)
         return response
 
         """ Parse response """

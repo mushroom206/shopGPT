@@ -36,7 +36,10 @@
               </ul>
             </div>
             <div class="amazon-link" v-if="choice.pros">
-            <el-link :href="choice.url" target="_blank">
+            <!-- <el-link :href="choice.url" target="_blank">
+              <el-image :src="require('@/assets/images/amazon_button.png')" :fit="contain" />
+            </el-link> -->
+            <el-link @click="addToCart">
               <el-image :src="require('@/assets/images/amazon_button.png')" :fit="contain" />
             </el-link>
             </div>
@@ -78,7 +81,10 @@ export default {
     if (this.question !== '') {
       this.$emit('ask-question', this.choice, this.question);
     }
-  }
+  },
+  addToCart() {
+    this.$emit('add-to-cart', this.choice);
+    },
   }
 };
 </script>
