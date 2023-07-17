@@ -68,6 +68,8 @@ const messages = {
     'Show Menu': 'Show Menu',
     'Pre item loading...': 'Pre item loading...',
     'Next item loading...': 'Next item loading...',
+    'Shopping Cart': 'Shopping Cart',
+    'Check out on Amazon': 'Check out on Amazon',
     // other translations...
   },
   Simplified_Chinese: {
@@ -103,6 +105,8 @@ const messages = {
     'Show Menu': '打开菜单',
     'Pre item loading...': '正加载前项...',
     'Next item loading...': '正加载后项...',
+    'Shopping Cart': '购物车',
+    'Check out on Amazon': '去Amazon买单',
     // other translations...
   }
   // other languages...

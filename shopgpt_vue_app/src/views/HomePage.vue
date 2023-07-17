@@ -10,7 +10,7 @@
             </el-image>
           </el-col>
           <el-col :xs="3" :sm="3" :md="2" :lg="1" class="cart-icon">
-            <el-dropdown>
+            <el-dropdown ref="cart">
               <el-button size="medium" circle>
                   <!-- <el-image
                     style="width: 25px; height: 25px"
@@ -34,21 +34,21 @@
                       />
                     </el-badge>
                     <el-input-number class="el-input-number" :min="1" :max="10" size="small" v-model="item.quantity" @click.prevent.self/>
-                    <el-icon class="el-icon-delete" @click="deleteCartItem(item.target, index)">
+                    <el-icon class="el-icon-delete" @click="deleteCartItem(item.target, index)" @click.prevent.self>
                       <Delete />
                     </el-icon>
                     <div>{{ item.target }}</div>
                   </el-card>
                 </el-dropdown-item>
                 <el-dropdown-item v-if="cartDropdownItems.length != 0" class="check-out-button-dropdown-item">
-                  <el-button type="primary" @click="checkoutOnAmazon">Check out on Amazon</el-button>                
+                  <el-button type="primary" @click="checkoutOnAmazon">{{$t('Check out on Amazon')}}</el-button>                
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
             </el-dropdown>
           </el-col>
           <el-col :xs="3" :sm="3" :md="2" :lg="1" class="language-icon">
-            <el-dropdown>
+            <el-dropdown ref="language_dropdown">
               <el-button size="medium" circle>
                   <!-- <el-image
                     style="width: 25px; height: 25px"
@@ -204,6 +204,12 @@
               <span>{{$t('Show Menu')}}</span>
             </template>
           </el-button>
+          <el-button @click="showShoppingCart" v-if="cartDropdownItems.length != 0">
+              <span>{{$t('Shopping Cart')}}</span>
+              <el-icon :size="25">
+                <ShoppingCart />
+              </el-icon>
+          </el-button>
         </el-row>
         <el-row :gutter="20" justify="center" class="next-button">
           <el-button-group>
@@ -309,6 +315,12 @@
               <span>{{$t('Show Menu')}}</span>
             </template>
           </el-button>
+          <el-button @click="showShoppingCart" v-if="cartDropdownItems.length != 0">
+              <span>{{$t('Shopping Cart')}}</span>
+              <el-icon :size="25">
+                <ShoppingCart />
+              </el-icon>
+          </el-button>
         </el-row>    
     <el-row :gutter="20" justify="center" class="fine-tune-section">
       <el-col :xs="24" :sm="18" :md="10" :lg="8">
@@ -361,7 +373,7 @@
     </div>
   </template>
   
-  <script setup>
+<script setup>
 import { ref, computed, reactive, inject } from 'vue'
 import { useStore } from 'vuex'
 import { ElMessage } from 'element-plus'
@@ -400,6 +412,8 @@ let minPrice = ref('')
 let maxPrice = ref('')
 let choice_card_container = ref(null);
 let cartDropdownItems= ref([]);
+let cart= ref(null);
+let language_dropdown= ref(null);
 // let askResponse = ref(null)
 let loading = computed(() => store.state.loading);
 let isVisible = ref(true);
@@ -685,6 +699,13 @@ const deleteCartItem = (target, index) => {
   });
 }
 
+const showShoppingCart = () => {
+  if (cart.value && cart.value.handleOpen) {
+    cart.value.handleOpen()
+  }
+  window.scrollTo({ top: cart.value.$el.offsetTop, behavior: 'smooth' });
+}
+
 const checkoutOnAmazon = () => {
       document.getElementById('amazon-form').submit();
     }
@@ -699,6 +720,10 @@ onMounted(() => {
     const userData = JSON.parse(storedUserData)
     userPicture.value = userData.picture
     store.dispatch('fetchUserSearchHistory', userData.email)    
+  }
+
+  if (language_dropdown.value && language_dropdown.value.handleOpen) {
+    language_dropdown.value.handleOpen()
   }
 
 })

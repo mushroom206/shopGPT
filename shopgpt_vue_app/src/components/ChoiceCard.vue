@@ -40,11 +40,11 @@
               <el-image :src="require('@/assets/images/amazon_button.png')" :fit="contain" />
             </el-link> -->
             <el-link @click="addToCart">
-              <el-image :src="require('@/assets/images/amazon_button.png')" :fit="contain" />
+              <el-image :src="require('@/assets/images/amazon_button.png')" :fit="contain" style="width: 140px; height: 35px" />
             </el-link>
             </div>
             <div class="amazon-price" v-if="choice.pros"> 
-              <h4>On Amazon for: {{ choice.price }}</h4>
+              <h4>For: {{ choice.price }}</h4>
             </div>
           </el-card>
         </el-main>

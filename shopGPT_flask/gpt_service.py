@@ -66,7 +66,7 @@ def callChatGPT_async(target, language, search_results):
         try:
             prices.append(search_result.offers.listings[0].price.display_amount)
         except AttributeError:
-            prices.append("view on item details page")
+            prices.append("view on checkout")
 
         thread = threading.Thread(target=callChatGPT, args=(data, results[i]))
         thread.start()
