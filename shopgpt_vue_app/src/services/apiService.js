@@ -4,7 +4,7 @@ import axios from 'axios';
 import { API_URL } from '@/config'
 // import { ElMessageBox } from 'element-plus'
 
-const timeout = 30000;
+const timeout = 120000;
 
 // async function generateList(payload) {
 //   try {
