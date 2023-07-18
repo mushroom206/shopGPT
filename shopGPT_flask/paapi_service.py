@@ -51,7 +51,10 @@ def search_items(item_query):
         SearchItemsResource.ITEMINFO_TITLE,
         SearchItemsResource.OFFERS_LISTINGS_PRICE,
         SearchItemsResource.IMAGES_PRIMARY_LARGE,
-        SearchItemsResource.IMAGES_VARIANTS_LARGE
+        SearchItemsResource.IMAGES_VARIANTS_LARGE,
+        SearchItemsResource.OFFERS_LISTINGS_DELIVERYINFO_ISAMAZONFULFILLED,
+        SearchItemsResource.OFFERS_LISTINGS_DELIVERYINFO_ISFREESHIPPINGELIGIBLE,
+        SearchItemsResource.OFFERS_LISTINGS_DELIVERYINFO_ISPRIMEELIGIBLE
     ]
 
     """ Forming request """
@@ -63,7 +66,8 @@ def search_items(item_query):
             search_index=search_index,
             item_count=item_count,
             resources=search_items_resource,
-            merchant='Amazon'
+            merchant='Amazon',
+            min_reviews_rating=4,
         )
     except ValueError as exception:
         print("Error in forming SearchItemsRequest: ", exception)
@@ -167,7 +171,7 @@ def search_items_with_price(item_query, minPrice, maxPrice):
     search_index = "All"
 
     """ Specify item count to be returned in search result """
-    item_count = 3
+    item_count = 5
 
     """ Choose resources you want from SearchItemsResource enum """
     """ For more details, refer: https://webservices.amazon.com/paapi5/documentation/search-items.html#resources-parameter """
@@ -175,7 +179,10 @@ def search_items_with_price(item_query, minPrice, maxPrice):
         SearchItemsResource.ITEMINFO_TITLE,
         SearchItemsResource.OFFERS_LISTINGS_PRICE,
         SearchItemsResource.IMAGES_PRIMARY_LARGE,
-        SearchItemsResource.IMAGES_VARIANTS_LARGE
+        SearchItemsResource.IMAGES_VARIANTS_LARGE,
+        SearchItemsResource.OFFERS_LISTINGS_DELIVERYINFO_ISAMAZONFULFILLED,
+        SearchItemsResource.OFFERS_LISTINGS_DELIVERYINFO_ISFREESHIPPINGELIGIBLE,
+        SearchItemsResource.OFFERS_LISTINGS_DELIVERYINFO_ISPRIMEELIGIBLE
     ]
 
     """ Forming request """
@@ -189,7 +196,8 @@ def search_items_with_price(item_query, minPrice, maxPrice):
             resources=search_items_resource,
             merchant='Amazon',
             max_price=maxPrice,
-            min_price=minPrice
+            min_price=minPrice,
+            min_reviews_rating=4,
         )
     except ValueError as exception:
         print("Error in forming SearchItemsRequest: ", exception)
@@ -250,7 +258,7 @@ def search_items_with_price(item_query, minPrice, maxPrice):
 def add_zeros_after_dot(string):
     result = string
     if not string:
-        print(result)
+        # print(result)
         return result
     if "." not in string:
         result = string + ".00"
@@ -265,6 +273,5 @@ def add_zeros_after_dot(string):
     result = result.replace("[^0-9]", "")
     result = result.replace(".", "")
     return result
-
 
         

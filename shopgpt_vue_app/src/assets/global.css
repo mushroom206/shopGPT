@@ -56,7 +56,7 @@ body {
 
 .card{
     background-color: #fff5d8;
-    border-radius: 20px;
+    border-radius: 10px;
   }
 
 .quality-property{
@@ -65,15 +65,17 @@ body {
 }
 
 .image-description{
-  text-align: center;
+  display: flex; 
+  align-items: center;
 }
 
 .amazon-link{
   text-align: center;
 }
 
-.amazon-price{
+.amazon-info{
   text-align: center;
+  font-size: 12px;
 }
 
 .price-inputs {

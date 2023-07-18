@@ -134,7 +134,7 @@
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
             <el-input v-model="userInputInputbox" :placeholder="$t('what\'s in your mind')"  clearable size="large">
               <template #append>
-                <el-button type="info" plain @click="generateEssentials">{{$t('Generate Essentials')}}</el-button>
+                <el-button type="info" plain @click="generateEssentials">{{$t('Help me get ready')}}</el-button>
               </template>
             </el-input>
           </el-col>
@@ -145,15 +145,23 @@
               <el-card v-if="store.state.generateListResults.itemList.length === 0">
                     <el-image :src="defaultListImage" fit="cover"/>
               </el-card>
-              <el-button 
+              <!-- <el-button 
                 round 
                 v-for="(item, index) in store.state.generateListResults.itemList.slice(0, 5)" 
                 :key="'first-' + index"
                 @click="setItemQuery($event)"
-              >
-                {{ item }}
-              </el-button>
-              <el-dropdown v-if="store.state.generateListResults.itemList.length > 5">
+              > -->
+              <el-badge value="X" v-for="(item) in store.state.listResults" :key="item.target" @click="deleteFromList(item.target)">
+                <el-button 
+                  round 
+                  @click.stop="setItemQuery($event)"
+                >
+                  {{ item.target }}
+                </el-button>
+              </el-badge>
+              <el-button v-if="Object.keys(store.state.listResults).length !== 0"
+              type="primary" @click="confirmList">{{$t('Confirm List and View Items')}}</el-button>
+              <!-- <el-dropdown v-if="store.state.generateListResults.itemList.length > 5">
                 <el-button primary>{{$t('more')}}<el-icon><arrow-down /></el-icon></el-button>
                 <template #dropdown>
                   <el-dropdown-menu>
@@ -165,7 +173,7 @@
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
-              </el-dropdown>
+              </el-dropdown> -->
             </el-card>
           </el-col>
         </el-row>
@@ -189,24 +197,24 @@
           </el-col>
         </el-row>
         <el-row :gutter="20" justify="center" class="expand-button" v-if="store.state.generateListResults.itemList.length != 0 || searchResults.target">
-          <el-button @click="toggleVisibility">
+          <el-button @click="toggleVisibility" size="small">
             <template v-if="isVisible">
-              <el-icon :size="25">
+              <el-icon :size="15">
                 <Remove />
               </el-icon>
-              <span>{{$t('Hide Menu')}}</span>
+              <span>{{$t('Hide Search Menu')}}</span>
             </template>
 
             <template v-else>
-              <el-icon :size="25">
+              <el-icon :size="15">
                 <CirclePlus />
               </el-icon>
-              <span>{{$t('Show Menu')}}</span>
+              <span>{{$t('Show Search Menu')}}</span>
             </template>
           </el-button>
-          <el-button @click="showShoppingCart" v-if="cartDropdownItems.length != 0">
+          <el-button size="small" @click="showShoppingCart" v-if="cartDropdownItems.length != 0">
               <span>{{$t('Shopping Cart')}}</span>
-              <el-icon :size="25">
+              <el-icon :size="15">
                 <ShoppingCart />
               </el-icon>
           </el-button>
@@ -255,7 +263,7 @@
         </el-row>
     <el-row :gutter="20" justify="center" class="card-container">
       <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="choice in searchResults.choices" :key="choice.target">
-        <ChoiceCard :choice="choice" @ask-question="askQuestion" @add-to-cart="addToCart" />
+        <ChoiceCard :choice="choice" @ask-question="askQuestion" @add-to-cart="addToCart" @find-similar="findSimilar" />
       </el-col>
     </el-row>
     <el-row :gutter="20" justify="center" class="next-button">
@@ -300,31 +308,31 @@
           </el-button-group>
         </el-row>
         <el-row :gutter="20" justify="center" class="expand-button" v-if="store.state.generateListResults.itemList.length != 0 || searchResults.target">
-          <el-button @click="toggleVisibility">
+          <el-button @click="toggleVisibility" size="small">
             <template v-if="isVisible">
-              <el-icon :size="25">
+              <el-icon :size="15">
                 <Remove />
               </el-icon>
-              <span>{{$t('Hide Menu')}}</span>
+              <span>{{$t('Hide Search Menu')}}</span>
             </template>
 
             <template v-else>
-              <el-icon :size="25">
+              <el-icon :size="15">
                 <CirclePlus />
               </el-icon>
-              <span>{{$t('Show Menu')}}</span>
+              <span>{{$t('Show Search Menu')}}</span>
             </template>
           </el-button>
-          <el-button @click="showShoppingCart" v-if="cartDropdownItems.length != 0">
+          <el-button size="small" @click="showShoppingCart" v-if="cartDropdownItems.length != 0">
               <span>{{$t('Shopping Cart')}}</span>
-              <el-icon :size="25">
+              <el-icon :size="15">
                 <ShoppingCart />
               </el-icon>
           </el-button>
         </el-row>    
     <el-row :gutter="20" justify="center" class="fine-tune-section">
       <el-col :xs="24" :sm="18" :md="10" :lg="8">
-        <el-card v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" shadow="hover" class="fine-tune-card">
+        <el-card :body-style="{ padding: '0px' }" v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" shadow="hover" class="fine-tune-card">
           <QualityProperty v-for="quality in searchResults['qualities-properties']" :key="quality.name" :quality="quality" @option-selected="updateQuality" />
             <div class="price-inputs">
               <label for="min-price">{{$t('Min Price')}}: </label>
@@ -448,6 +456,7 @@ let searchResults = computed(() => {
 
 // Methods
 const initialSubmit = (query) => {
+  closeLanguage()
   item_query.value = query;
   if (item_query.value != null) {
     // check if user is logged in
@@ -509,6 +518,7 @@ const initialSubmit = (query) => {
 }
 
 const generateEssentials = () => {
+  closeLanguage()
   if (userInputInputbox.value != null && userInputInputbox.value != '') {
     loading.value = true;
 
@@ -530,8 +540,8 @@ const generateEssentials = () => {
 }
 
 const preItem = () => {
-  store.dispatch('setPreItem', store.state.listResults[store.state.searchResults.target].pre)
   globalState.itemQuery = store.state.listResults[store.state.searchResults.target].pre
+  store.dispatch('setPreItem', store.state.listResults[store.state.searchResults.target].pre)
   if(store.state.listResults[store.state.searchResults.target].pre 
   && store.state.listResults[store.state.listResults[store.state.searchResults.target].pre].choices.length == 0){
     const storedUserData = localStorage.getItem('userData')
@@ -552,8 +562,8 @@ const preItem = () => {
 }
 
 const nextItem = () => {
-  store.dispatch('setNextItem', store.state.listResults[store.state.searchResults.target].next)
   globalState.itemQuery = store.state.listResults[store.state.searchResults.target].next
+  store.dispatch('setNextItem', store.state.listResults[store.state.searchResults.target].next)
   if(store.state.listResults[store.state.searchResults.target].next 
   && store.state.listResults[store.state.listResults[store.state.searchResults.target].next].choices.length == 0){
     const storedUserData = localStorage.getItem('userData')
@@ -587,6 +597,10 @@ const askQuestion = (choice, question) => {
   store.dispatch('askQuestion', { choice: choice, question: String(question) })
 }
 
+const findSimilar = (target) => {
+  initialSubmit(store.state.searchResults.target + " " + target)
+}
+
 const getUserData = async (accessToken) => {
   try {
     const response = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`);
@@ -602,6 +616,7 @@ const getUserData = async (accessToken) => {
 }
 
 const login = () => {
+  closeLanguage()
   googleTokenLogin().then((response) => {
     getUserData(response.access_token).then((data) => {
       userPicture.value = data.picture
@@ -697,6 +712,9 @@ const deleteCartItem = (target, index) => {
   type: 'success',
   duration: 2000, // Duration is in milliseconds, so 2000 ms = 2 seconds
   });
+  if (cart.value && cart.value.handleClose && cartDropdownItems.value.length == 0) {
+    cart.value.handleClose()
+  }
 }
 
 const showShoppingCart = () => {
@@ -710,6 +728,51 @@ const checkoutOnAmazon = () => {
       document.getElementById('amazon-form').submit();
     }
 
+const closeLanguage = () => {
+  if (language_dropdown.value && language_dropdown.value.handleClose) {
+    language_dropdown.value.handleClose()
+  }
+}
+
+const deleteFromList = (item) => {
+
+  let list = store.state.listResults
+  // Check if item exists in list
+  if (!list[item]) {
+        console.error('Item not found in list');
+        return list;
+    }
+
+    // Get the "pre" and "next" items from the item to be deleted
+    let pre = list[item]['pre'];
+    let next = list[item]['next'];
+
+    // Update the "next" of the "pre" item
+    if (pre !== "" && list[pre]) {
+        list[pre]['next'] = next;
+    }
+
+    // Update the "pre" of the "next" item
+    if (next !== "" && list[next]) {
+        list[next]['pre'] = pre;
+    }
+
+    // Delete the item from list
+    delete list[item];
+
+    console.log(store.state.listResults)
+
+    ElMessage({
+        message: item + ' Deleted',
+        type: 'success',
+        duration: 2000, // Duration is in milliseconds, so 2000 ms = 2 seconds
+    });
+
+} 
+
+const confirmList = () => {
+  window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
+}
 
 onMounted(() => {
   // Check local storage for user data
@@ -769,6 +832,7 @@ onMounted(() => {
 
   .fine-tune-button-div{
     text-align: center;
+    padding-bottom: 5px;
   }
 
   .centered-content{

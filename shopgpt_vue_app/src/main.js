@@ -43,11 +43,11 @@ const messages = {
     'Search' : 'Search',
     'Thinking...' : 'Thinking...',
     'Fine Tune Choices!' : 'Fine Tune Choices!',
-    'Tell me more about this item' : 'Tell me more about this item',
+    'Tell me more' : 'Tell me more',
     'Ask AI' : 'Ask AI',
     'Pros': 'Pros',
     'Cons': 'Cons',
-    'Generate Essentials': 'Generate Essentials',
+    'Help me get ready': 'Help me get ready',
     'what\'s in your mind': 'what\'s in your mind',
     'Just moved, fill my living room': 'Just moved, fill my living room',
     'Fisrt day at college': 'Fisrt day at college',
@@ -64,12 +64,18 @@ const messages = {
     'more': 'more',
     'Min Price': 'Min Price',
     'Max Price': 'Max Price',
-    'Hide Menu': 'Hide Menu',
-    'Show Menu': 'Show Menu',
+    'Hide Search Menu': 'Hide Search Menu',
+    'Show Search Menu': 'Show Search Menu',
     'Pre item loading...': 'Pre item loading...',
     'Next item loading...': 'Next item loading...',
     'Shopping Cart': 'Shopping Cart',
     'Check out on Amazon': 'Check out on Amazon',
+    'Confirm List and View Items': 'Confirm List and View Items',
+    'Fulfilled by Amazon': 'Fulfilled by Amazon',
+    'Free Shipping': 'Free Shipping',
+    'Prime Eligible': 'Prime Eligible',
+    'Above 4 stars': 'Above 4 stars',
+    'Find similar Item': 'Find similar Item',
     // other translations...
   },
   Simplified_Chinese: {
@@ -80,11 +86,11 @@ const messages = {
     'Search' : '搜索',
     'Thinking...' : '思考中...',
     'Fine Tune Choices!' : '优化结果',
-    'Tell me more about this item' : '我想了解更多',
+    'Tell me more' : '了解更多',
     'Ask AI' : '问 AI',
     'Pros': '优点',
     'Cons': '缺点',
-    'Generate Essentials': '生成必需品',
+    'Help me get ready': '帮我准备',
     'what\'s in your mind': '帮你计划',
     'Just moved, fill my living room': '刚搬家，需要客厅用的家具',
     'Fisrt day at college': '大学开学第一天',
@@ -101,12 +107,18 @@ const messages = {
     'more': '更多',
     'Min Price': '最低价',
     'Max Price': '最高价',
-    'Hide Menu': '隐藏菜单',
-    'Show Menu': '打开菜单',
+    'Hide Search Menu': '隐藏搜索菜单',
+    'Show Search Menu': '打开搜索菜单',
     'Pre item loading...': '正加载前项...',
     'Next item loading...': '正加载后项...',
     'Shopping Cart': '购物车',
     'Check out on Amazon': '去Amazon买单',
+    'Confirm List and View Items': '确认清单开始选品',
+    'Fulfilled by Amazon': 'Amazon发货',
+    'Free Shipping': '免运费',
+    'Prime Eligible': 'Prime会员',
+    'Above 4 stars': '评价高于4星',
+    'Find similar Item': '找近似商品',
     // other translations...
   }
   // other languages...
@@ -166,6 +178,9 @@ const store = createStore({
             results['qualities-properties'] = state.searchResults['qualities-properties'];
         }
         if(!results.empty){
+          if(results.target.includes(state.searchResults.target)){
+            results.target = state.searchResults.target
+          }
           state.searchResults = results;
         }else{
           state.searchResults = {
@@ -220,26 +235,32 @@ actions: {
       }
       commit('setGenerateListResults', results);
       commit('setListResults', results.itemList);
-      ElMessageBox.alert(results['tip'], 'tip', {
+      commit('endLoading'); 
+      // ElMessageBox.alert(results['tip'], 'tip', {
         // if you want to disable its autofocus
         // autofocus: false,
-        confirmButtonText: 'OK',
+        // confirmButtonText: 'OK',
         // callback: (action) => {  // Remove type annotation here
         //   ElMessage({
         //     type: 'info',
         //     message: `action: ${action}`,
         //   })
         // },
-      })
+      // })
       payload.item_query = results.itemList[0]
-      await dispatch('fetchSearchResults', payload),
+      dispatch('fetchSearchResults', payload)
 
-      payload.item_query = results.itemList[1]
-      payload.commit_flag = false;
-      setTimeout(() => {
-        dispatch('fetchSearchResults', payload)
-      }, 1000); 
-
+      results.itemList.forEach((result, index) => {
+        if(index != 0){
+          let payload1 = {...payload}
+          payload1.item_query = result
+          payload1.commit_flag = false;
+          setTimeout(() => { 
+          dispatch('fetchSearchResults', payload1)
+          }, 3000);
+        }
+      });
+      
     } catch (error) {
       console.error('Error fetching search results:', error);
     } finally {
@@ -252,11 +273,11 @@ actions: {
         commit('startLoading');  // Start loading before the API request
       }
       payload.language = store.state.lang;
-      const response1Promise = apiService.searchItems(payload);
-      const response2Promise = new Promise(resolve => setTimeout(resolve, 1000))
-        .then(() => apiService.searchProperties(payload));
       
-      const [response1, response2] = await Promise.all([response1Promise, response2Promise]);
+      const [response1, response2] = await Promise.all(
+        [apiService.searchItems(payload), 
+          apiService.searchProperties(payload)]
+        );
       let results1;
       let results2;
       // try {

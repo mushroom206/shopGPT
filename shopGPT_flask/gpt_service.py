@@ -12,15 +12,13 @@ load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 def callChatGPT_list(data):
-    print("callChatGPT_list")
-    print(data)
+    # print("callChatGPT_list")
+    # print(data)
     completion = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
     messages=[
             {"role": "user", "content": """Generate a list of items essential to {context} as [item1,item2,item3...], so I can shop and prepare for {context}.
-              Generate items specific to {context}, eliminate ambiguity.
-              Generate a very brief tip specific to {context}.
-              Do not generate items relates to subcriptions or memberships.
+              Generate items specific to {context}, eliminate ambiguity, do not include memberships.
               Do not generate desciption of items. Max 15 most important items, Min 10 items. 
               Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
               Do not write anything outside of the JSON structure. 
@@ -28,8 +26,7 @@ def callChatGPT_list(data):
               The structure is as follow: 
             {
             "context": "",
-            "itemList": [],
-            "tip": ""
+            "itemList": []
             }
             now {context} =""" + data['list_query']
             }
@@ -51,6 +48,9 @@ def callChatGPT_async(target, language, search_results):
     results = [result1, result2, result3, result4, result5, result6]
     image_urls = [[],[],[]]
     prices = []
+    amazon_fulfills = []
+    free_shippings = []
+    prime_eligibles = []
     search_results = random.sample(search_results, min(3, len(search_results)))
     for i, search_result in enumerate(search_results):
         data = {
@@ -67,6 +67,21 @@ def callChatGPT_async(target, language, search_results):
             prices.append(search_result.offers.listings[0].price.display_amount)
         except AttributeError:
             prices.append("view on checkout")
+
+        try:
+            amazon_fulfills.append(search_result.offers.listings[0].delivery_info.is_amazon_fulfilled)
+        except AttributeError:
+            amazon_fulfills.append("view on checkout")
+
+        try:
+            free_shippings.append(search_result.offers.listings[0].delivery_info.is_free_shipping_eligible)
+        except AttributeError:
+            free_shippings.append("view on checkout")
+
+        try:
+            prime_eligibles.append(search_result.offers.listings[0].delivery_info.is_prime_eligible)
+        except AttributeError:
+            prime_eligibles.append("view on checkout")            
 
         thread = threading.Thread(target=callChatGPT, args=(data, results[i]))
         thread.start()
@@ -97,6 +112,9 @@ def callChatGPT_async(target, language, search_results):
                   "url": search_results[x].detail_page_url,
                   "asin": search_results[x].asin,
                   "price": prices[x],
+                  "amazon_fulfill": amazon_fulfills[x],
+                  "free_shipping": free_shippings[x],
+                  "prime_eligible": prime_eligibles[x],
                   "image_urls": image_urls[x]
                   }
           response['choices'].append(tempJSON)
@@ -106,7 +124,6 @@ def callChatGPT_async(target, language, search_results):
 
 def callChatGPT(data, result):
     # print("callChatGPT")
-    # print(data)
     # Generate a list of 3 specific items that fits the description of {target} as [choice1, choice2, choice3], 
     # breakdown each choice into [brand, item category, and model], 
     # detailed enough so I can use your response to query for the items on a shopping site like Amazon. 
