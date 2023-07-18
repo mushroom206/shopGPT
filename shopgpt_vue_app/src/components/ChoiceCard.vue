@@ -17,9 +17,9 @@
                   fit="contain"
                 />
                 <el-image v-else
-                  style="width: 250px; height: 250px"
+                  style="width: 300px; height: 300px"
                   :src="choice.image"
-                  fit="fill"
+                  fit="contain"
                 />
                 <div class="amazon-info" v-if="choice.pros" style="margin-bottom: 5px;"><el-tag size="large" type="warning" effect="light" round><b>{{ choice.price }}</b></el-tag></div>
               </div>
