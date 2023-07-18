@@ -151,7 +151,7 @@
                 :key="'first-' + index"
                 @click="setItemQuery($event)"
               > -->
-              <el-badge value="X" v-for="(item) in store.state.listResults" :key="item.target" @click="deleteFromList(item.target)">
+              <el-badge style="margin: 7px;" value="X" v-for="(item) in store.state.listResults" :key="item.target" @click="deleteFromList(item.target)">
                 <el-button 
                   round 
                   @click.stop="setItemQuery($event)"

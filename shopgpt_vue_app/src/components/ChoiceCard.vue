@@ -10,14 +10,13 @@
             <div class="image-description">
               <div>
                 <el-image v-if="!choice.default"
-                  style="width: 150px; height: 150px; margin-top: 5px; margin-right: 5px; margin-bottom: 5px;"
+                  style="width: 155px; height: 155px; margin-top: 5px; margin-right: 5px; margin-bottom: 5px;"
                   :src="choice.image_urls"
                   :zoom-rate="1.2"
                   :preview-src-list="choice.image_urls"
                   fit="contain"
                 />
                 <el-image v-else
-                  style="width: 300px; height: 300px"
                   :src="choice.image"
                   fit="contain"
                 />
