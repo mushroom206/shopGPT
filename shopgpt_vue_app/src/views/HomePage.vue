@@ -101,7 +101,7 @@
               <el-button round @click="fillInputbox($event)">{{$t('Fisrt day at college')}}</el-button>
               <el-button round @click="fillInputbox($event)">{{$t('Need office supplies')}}</el-button>
               <el-button round @click="fillInputbox($event)">{{$t('Workout in Gym')}}</el-button>
-              <el-button round @click="fillInputbox($event)">{{$t('First time making Pasta')}}</el-button>
+              <el-button round @click="fillInputbox($event)">{{$t('Going camping this weekend')}}</el-button>
               <el-dropdown>
                 <el-button style="margin-left: 5px;" primary>{{$t('more')}}<el-icon><arrow-down /></el-icon></el-button>
                 <template #dropdown>
