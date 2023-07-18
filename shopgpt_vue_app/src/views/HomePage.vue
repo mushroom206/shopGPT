@@ -99,18 +99,18 @@
             <el-card shadow="hover" class="card" :body-style="{ padding: '10px' }">
               <el-button round @click="fillInputbox($event)">{{$t('Just moved, fill my living room')}}</el-button>
               <el-button round @click="fillInputbox($event)">{{$t('Fisrt day at college')}}</el-button>
-              <el-button round @click="fillInputbox($event)">{{$t('Going camping this weekend')}}</el-button>
+              <el-button round @click="fillInputbox($event)">{{$t('Need office supplies')}}</el-button>
               <el-button round @click="fillInputbox($event)">{{$t('Workout in Gym')}}</el-button>
               <el-button round @click="fillInputbox($event)">{{$t('First time making Pasta')}}</el-button>
               <el-dropdown>
-                <el-button primary>{{$t('more')}}<el-icon><arrow-down /></el-icon></el-button>
+                <el-button style="margin-left: 5px;" primary>{{$t('more')}}<el-icon><arrow-down /></el-icon></el-button>
                 <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item>
                     <el-button round @click="fillInputbox($event)">{{$t('Hosting a birthday party')}}</el-button>
                   </el-dropdown-item>
                   <el-dropdown-item>
-                    <el-button round @click="fillInputbox($event)">{{$t('Need office supplies')}}</el-button>
+                    <el-button round @click="fillInputbox($event)">{{$t('First time making Pasta')}}</el-button>
                   </el-dropdown-item>
                   <el-dropdown-item>
                     <el-button round @click="fillInputbox($event)">{{$t('Expecting a cat')}}</el-button>
@@ -159,8 +159,10 @@
                   {{ item.target }}
                 </el-button>
               </el-badge>
-              <el-button v-if="Object.keys(store.state.listResults).length !== 0"
-              type="primary" @click="confirmList">{{$t('Confirm List and View Items')}}</el-button>
+              <div class="confirm-list-button">
+                <el-button style="margin-top: 5px;" v-if="Object.keys(store.state.listResults).length !== 0"
+                type="primary" @click="confirmList">{{$t('Confirm List and View Items')}}</el-button>
+              </div>
               <!-- <el-dropdown v-if="store.state.generateListResults.itemList.length > 5">
                 <el-button primary>{{$t('more')}}<el-icon><arrow-down /></el-icon></el-button>
                 <template #dropdown>
@@ -197,7 +199,7 @@
           </el-col>
         </el-row>
         <el-row :gutter="20" justify="center" class="expand-button" v-if="store.state.generateListResults.itemList.length != 0 || searchResults.target">
-          <el-button @click="toggleVisibility" size="small">
+          <el-button @click="toggleVisibility" size="medium">
             <template v-if="isVisible">
               <el-icon :size="15">
                 <Remove />
@@ -212,7 +214,7 @@
               <span>{{$t('Show Search Menu')}}</span>
             </template>
           </el-button>
-          <el-button size="small" @click="showShoppingCart" v-if="cartDropdownItems.length != 0">
+          <el-button size="medium" @click="showShoppingCart" v-if="cartDropdownItems.length != 0">
               <span>{{$t('Shopping Cart')}}</span>
               <el-icon :size="15">
                 <ShoppingCart />
@@ -308,7 +310,7 @@
           </el-button-group>
         </el-row>
         <el-row :gutter="20" justify="center" class="expand-button" v-if="store.state.generateListResults.itemList.length != 0 || searchResults.target">
-          <el-button @click="toggleVisibility" size="small">
+          <el-button @click="toggleVisibility" size="medium">
             <template v-if="isVisible">
               <el-icon :size="15">
                 <Remove />
@@ -323,7 +325,7 @@
               <span>{{$t('Show Search Menu')}}</span>
             </template>
           </el-button>
-          <el-button size="small" @click="showShoppingCart" v-if="cartDropdownItems.length != 0">
+          <el-button size="medium" @click="showShoppingCart" v-if="cartDropdownItems.length != 0">
               <span>{{$t('Shopping Cart')}}</span>
               <el-icon :size="15">
                 <ShoppingCart />

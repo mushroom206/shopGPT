@@ -64,6 +64,10 @@ body {
   text-align: center;
 }
 
+.confirm-list-button{
+  text-align: center;
+}
+
 .image-description{
   display: flex; 
   align-items: center;
@@ -75,7 +79,7 @@ body {
 
 .amazon-info{
   text-align: center;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .price-inputs {

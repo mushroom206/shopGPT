@@ -3,14 +3,14 @@
       <el-container>
         <!-- <el-header>HEAD</el-header> -->
         <el-main style="padding: 5px;">
-          <el-card :body-style="{ 'padding-top': '5px', 'padding-bottom': '0px', 'padding-left': '5px', 'padding-right': '5px', 'font-size': '13.5px' }">
+          <el-card :body-style="{ 'padding-top': '5px', 'padding-bottom': '0px', 'padding-left': '5px', 'padding-right': '5px', 'font-size': '15px' }">
             <div style="margin-left: 5px;" v-if="!choice.default">
               <b>{{ choice.target }}</b>
             </div>
             <div class="image-description">
               <div>
                 <el-image v-if="!choice.default"
-                  style="width: 100px; height: 100px; margin-top: 5px; margin-right: 5px; margin-bottom: 5px;"
+                  style="width: 150px; height: 150px; margin-top: 5px; margin-right: 5px; margin-bottom: 5px;"
                   :src="choice.image_urls"
                   :zoom-rate="1.2"
                   :preview-src-list="choice.image_urls"
@@ -19,16 +19,16 @@
                 <el-image v-else
                   style="width: 250px; height: 250px"
                   :src="choice.image"
-                  fit="contain"
+                  fit="fill"
                 />
-                <div class="amazon-info" v-if="choice.pros" style="margin-bottom: 5px;"><el-tag  type="warning" effect="light" round><b>{{ choice.price }}</b></el-tag></div>
+                <div class="amazon-info" v-if="choice.pros" style="margin-bottom: 5px;"><el-tag size="large" type="warning" effect="light" round><b>{{ choice.price }}</b></el-tag></div>
               </div>
               <div style="margin-left: 10px;">
-                <div class="amazon-info" v-if="choice.pros && choice.amazon_fulfill"><el-tag  type="success" effect="plain" round>{{$t('Fulfilled by Amazon')}}</el-tag></div>
-                <div class="amazon-info" v-if="choice.pros && choice.free_shipping"><el-tag  type="success" effect="plain" round>{{$t('Free Shipping')}}</el-tag></div>
-                <div class="amazon-info" v-if="choice.pros && choice.prime_eligible"><el-tag  type="success" effect="plain" round>{{$t('Prime Eligible')}}</el-tag></div>
-                <div class="amazon-info" v-if="choice.pros"><el-tag  type="success" effect="plain" round>{{$t('Above 4 stars')}}</el-tag></div>
-                <div class="amazon-info" style="margin-top: 5px;" v-if="choice.pros"><el-button @click="findSimilar" size="small" type="primary" :icon="Search">{{$t('Find similar Item')}}</el-button></div>
+                <div class="amazon-info" v-if="choice.pros && choice.amazon_fulfill"><el-tag size="large" type="success" effect="plain" round>{{$t('Fulfilled by Amazon')}}</el-tag></div>
+                <div class="amazon-info" style="margin-top: 5px;" v-if="choice.pros && choice.free_shipping"><el-tag size="large" type="success" effect="plain" round>{{$t('Free Shipping')}}</el-tag></div>
+                <div class="amazon-info" style="margin-top: 5px;" v-if="choice.pros && choice.prime_eligible"><el-tag size="large" type="success" effect="plain" round>{{$t('Prime Eligible')}}</el-tag></div>
+                <div class="amazon-info" style="margin-top: 5px;" v-if="choice.pros"><el-tag size="large" type="success" effect="plain" round>{{$t('Above 4 stars')}}</el-tag></div>
+                <div class="amazon-info" style="margin-top: 10px;" v-if="choice.pros"><el-button @click="findSimilar" size="medium" type="primary" :icon="Search">{{$t('Find similar Item')}}</el-button></div>
               </div>
             </div>
             <!-- <span v-if="!choice.default">{{$t('click to see more')}}</span> -->
@@ -50,7 +50,7 @@
               <el-image :src="require('@/assets/images/amazon_button.png')" :fit="contain" />
             </el-link> -->
             <el-link @click="addToCart" style="margin-bottom: 5px;">
-              <el-image :src="require('@/assets/images/amazon_button.png')" :fit="contain" style="width: 120px; height: 30px" />
+              <el-image :src="require('@/assets/images/amazon_button.png')" :fit="contain" style="width: 140px; height: 35px" />
             </el-link>
             </div>
             <!-- <div class="amazon-price" v-if="choice.pros"> 
