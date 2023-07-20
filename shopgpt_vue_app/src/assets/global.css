@@ -114,3 +114,15 @@ body {
 h4 {
   margin: 5px; /* or any other value you wish */
 }
+
+.scrollbar-flex-content {
+  display: flex;
+}
+
+.variation_options{
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center;
+  margin-left: 5px;
+}

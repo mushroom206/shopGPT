@@ -22,7 +22,7 @@ const timeout = 120000;
 // }
 
 async function generateList(payload) {
-  const maxRetries = 3;
+  const maxRetries = 1;
   const delayBetweenRetriesMs = 1000;
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -66,7 +66,7 @@ async function generateList(payload) {
 // }
 
 async function searchItems(payload) {
-  const maxRetries = 3;
+  const maxRetries = 1;
   const delayBetweenRetriesMs = 1000;
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -139,7 +139,7 @@ async function searchItems(payload) {
 // }
 
 async function searchProperties(payload) {
-  const maxRetries = 3;
+  const maxRetries = 1;
   const delayBetweenRetriesMs = 1000;
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -167,7 +167,7 @@ async function searchProperties(payload) {
 }
 
 async function refineSearchItems(queryObject) {
-  const maxRetries = 3;
+  const maxRetries = 1;
   const delayBetweenRetriesMs = 1000;
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -194,7 +194,7 @@ async function refineSearchItems(queryObject) {
 }
 
 async function askItemDetails(queryObject) {
-  const maxRetries = 3;
+  const maxRetries = 1;
   const delayBetweenRetriesMs = 1000;
 
   for (let attempt = 0; attempt < maxRetries; attempt++) {
@@ -218,6 +218,24 @@ async function askItemDetails(queryObject) {
       await new Promise(resolve => setTimeout(resolve, delayBetweenRetriesMs));
     }
   }
+}
+
+
+async function getVariants(asin) {
+  const maxRetries = 1;
+  const delayBetweenRetriesMs = 1000;
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const response = await axios.get(`${API_URL}get-variants/${asin}`, { timeout });
+      return response.data;
+    } catch (error) {
+      console.error('Error:', error);
+      // ElMessageBox.alert('getUserSearchHistory network error, please try again', 'Info', {
+      //   confirmButtonText: 'OK'
+      // })
+      await new Promise(resolve => setTimeout(resolve, delayBetweenRetriesMs));
+    }
+  }  
 }
 
 
@@ -254,5 +272,6 @@ export default {
   refineSearchItems,
   askItemDetails,
   saveEmail,
-  getUserSearchHistory
+  getUserSearchHistory,
+  getVariants
 }

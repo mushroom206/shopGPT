@@ -96,7 +96,8 @@
       <el-main class="el-main" v-loading="loading" :element-loading-text="$t('Thinking...')">
         <el-row :gutter="20" justify="center" class="search-form" v-show="isVisible">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
-            <el-card shadow="hover" class="card" :body-style="{ padding: '10px' }">
+            <el-card shadow="hover" class="card" :body-style="{ padding: '5px' }">
+              <div style="margin-bottom: 5px;"><el-tag type="warning" effect="dark" round>{{$t('Your Activity')}}:</el-tag></div>
               <el-button round @click="fillInputbox($event)">{{$t('Just moved, fill my living room')}}</el-button>
               <el-button round @click="fillInputbox($event)">{{$t('Fisrt day at college')}}</el-button>
               <el-button round @click="fillInputbox($event)">{{$t('Need office supplies')}}</el-button>
@@ -124,6 +125,9 @@
                   <el-dropdown-item>
                     <el-button round @click="fillInputbox($event)">{{$t('BBQ weekend')}}</el-button>
                   </el-dropdown-item>
+                  <el-dropdown-item>
+                    <el-button round @click="fillInputbox($event)">{{$t('Household products')}}</el-button>
+                  </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
               </el-dropdown>
@@ -141,7 +145,8 @@
         </el-row>
         <el-row :gutter="20" justify="center" class="card-container" ref="choice_card_container">
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
-            <el-card shadow="hover" class="card" :body-style="{ padding: '10px' }" v-show="isVisible || store.state.generateListResults.itemList.length !== 0">
+            <el-card shadow="hover" class="card" :body-style="{ padding: '5px' }" v-show="isVisible || store.state.generateListResults.itemList.length !== 0">
+              <div style="margin-bottom: 5px;"><el-tag type="warning" effect="dark" round>{{$t('Essentials')}}:</el-tag></div>
               <el-card v-if="store.state.generateListResults.itemList.length === 0">
                     <el-image :src="defaultListImage" fit="cover"/>
               </el-card>
@@ -159,10 +164,10 @@
                   {{ item.target }}
                 </el-button>
               </el-badge>
-              <div class="confirm-list-button">
+              <!-- <div class="confirm-list-button">
                 <el-button style="margin-top: 5px;" v-if="Object.keys(store.state.listResults).length !== 0"
                 type="primary" @click="confirmList">{{$t('Confirm List and View Items')}}</el-button>
-              </div>
+              </div> -->
               <!-- <el-dropdown v-if="store.state.generateListResults.itemList.length > 5">
                 <el-button primary>{{$t('more')}}<el-icon><arrow-down /></el-icon></el-button>
                 <template #dropdown>
@@ -239,8 +244,8 @@
               v-else-if="store.state.listResults[store.state.searchResults.target]
                       && store.state.listResults[store.state.searchResults.target].pre"
             >
+            <el-icon class="el-icon--right"><ArrowLeft /></el-icon>
             {{$t('Pre item loading...')}}
-              <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
             <el-button 
               type="primary" 
@@ -265,7 +270,7 @@
         </el-row>
     <el-row :gutter="20" justify="center" class="card-container">
       <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="choice in searchResults.choices" :key="choice.target">
-        <ChoiceCard :choice="choice" @ask-question="askQuestion" @add-to-cart="addToCart" @find-similar="findSimilar" />
+        <ChoiceCard :choice="choice" @ask-question="askQuestion" @add-to-cart="addToCart" @find-similar="findSimilar"  @find-variants="findVariants"/>
       </el-col>
     </el-row>
     <el-row :gutter="20" justify="center" class="next-button">
@@ -603,6 +608,29 @@ const findSimilar = (target) => {
   initialSubmit(store.state.searchResults.target + " " + target)
 }
 
+const findVariants = (asin) => {
+  store.dispatch('startLoading')
+  apiService.getVariants(asin)  // Use apiService to save the email here
+        .then((response) => {
+          console.log(response)
+          if(response.error){
+            if(response.error == "NoResults"){
+              ElMessage({
+                  message: 'No variants for this item',
+                  type: 'error',
+                  duration: 2000, // Duration is in milliseconds, so 2000 ms = 2 seconds
+              });
+            }
+          }else{
+            store.dispatch('setVariants', response);
+          }
+        })
+        .catch(error => console.error(error))
+        .finally(() => {
+          store.dispatch('endLoading');
+        });
+}
+
 const getUserData = async (accessToken) => {
   try {
     const response = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`);
@@ -671,7 +699,25 @@ const fillInputbox = (event) => {
 const setItemQuery = (event) => {
   console.log("setItemQuery", event.target.innerText)
   globalState.itemQuery = event.target.innerText;
-  initialSubmit(globalState.itemQuery)
+  let item = store.state.listResults[event.target.innerText]
+  if(item.choices.length != 0 || item.empty){
+    store.dispatch('setSearchResults', item)
+  }else{
+    initialSubmit(globalState.itemQuery)
+  }
+  // if(!store.state.inSearchList.includes(event.target.innerText) 
+  // && (item.choices.length != 0 
+  //   || item.empty)){
+  //   initialSubmit(globalState.itemQuery)
+  // }else{
+  //   if(item.choices.length != 0 
+  //   || item.empty){
+  //     store.dispatch('setSearchResults', item)
+  //   }else{
+  //     item.isSet = true
+  //     store.dispatch('startLoading')
+  //   }
+  // }
 }
 
 const toggleVisibility = () => {
@@ -681,7 +727,7 @@ const toggleVisibility = () => {
 
   const addToCart = (choice) => {
   // Check if the item is already in the array
-  const exists = cartDropdownItems.value.find(item => item.target === choice.target);
+  const exists = cartDropdownItems.value.find(item => item.asin === choice.asin);
 
   if (!exists) {
     // If the item doesn't exist, add it to the array
@@ -739,6 +785,7 @@ const closeLanguage = () => {
 const deleteFromList = (item) => {
 
   let list = store.state.listResults
+  if(list[item]['target'] != store.state.searchResults['target']){
   // Check if item exists in list
   if (!list[item]) {
         console.error('Item not found in list');
@@ -769,12 +816,19 @@ const deleteFromList = (item) => {
         type: 'success',
         duration: 2000, // Duration is in milliseconds, so 2000 ms = 2 seconds
     });
+  }else{
+    ElMessage({
+        message: 'Present item can not be deleted',
+        type: 'error',
+        duration: 2000, // Duration is in milliseconds, so 2000 ms = 2 seconds
+    });
+  }
 
 } 
 
-const confirmList = () => {
-  window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
-}
+// const confirmList = () => {
+//   window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
+// }
 
 onMounted(() => {
   // Check local storage for user data
@@ -789,6 +843,11 @@ onMounted(() => {
 
   if (language_dropdown.value && language_dropdown.value.handleOpen) {
     language_dropdown.value.handleOpen()
+    setTimeout(() => {
+      if (language_dropdown.value && language_dropdown.value.handleClose) {  
+        language_dropdown.value.handleClose()
+      }
+    }, 1500);  
   }
 
 })

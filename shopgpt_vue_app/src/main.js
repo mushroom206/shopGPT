@@ -76,6 +76,10 @@ const messages = {
     'Prime Eligible': 'Prime Eligible',
     'Above 4 stars': 'Above 4 stars',
     'Find similar Item': 'Find similar Item',
+    'Your Activity': 'Your Activity',
+    'Essentials': 'Essentials',
+    'Check Variants': 'Check Variants',
+    'Household products': 'Household products',
     // other translations...
   },
   Simplified_Chinese: {
@@ -119,6 +123,9 @@ const messages = {
     'Prime Eligible': 'Prime会员',
     'Above 4 stars': '评价高于4星',
     'Find similar Item': '找近似商品',
+    'Your Activity': '你的活动',
+    'Essentials': '必需品',
+    'Household products': '家居用品',
     // other translations...
   }
   // other languages...
@@ -136,7 +143,8 @@ const store = createStore({
       },
       loading: false, 
       lang: 'English',  // default language is English
-      userSearchHistory: []
+      userSearchHistory: [],
+      inSearchList: []
     }
   },
   mutations: {
@@ -161,12 +169,18 @@ const store = createStore({
     setListResultsItem(state, payload) {
       let {results1, results2} = payload
       if (Object.prototype.hasOwnProperty.call(state.listResults, results1.target)) {
-        state.listResults[results1.target].choices = results1.choices;
+        let item = state.listResults[results1.target]
+        item.choices = results1.choices;
         if(results1.empty){
-          state.listResults[results1.target].empty = true
+          item.empty = true
         }else{
-          state.listResults[results1.target].empty = false
-          state.listResults[results1.target]['qualities-properties'] = results2['qualities-properties'];
+          item.empty = false
+          item['qualities-properties'] = results2['qualities-properties'];
+        }
+        if(item.isSet){
+          this.commit('setSearchResults', item)
+          item.isSet = !item.isSet
+          this.commit('endLoading')
         }
       }
       console.log(state.listResults)
@@ -217,6 +231,21 @@ const store = createStore({
     setUserSearchHistory(state, searchHistory) {
       state.userSearchHistory = searchHistory;
     },
+    setInSearchList(state, item_query) {
+      state.inSearchList.push(item_query);
+    },
+    removeFromSearchList(state, item_query){
+      state.inSearchList = state.inSearchList.filter(str => str !== item_query);
+    },
+    setVariants(state, variantsResult){
+      for (let i = 0; i < state.searchResults.choices.length; i++) {
+        if (state.searchResults.choices[i].asin === variantsResult.asin) {
+          state.searchResults.choices[i].variants = variantsResult.variants;
+          state.searchResults.choices[i].variation_dimensions = variantsResult.variation_dimensions;
+          break;  // This will exit the loop after the first match is found
+        }
+      }
+    }
 },
 actions: {
   async fetchGenerateListResults({ commit, dispatch }, payload) {
@@ -274,32 +303,46 @@ actions: {
       }
       payload.language = store.state.lang;
       
-      const [response1, response2] = await Promise.all(
-        [apiService.searchItems(payload), 
-          apiService.searchProperties(payload)]
-        );
+      if(!store.state.inSearchList.includes(payload.item_query)){
+        commit('setInSearchList', payload.item_query);
+      }
+      
       let results1;
       let results2;
-      // try {
-        results1 = response1;
-        console.log(results1)
-      // } catch (e) {
-      //   console.error('Error parsing response:', e);
-      //   results = response;  // Use the original response if parsing fails
-      // }
       try {
-        results2 = JSON.parse(response2);
-      } catch (e) {
-        console.error('Error parsing response:', e);
-        results2 = response2;  // Use the original response if parsing fails
+        const [response1, response2] = await Promise.all(
+          [apiService.searchItems(payload), 
+            apiService.searchProperties(payload)]
+          );
+        // try {
+          results1 = response1;
+          console.log(results1)
+        // } catch (e) {
+        //   console.error('Error parsing response:', e);
+        //   results = response;  // Use the original response if parsing fails
+        // }
+        try {
+          results2 = JSON.parse(response2);
+        } catch (e) {
+          console.error('Error parsing response:', e);
+          results2 = response2;  // Use the original response if parsing fails
+        }  
+      } catch (error) {
+        // handle error here if necessary
+        console.error('Error:', error);
+      } finally {
+        commit('removeFromSearchList', payload.item_query);
       }
-      if(payload.commit_flag){
-        commit('setSearchResults', results1);
-        if(!results1.empty){
-          commit('setSearchPropertiesResults', results2);
+
+      if(results1){
+        if(payload.commit_flag){
+          commit('setSearchResults', results1);
+          if(!results1.empty){
+            commit('setSearchPropertiesResults', results2);
+          }
         }
+        commit('setListResultsItem', {results1, results2});
       }
-      commit('setListResultsItem', {results1, results2});
     } catch (error) {
       console.error('Error fetching search results:', error);
     } finally {
@@ -385,6 +428,18 @@ actions: {
   },
   async setNextItem({ commit }, item) {
     commit('setSearchResults', store.state.listResults[item]);
+  },
+  async startLoading({ commit }) {
+    commit('startLoading');
+  },
+  async endLoading({ commit }) {
+    commit('endLoading');
+  },
+  async setSearchResults({ commit }, item) {
+    commit('setSearchResults', item);
+  },
+  async setVariants({ commit }, variantsResult) {
+    commit('setVariants', variantsResult);
   },
 }
 })

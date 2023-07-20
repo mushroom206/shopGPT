@@ -4,6 +4,9 @@ import os
 import threading
 import json
 import random
+import time
+
+from paapi_service import get_variations
 
 # Load environment variables
 load_dotenv()
@@ -14,27 +17,39 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 def callChatGPT_list(data):
     # print("callChatGPT_list")
     # print(data)
-    completion = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
-    messages=[
-            {"role": "user", "content": """Generate a list of items essential to {context} as [item1,item2,item3...], so I can shop and prepare for {context}.
-              Generate items specific to {context}, eliminate ambiguity, do not include memberships.
-              Do not generate desciption of items. Max 15 most important items, Min 10 items. 
-              Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
-              Do not write anything outside of the JSON structure. 
-              Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
-              The structure is as follow: 
-            {
-            "context": "",
-            "itemList": []
-            }
-            now {context} =""" + data['list_query']
-            }
-    ]
-    )
-    response = completion.choices[0].message.content
-    # print(response)
-    return response
+    MAX_RETRIES = 3
+    retries = 0
+    while retries < MAX_RETRIES:
+        try:
+            completion = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "user", "content": """Generate a list of items essential to {context} as [item1,item2,item3...], so I can shop and prepare for {context}.
+                    Generate items specific to {context}, eliminate ambiguity.
+                    Do not include membership.
+                    For IDs or access cards, return card holder instead.
+                    Do not generate desciption of items. Max 15 most important items, Min 10 items. 
+                    Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
+                    Do not write anything outside of the JSON structure. 
+                    Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
+                    The structure is as follow: 
+                    {
+                    "context": "",
+                    "itemList": []
+                    }
+                    now {context} =""" + data['list_query']
+                    }
+            ]
+            )
+            response = completion.choices[0].message.content
+            # print(response)
+            return response
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+
+        retries += 1
+        time.sleep(1)      
+
 
 def callChatGPT_async(target, language, search_results):
     # Create three threads to call ChatGPT simultaneously.
@@ -66,7 +81,7 @@ def callChatGPT_async(target, language, search_results):
         try:
             prices.append(search_result.offers.listings[0].price.display_amount)
         except AttributeError:
-            prices.append("view on checkout")
+            prices.append("check variants")
 
         try:
             amazon_fulfills.append(search_result.offers.listings[0].delivery_info.is_amazon_fulfilled)
@@ -86,7 +101,7 @@ def callChatGPT_async(target, language, search_results):
         thread = threading.Thread(target=callChatGPT, args=(data, results[i]))
         thread.start()
         threads.append(thread)
-        # thread = threading.Thread(target=callChatGPT_description, args=(data, results[i+3]))
+        # thread = threading.Thread(target=callPaapi_variations, args=(search_result.asin, results[i+3]))
         # thread.start()
         # threads.append(thread)
 
@@ -103,14 +118,15 @@ def callChatGPT_async(target, language, search_results):
     for x in range(3):
         if results[x][0] is not None:
           temp1 = json.loads(results[x][0])
-          # temp2 = json.loads(results[x+3][0])
+        #   temp2 = json.loads(results[x+3][0])
           tempJSON = {
                   "target": temp1['target'],
-                  # "description": temp2['description'],
+                #   "variations": temp2,
                   "pros": temp1['pros'],
-                  "cons": temp1['cons'],
+                  "cons": [],
                   "url": search_results[x].detail_page_url,
                   "asin": search_results[x].asin,
+                  "parent_asin": search_results[x].parent_asin,
                   "price": prices[x],
                   "amazon_fulfill": amazon_fulfills[x],
                   "free_shipping": free_shippings[x],
@@ -127,28 +143,37 @@ def callChatGPT(data, result):
     # Generate a list of 3 specific items that fits the description of {target} as [choice1, choice2, choice3], 
     # breakdown each choice into [brand, item category, and model], 
     # detailed enough so I can use your response to query for the items on a shopping site like Amazon. 
-    completion = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
-    messages=[
-            {"role": "user", "content": """you are my shopping advisor. 
-            Define {target} as a product.
-            In """+ data['language'] +""", generate a list of at most 3 pros and cons of {target}.
-              Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format. 
-              Do not write anything outside of the JSON structure. 
-              Write the Value of JSON in """+ data['language'] +""", Key of JSON in English.
-              Make {target} concise, 5 words max , include brand.
-              The structure is as follow: 
-            {
-              "target": "",
-              "pros": [],
-              "cons": []
-            }
-            now {target} =""" + data['item_query']
-            }
-    ]
-    )
-    response = completion.choices[0].message.content
-    result[0] = response
+    MAX_RETRIES = 3
+    retries = 0
+    while retries < MAX_RETRIES:
+        try:
+            completion = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "user", "content": """you are my shopping advisor. 
+                    Define {target} as a product.
+                    In """+ data['language'] +""", generate a list of at most 3 pros of {target}.
+                    Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format. 
+                    Do not write anything outside of the JSON structure. 
+                    Write the Value of JSON in """+ data['language'] +""", Key of JSON in English.
+                    Make {target} concise, 5 words max , include brand.
+                    The structure is as follow: 
+                    {
+                    "target": "",
+                    "pros": []
+                    }
+                    now {target} =""" + data['item_query']
+                    }
+            ]
+            )
+            response = completion.choices[0].message.content
+            result[0] = response
+            break
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+
+        retries += 1
+        time.sleep(1)      
 
 # def callChatGPT_description(data, result):
 #     # print("callChatGPT_description")
@@ -181,48 +206,57 @@ def callChatGPT(data, result):
     # print(result[0])
 
 def callChatGPT_properties(data):
-    print("callChatGPT_properties")
-    print(data)
-    completion = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
-    messages=[
-            {"role": "user", "content": """you are my shopping advisor. 
-            Define {target} as an item category or a concept of an item. 
-              In """+ data['language'] +""", generate 3 most common and important quality or properties specific to {target} that affect how consumers compare {target}, but do not include price. 
-              For example, 
-              if {target} = rice cooker, the quality or properties that may affect your choices can be material, size, design, etc. 
-              For each quality or property, generate 3 options. 
-              Options should be specific enough to help further filtering possible results on site like Amazon.
-              For search accuracy, use numerical value in options if applicable.
-              Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
-              Do not write anything outside of the JSON structure. 
-              Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
-              Keep the Value of {target} in english.
-              The structure is as follow: 
-            {
-            "target": "",
-            "qualities-properties": [
-            {
-            "quality":"",
-            "options": []
-            },
-            {
-            "quality":"",
-            "options": []
-            },
-            {
-            "quality":"",
-            "options": []
-            }
+    # print("callChatGPT_properties")
+    # print(data)
+    MAX_RETRIES = 3
+    retries = 0
+    while retries < MAX_RETRIES:
+        try:
+            completion = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "user", "content": """you are my shopping advisor. 
+                    Define {target} as an item category or a concept of an item. 
+                    In """+ data['language'] +""", generate 3 most common and important quality or properties specific to {target} that affect how consumers compare {target}, but do not include price. 
+                    For example, 
+                    if {target} = rice cooker, the quality or properties that may affect your choices can be material, size, design, etc. 
+                    For each quality or property, generate 3 options. 
+                    Options should be specific enough to help further filtering possible results on site like Amazon.
+                    For search accuracy, use numerical value in options if applicable.
+                    Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
+                    Do not write anything outside of the JSON structure. 
+                    Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
+                    Keep the Value of {target} in english.
+                    The structure is as follow: 
+                    {
+                    "target": "",
+                    "qualities-properties": [
+                    {
+                    "quality":"",
+                    "options": []
+                    },
+                    {
+                    "quality":"",
+                    "options": []
+                    },
+                    {
+                    "quality":"",
+                    "options": []
+                    }
+                    ]
+                    }
+                    now {target} =""" + data['item_query']
+                    }
             ]
-            }
-            now {target} =""" + data['item_query']
-            }
-    ]
-    )
-    response = completion.choices[0].message.content
-    # print(response)
-    return response
+            )
+            response = completion.choices[0].message.content
+            # print(response)
+            return response
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+
+        retries += 1
+        time.sleep(1)   
 
 # def callChatGPT_refine(data):
 #     print("callChatGPT_refine")
@@ -281,29 +315,42 @@ def callChatGPT_properties(data):
 #     return response
 
 def callChatGPT_ask(data):
-    print("callChatGPT_ask")
-    print(data)
-    completion = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
-    messages=[
-            {"role": "user", "content": """you are my shopping advisor. 
-            Answer my {question} about {target}, try to be specific and informative.
-            Define {details} as your product reference link.
-            {target} = """ + data['queryObject']['choice']['target'] + """.
-            {question} = """+ data['queryObject']['question'] + """. 
-            {details} = """+ data['queryObject']['choice']['url'] + """. 
-              Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
-              Do not write anything outside of the JSON structure. 
-              Write the Value of JSON in """+ data['queryObject']['language'] +""", Key of JSON in English. 
-              Keep the value of brand and model in english. 
-              The structure is as follow, the key must be the word "answer": 
-            {
-            "answer": ""
-            }
-            """
-            }
-    ]
-    )
-    response = completion.choices[0].message.content
-    print(response)
-    return response
+    # print("callChatGPT_ask")
+    # print(data)
+    MAX_RETRIES = 3
+    retries = 0
+    while retries < MAX_RETRIES:
+        try:
+            completion = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "user", "content": """you are my shopping advisor. 
+                    Answer my {question} about {target}, try to be specific and informative.
+                    Define {details} as your product reference link.
+                    {target} = """ + data['queryObject']['choice']['target'] + """.
+                    {question} = """+ data['queryObject']['question'] + """. 
+                    {details} = """+ data['queryObject']['choice']['url'] + """. 
+                    Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
+                    Do not write anything outside of the JSON structure. 
+                    Write the Value of JSON in """+ data['queryObject']['language'] +""", Key of JSON in English. 
+                    Keep the value of brand and model in english. 
+                    The structure is as follow, the key must be the word "answer": 
+                    {
+                    "answer": ""
+                    }
+                    """
+                    }
+            ]
+            )
+            response = completion.choices[0].message.content
+            # print(response)
+            return response
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+
+        retries += 1
+        time.sleep(1)
+
+def callPaapi_variations(asin, result):
+    result[0] = get_variations(asin)
+    
