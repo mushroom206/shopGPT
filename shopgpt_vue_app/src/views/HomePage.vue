@@ -226,7 +226,7 @@
               </el-icon>
           </el-button>
         </el-row>
-        <el-row :gutter="20" justify="center" class="next-button">
+        <el-row :gutter="20" justify="center" class="next-button" ref="next_container">
           <el-button-group>
             <el-button 
               type="primary" 
@@ -426,6 +426,7 @@ let userInputInputbox = ref('')
 let minPrice = ref('')
 let maxPrice = ref('')
 let choice_card_container = ref(null);
+let next_container = ref(null);
 let cartDropdownItems= ref([]);
 let cart= ref(null);
 let language_dropdown= ref(null);
@@ -481,7 +482,7 @@ const initialSubmit = (query) => {
     store.dispatch('fetchSearchResults', payload)
 
     // Scroll to the position
-    window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
+    window.scrollTo({ top: next_container.value.$el.offsetTop, behavior: 'smooth' });
     isVisible.value = false;
 
   setTimeout(() => {  
@@ -565,7 +566,7 @@ const preItem = () => {
       store.dispatch('fetchSearchResults', payload)
   }  
     // Scroll to the position
-  window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
+  window.scrollTo({ top: next_container.value.$el.offsetTop, behavior: 'smooth' });
 }
 
 const nextItem = () => {
@@ -587,13 +588,13 @@ const nextItem = () => {
       store.dispatch('fetchSearchResults', payload)
   }  
     // Scroll to the position
-    window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
+    window.scrollTo({ top: next_container.value.$el.offsetTop, behavior: 'smooth' });
 }
 
 const submitQualities = () => {
     store.dispatch('fetchRefinedSearchResults', { target: searchResults.value.target, qualities: selectedQualities.value, minPrice: minPrice.value, maxPrice: maxPrice.value })
     // Scroll to the position
-    window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
+    window.scrollTo({ top: next_container.value.$el.offsetTop, behavior: 'smooth' });
 }
 
 const updateQuality = (selectedQuality) => {
