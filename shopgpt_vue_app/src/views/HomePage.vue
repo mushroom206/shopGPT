@@ -269,9 +269,13 @@
           </el-button-group>
         </el-row>
     <el-row :gutter="20" justify="center" class="card-container">
-      <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="choice in searchResults.choices" :key="choice.target">
-        <ChoiceCard :choice="choice" @ask-question="askQuestion" @add-to-cart="addToCart" @find-similar="findSimilar"  @find-variants="findVariants"/>
-      </el-col>
+      <el-scrollbar>
+        <div class="scrollbar-flex-content">
+          <div style="margin-left: 5px;" v-for="choice in searchResults.choices" :key="choice.target">
+            <ChoiceCard :choice="choice" @ask-question="askQuestion" @add-to-cart="addToCart" @find-similar="findSimilar"  @find-variants="findVariants"/>
+          </div>
+        </div>
+      </el-scrollbar>
     </el-row>
     <el-row :gutter="20" justify="center" class="next-button">
       <el-button-group>
@@ -408,7 +412,8 @@ import defaultImage3_en from '@/assets/images/undraw_shopping_app_flsj.png';
 import defaultImage1_zh from '@/assets/images/undraw_Search_app_flsj_zh.png';
 // import defaultImage2_zh from '@/assets/images/undraw_ask_app_flsj_zh.png';
 import defaultImage3_zh from '@/assets/images/undraw_shopping_app_flsj_zh.png';
-import defaultListImage from '@/assets/images/thinking.png';
+import defaultListImage_en from '@/assets/images/thinking_en.png';
+import defaultListImage_zh from '@/assets/images/thinking_zh.png';
 
 import {
   Avatar, ArrowDown, ArrowLeft, ArrowRight, CirclePlus, Remove, Tools, ShoppingCart, Delete
@@ -456,6 +461,8 @@ let defaultChoices = reactive([
     image: defaultImage3,
   },
 ])
+
+let defaultListImage = ref(defaultListImage_en)
 // Computed
 let searchResults = computed(() => {
   return store.state.searchResults.choices.length ? store.state.searchResults : { choices: defaultChoices }
@@ -684,11 +691,13 @@ const changeLanguage = (language) => {
     defaultChoices[0].image = defaultImage1_en;
     // defaultChoices[1].image = defaultImage2_en;
     defaultChoices[1].image = defaultImage3_en;
+    defaultListImage = defaultListImage_en;
   }
   if(language == 'Simplified_Chinese'){
     defaultChoices[0].image = defaultImage1_zh;
     // defaultChoices[1].image = defaultImage2_zh;
     defaultChoices[1].image = defaultImage3_zh;
+    defaultListImage = defaultListImage_zh
   }
 }
 
