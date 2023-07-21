@@ -271,7 +271,7 @@
     <el-row :gutter="20" justify="center" class="card-container">
       <el-scrollbar>
         <div class="scrollbar-flex-content">
-          <div style="margin-left: 5px;" v-for="choice in searchResults.choices" :key="choice.target">
+          <div style="margin-left: 5px; max-width: 90vw;" v-for="choice in searchResults.choices" :key="choice.target">
             <ChoiceCard :choice="choice" @ask-question="askQuestion" @add-to-cart="addToCart" @find-similar="findSimilar"  @find-variants="findVariants"/>
           </div>
         </div>
