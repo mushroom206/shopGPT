@@ -219,7 +219,7 @@
               <span>{{$t('Show Search Menu')}}</span>
             </template>
           </el-button>
-          <el-button size="medium" @click="showShoppingCart" v-if="cartDropdownItems.length != 0">
+          <el-button size="medium" @click="showShoppingCart">
               <span>{{$t('Shopping Cart')}}</span>
               <el-icon :size="15">
                 <ShoppingCart />
@@ -334,7 +334,7 @@
               <span>{{$t('Show Search Menu')}}</span>
             </template>
           </el-button>
-          <el-button size="medium" @click="showShoppingCart" v-if="cartDropdownItems.length != 0">
+          <el-button size="medium" @click="showShoppingCart">
               <span>{{$t('Shopping Cart')}}</span>
               <el-icon :size="15">
                 <ShoppingCart />

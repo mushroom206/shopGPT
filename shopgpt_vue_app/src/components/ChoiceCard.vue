@@ -1,5 +1,5 @@
 <template>
-  <el-card :body-style="{ padding: '0px' }" shadow="hover" class="card">
+  <el-card :body-style="{ padding: '0px' }" shadow="hover" class="card" v-if="!choice.default">
       <el-container>
         <!-- <el-header>HEAD</el-header> -->
         <el-main style="padding: 5px;">
