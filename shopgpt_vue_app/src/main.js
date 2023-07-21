@@ -197,12 +197,12 @@ const store = createStore({
           }
           state.searchResults = results;
         }else{
-          state.searchResults = {
-            "target": results.target,
-            "choices": [],
-            "empty": results.empty
-          }
-          ElMessageBox.alert("We did not find anything for "+results.target, 'Sorry!', {
+          // state.searchResults = {
+          //   "target": results.target,
+          //   "choices": [],
+          //   "empty": results.empty
+          // }
+          ElMessageBox.alert("We did not find anything", 'Sorry!', {
             // if you want to disable its autofocus
             // autofocus: false,
             confirmButtonText: 'OK',

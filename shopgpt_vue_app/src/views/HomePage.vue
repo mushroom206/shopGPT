@@ -6,7 +6,9 @@
           <el-col :xs="15" :sm="15" :md="18" :lg="21">
             <el-image
               style="width: 120px; height: 40px"
-              :src="require('@/assets/images/shopGPT_logo_noBG_banner.png')">
+              :src="require('@/assets/images/shopGPT_logo_noBG_banner.png')"
+              @click="goToHomePage"
+            >
             </el-image>
           </el-col>
           <el-col :xs="3" :sm="3" :md="2" :lg="1" class="cart-icon">
@@ -203,7 +205,7 @@
             <SearchForm @keydown.enter.prevent @submit="initialSubmit($event)" />
           </el-col>
         </el-row>
-        <el-row :gutter="20" justify="center" class="expand-button" v-if="store.state.generateListResults.itemList.length != 0 || searchResults.target">
+        <el-row :gutter="20" justify="center" class="expand-button" v-if="searchResults.target">
           <el-button @click="toggleVisibility" size="medium">
             <template v-if="isVisible">
               <el-icon :size="15">
@@ -318,7 +320,7 @@
             </el-button>
           </el-button-group>
         </el-row>
-        <el-row :gutter="20" justify="center" class="expand-button" v-if="store.state.generateListResults.itemList.length != 0 || searchResults.target">
+        <el-row :gutter="20" justify="center" class="expand-button" v-if="searchResults.target">
           <el-button @click="toggleVisibility" size="medium">
             <template v-if="isVisible">
               <el-icon :size="15">
@@ -394,6 +396,7 @@
   
 <script setup>
 import { ref, computed, reactive, inject } from 'vue'
+import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { ElMessage } from 'element-plus'
 import SearchForm from '../components/SearchForm.vue'
@@ -468,6 +471,7 @@ let searchResults = computed(() => {
   return store.state.searchResults.choices.length ? store.state.searchResults : { choices: defaultChoices }
 })
 
+const router = useRouter()
 
 // Methods
 const initialSubmit = (query) => {
@@ -834,7 +838,11 @@ const deleteFromList = (item) => {
     });
   }
 
-} 
+}
+
+const goToHomePage = () => {
+      router.push('/').then(() => window.location.reload())
+    }
 
 // const confirmList = () => {
 //   window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
