@@ -20,18 +20,21 @@
                   :src="choice.image"
                   fit="contain"
                 />
-                <div class="amazon-info" v-if="choice.pros" style="margin-bottom: 5px; margin-top: -5px;">
+                <div class="amazon-info" v-if="!choice.default" style="margin-bottom: 5px; margin-top: -5px;">
+                  <el-text type="danger">{{ computePercentageText() }}</el-text>
                   <el-tag size="large" type="warning" effect="light" round>
                     <b>{{ localData.choice.price }}</b>
                   </el-tag>
+                  <div class="amazon-info" style="margin-top: 5px;" v-if="!choice.default"><el-text tag="del">{{ computeDiscountText() }}</el-text></div>
                 </div>
               </div>
               <div style="margin-left: 10px;">
-                <div class="amazon-info" v-if="choice.pros && localData.choice.amazon_fulfill"><el-tag size="large" type="success" effect="plain" round>{{$t('Fulfilled by Amazon')}}</el-tag></div>
-                <div class="amazon-info" style="margin-top: 5px;" v-if="choice.pros && localData.choice.free_shipping"><el-tag size="large" type="success" effect="plain" round>{{$t('Free Shipping')}}</el-tag></div>
-                <div class="amazon-info" style="margin-top: 5px;" v-if="choice.pros && localData.choice.prime_eligible"><el-tag size="large" type="success" effect="plain" round>{{$t('Prime Eligible')}}</el-tag></div>
-                <div class="amazon-info" style="margin-top: 5px;" v-if="choice.pros"><el-tag size="large" type="success" effect="plain" round>{{$t('Above 4 stars')}}</el-tag></div>
-                <div class="amazon-info" style="margin-top: 15px;" v-if="choice.pros"><el-button @click="findVariants" size="medium" type="primary" :icon="Search">{{$t('Check Variants')}}</el-button></div>
+                <div class="amazon-info" v-if="!choice.default && localData.choice.amazon_fulfill"><el-tag size="large" type="success" effect="plain" round>{{$t('Fulfilled by Amazon')}}</el-tag></div>
+                <div class="amazon-info" style="margin-top: 5px;" v-if="!choice.default && localData.choice.free_shipping"><el-tag size="large" type="success" effect="plain" round>{{$t('Free Shipping')}}</el-tag></div>
+                <div class="amazon-info" style="margin-top: 5px;" v-if="!choice.default && localData.choice.prime_eligible"><el-tag size="large" type="success" effect="plain" round>{{$t('Prime Eligible')}}</el-tag></div>
+                <div class="amazon-info" style="margin-top: 5px;" v-if="!choice.default"><el-tag size="large" type="success" effect="plain" round><i class="fa fa-star"></i>{{$t('Above 4 stars')}}</el-tag></div>
+                <div class="amazon-info" style="margin-top: 5px;" v-if="!choice.default && Number(localData.choice.saving_amount)"><el-tag size="large" type="success" effect="plain" round>{{$t('Deep Discount')}}</el-tag></div>
+                <!-- <div class="amazon-info" style="margin-top: 15px;" v-if="!choice.default"><el-button @click="findVariants" size="medium" type="primary" :icon="Search">{{$t('Check Variants')}}</el-button></div> -->
               </div>
             </div>
             <!-- <span v-if="!choice.default">{{$t('click to see more')}}</span> -->
@@ -60,10 +63,10 @@
                 </el-scrollbar>
               </div>  
             </div>
-            <div class="pros" v-if="choice.pros">
+            <div class="pros" v-if="!choice.default">
               <!-- <h4>{{$t('Pros')}}:</h4> -->
               <ul class="check-list">
-                <li v-for="(pro, index) in choice.pros" :key="index">{{ pro }}</li>
+                <li v-for="(pro, index) in !choice.default" :key="index">{{ pro }}</li>
               </ul>
             </div>
             <div class="cons" v-if="choice.cons">
@@ -72,16 +75,17 @@
                 <li v-for="(con, index) in choice.cons" :key="index">{{ con }}</li>
               </ul>
             </div>
-            <div class="amazon-link" v-if="choice.pros">
+            <div class="amazon-link" v-if="!choice.default">
             <!-- <el-link :href="choice.url" target="_blank">
               <el-image :src="require('@/assets/images/amazon_button.png')" :fit="contain" />
             </el-link> -->
             <el-link @click="addToCart" style="margin-bottom: 5px; margin-right:5px;">
               <el-image :src="require('@/assets/images/amazon_button.png')" :fit="contain" style="width: 140px; height: 35px" />
             </el-link>
-            <el-button @click="findSimilar" style="margin-bottom: 5px;" size="medium" type="primary" :icon="Search">{{$t('Find similar Item')}}</el-button>
+            <!-- <el-button @click="findSimilar" style="margin-bottom: 5px;" size="medium" type="primary" :icon="Search">{{$t('Find similar Item')}}</el-button> -->
+            <el-button style="margin-top: -5px;" @click="findVariants" size="medium" type="primary" :icon="Search">{{$t('Check Variants')}}</el-button>
             </div>
-            <!-- <div class="amazon-price" v-if="choice.pros"> 
+            <!-- <div class="amazon-price" v-if="!choice.default"> 
               <h4>For: {{ choice.price }}</h4>
             </div> -->
           </el-card>
@@ -219,6 +223,9 @@ watch(() => selectedOptions.value, (newOpitons) => {
   localData.choice.free_shipping = props.choice.variants[index].free_shipping
   localData.choice.prime_eligible = props.choice.variants[index].prime_eligible
   localData.choice.asin = props.choice.variants[index].asin
+  localData.choice.amount = props.choice.variants[index].amount
+  localData.choice.saving_amount = props.choice.variants[index].saving_amount
+  localData.choice.saving_percentage = props.choice.variants[index].saving_percentage
 });
 
 // Methods for events
@@ -232,11 +239,29 @@ const addToCart = () => {
   emit('add-to-cart', localData.choice);
 };
 
-const findSimilar = () => {
-  emit('find-similar', props.choice.target);
-};
+// const findSimilar = () => {
+//   emit('find-similar', props.choice.target);
+// };
 
 const findVariants = () => {
   emit('find-variants', props.choice.asin);
 };
+
+const computeDiscountText = () => {
+  if(Number(localData.choice.saving_amount) && Number(localData.choice.amount)){
+    let total = (Number(localData.choice.saving_amount) + Number(localData.choice.amount)).toFixed(2)
+    return "$"+total.toString()
+  }else{
+    return ""
+  }
+};
+
+const computePercentageText = () => {
+  if(Number(localData.choice.saving_percentage)){
+    return "-"+localData.choice.saving_percentage+"%"
+  }else{
+    return ""
+  }
+};
+
 </script>

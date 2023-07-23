@@ -43,6 +43,12 @@ def search():
         if 'email' in data: # if user is logged in
             save_search_history(data['email'], data['item_query'])            
         result = callChatGPT_async(data['item_query'], data['language'], search_results_items)
+        if len(result['choices']) == 0:
+            result = {
+                "target": data['item_query'],
+                "choices":[],
+                "empty": True
+            }
         return jsonify(result), 200
     except Exception as e:
         print('search error')
@@ -128,7 +134,13 @@ def getVariants(asin):
                 response['variation_dimensions'].append(temp_dime)
         for variant in variants:
             if variant.offers and variant.offers.listings[0].price:
+                saving_amount = "check variant"
+                saving_percentage = "check variant" 
+                if(variant.offers.listings[0].price.savings):
+                    saving_amount = variant.offers.listings[0].price.savings.amount
+                    saving_percentage = variant.offers.listings[0].price.savings.percentage
                 price = variant.offers.listings[0].price.display_amount
+                amount = variant.offers.listings[0].price.amount
                 amazon_fulfill = variant.offers.listings[0].delivery_info.is_amazon_fulfilled
                 free_shipping = variant.offers.listings[0].delivery_info.is_free_shipping_eligible
                 prime_eligible = variant.offers.listings[0].delivery_info.is_prime_eligible
@@ -148,6 +160,9 @@ def getVariants(asin):
                     "url": variant.detail_page_url,
                     "asin": variant.asin,
                     "price": price,
+                    "amount": amount,
+                    "saving_amount": saving_amount,
+                    "saving_percentage": saving_percentage,
                     "amazon_fulfill": amazon_fulfill,
                     "free_shipping": free_shipping,
                     "prime_eligible": prime_eligible,

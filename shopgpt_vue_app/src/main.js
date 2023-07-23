@@ -167,7 +167,8 @@ const store = createStore({
       console.log(state.listResults)
     },
     setListResultsItem(state, payload) {
-      let {results1, results2} = payload
+      // let {results1, results2} = payload
+      let {results1} = payload
       if (Object.prototype.hasOwnProperty.call(state.listResults, results1.target)) {
         let item = state.listResults[results1.target]
         item.choices = results1.choices;
@@ -175,7 +176,7 @@ const store = createStore({
           item.empty = true
         }else{
           item.empty = false
-          item['qualities-properties'] = results2['qualities-properties'];
+          // item['qualities-properties'] = results2['qualities-properties'];
         }
         if(item.isSet){
           this.commit('setSearchResults', item)
@@ -186,6 +187,7 @@ const store = createStore({
       console.log(state.listResults)
     },
     setSearchResults(state, results) {
+        console.log(results)
         // Check if 'qualities-properties' exists in results
         if (!Object.prototype.hasOwnProperty.call(results, 'qualities-properties')) {
             // If it does not exist, copy it from state.searchResults
@@ -308,11 +310,13 @@ actions: {
       }
       
       let results1;
-      let results2;
+      // let results2;
       try {
-        const [response1, response2] = await Promise.all(
+        // const [response1, response2] = await Promise.all(
+        const [response1] = await Promise.all(  
           [apiService.searchItems(payload), 
-            apiService.searchProperties(payload)]
+            // apiService.searchProperties(payload)
+          ]
           );
         // try {
           results1 = response1;
@@ -321,12 +325,12 @@ actions: {
         //   console.error('Error parsing response:', e);
         //   results = response;  // Use the original response if parsing fails
         // }
-        try {
-          results2 = JSON.parse(response2);
-        } catch (e) {
-          console.error('Error parsing response:', e);
-          results2 = response2;  // Use the original response if parsing fails
-        }  
+        // try {
+        //   results2 = JSON.parse(response2);
+        // } catch (e) {
+        //   console.error('Error parsing response:', e);
+        //   results2 = response2;  // Use the original response if parsing fails
+        // }  
       } catch (error) {
         // handle error here if necessary
         console.error('Error:', error);
@@ -337,11 +341,12 @@ actions: {
       if(results1){
         if(payload.commit_flag){
           commit('setSearchResults', results1);
-          if(!results1.empty){
-            commit('setSearchPropertiesResults', results2);
-          }
+          // if(!results1.empty){
+          //   commit('setSearchPropertiesResults', results2);
+          // }
         }
-        commit('setListResultsItem', {results1, results2});
+        commit('setListResultsItem', {results1});
+        // commit('setListResultsItem', {results1, results2});
       }
     } catch (error) {
       console.error('Error fetching search results:', error);

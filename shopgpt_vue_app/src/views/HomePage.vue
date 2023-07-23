@@ -25,23 +25,25 @@
               <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item v-if="cartDropdownItems.length == 0">cart is empty</el-dropdown-item>
-                <el-dropdown-item v-for="(item, index) in cartDropdownItems" :key="index">
-                  <el-card :body-style="{ padding: '15px'}">
-                    <el-badge :value=item.price class="item" type="warning">
-                      <el-image
-                        style="width: 50px; height: 50px"
-                        :src="item.image_urls"
-                        :title="item.target"
-                        fit="contain"
-                      />
-                    </el-badge>
-                    <el-input-number class="el-input-number" :min="1" :max="10" size="small" v-model="item.quantity" @click.prevent.self/>
-                    <el-icon class="el-icon-delete" @click="deleteCartItem(item.target, index)" @click.prevent.self>
-                      <Delete />
-                    </el-icon>
-                    <div>{{ item.target }}</div>
-                  </el-card>
-                </el-dropdown-item>
+                <el-scrollbar max-height="50vh">
+                      <el-dropdown-item v-for="(item, index) in cartDropdownItems" :key="index">
+                        <el-card :body-style="{ padding: '15px' }">
+                          <el-badge :value=item.price class="item" type="warning">
+                            <el-image
+                              style="width: 50px; height: 50px"
+                              :src="item.image_urls"
+                              :title="item.target"
+                              fit="contain"
+                            />
+                          </el-badge>
+                          <el-input-number class="el-input-number" :min="1" :max="10" size="small" v-model="item.quantity" @click.prevent.self/>
+                          <el-icon class="el-icon-delete" @click="deleteCartItem(item.target, index)" @click.prevent.self>
+                            <Delete />
+                          </el-icon>
+                          <div style="width: 250px; white-space: normal;">{{ item.target }}</div>
+                        </el-card>
+                      </el-dropdown-item>
+                </el-scrollbar>
                 <el-dropdown-item v-if="cartDropdownItems.length != 0" class="check-out-button-dropdown-item">
                   <el-button type="primary" @click="checkoutOnAmazon">{{$t('Check out on Amazon')}}</el-button>                
                 </el-dropdown-item>
@@ -96,7 +98,7 @@
         </el-row>
       </el-header>
       <el-main class="el-main" v-loading="loading" :element-loading-text="$t('Thinking...')">
-        <el-row :gutter="20" justify="center" class="search-form" v-show="isVisible">
+        <!-- <el-row :gutter="20" justify="center" class="search-form" v-show="isVisible">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
             <el-card shadow="hover" class="card" :body-style="{ padding: '5px' }">
               <div style="margin-bottom: 5px;"><el-tag type="warning" effect="dark" round>{{$t('Your Activity')}}:</el-tag></div>
@@ -135,7 +137,7 @@
               </el-dropdown>
             </el-card>
           </el-col>
-        </el-row>
+        </el-row> -->
         <el-row :gutter="20" justify="center" class="search-form" v-show="isVisible">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
             <el-input v-model="userInputInputbox" :placeholder="$t('what\'s in your mind')"  clearable size="large">
@@ -200,13 +202,13 @@
             </el-card>
           </el-col>
         </el-row>
-        <el-row :gutter="20" justify="center" class="search-form" v-show="isVisible">
+        <!-- <el-row :gutter="20" justify="center" class="search-form" v-show="isVisible">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
             <SearchForm @keydown.enter.prevent @submit="initialSubmit($event)" />
           </el-col>
-        </el-row>
+        </el-row> -->
         <el-row :gutter="20" justify="center" class="expand-button" v-if="searchResults.target">
-          <el-button @click="toggleVisibility" size="medium">
+          <!-- <el-button @click="toggleVisibility" size="medium">
             <template v-if="isVisible">
               <el-icon :size="15">
                 <Remove />
@@ -220,7 +222,7 @@
               </el-icon>
               <span>{{$t('Show Search Menu')}}</span>
             </template>
-          </el-button>
+          </el-button> -->
           <el-button size="medium" @click="showShoppingCart">
               <span>{{$t('Shopping Cart')}}</span>
               <el-icon :size="15">
@@ -321,7 +323,7 @@
           </el-button-group>
         </el-row>
         <el-row :gutter="20" justify="center" class="expand-button" v-if="searchResults.target">
-          <el-button @click="toggleVisibility" size="medium">
+          <!-- <el-button @click="toggleVisibility" size="medium">
             <template v-if="isVisible">
               <el-icon :size="15">
                 <Remove />
@@ -335,7 +337,7 @@
               </el-icon>
               <span>{{$t('Show Search Menu')}}</span>
             </template>
-          </el-button>
+          </el-button> -->
           <el-button size="medium" @click="showShoppingCart">
               <span>{{$t('Shopping Cart')}}</span>
               <el-icon :size="15">
@@ -399,7 +401,7 @@ import { ref, computed, reactive, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { ElMessage } from 'element-plus'
-import SearchForm from '../components/SearchForm.vue'
+// import SearchForm from '../components/SearchForm.vue'
 import ChoiceCard from '../components/ChoiceCard.vue'
 import QualityProperty from '../components/QualityProperty.vue'
 import SearchButton from '../components/SearchButton.vue'
@@ -419,7 +421,7 @@ import defaultListImage_en from '@/assets/images/thinking_en.png';
 import defaultListImage_zh from '@/assets/images/thinking_zh.png';
 
 import {
-  Avatar, ArrowDown, ArrowLeft, ArrowRight, CirclePlus, Remove, Tools, ShoppingCart, Delete
+  Avatar, ArrowLeft, ArrowRight, Tools, ShoppingCart, Delete
 } from '@element-plus/icons-vue'
 
 
@@ -705,10 +707,10 @@ const changeLanguage = (language) => {
   }
 }
 
-const fillInputbox = (event) => {
-      userInputInputbox.value = event.target.innerText;
-      generateEssentials()
-}
+// const fillInputbox = (event) => {
+//       userInputInputbox.value = event.target.innerText;
+//       generateEssentials()
+// }
 
 const setItemQuery = (event) => {
   console.log("setItemQuery", event.target.innerText)
@@ -734,10 +736,10 @@ const setItemQuery = (event) => {
   // }
 }
 
-const toggleVisibility = () => {
-    isVisible.value = !isVisible.value;
-    window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
-  }
+// const toggleVisibility = () => {
+//     isVisible.value = !isVisible.value;
+//     window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
+//   }
 
   const addToCart = (choice) => {
   // Check if the item is already in the array

@@ -25,10 +25,11 @@ def callChatGPT_list(data):
             model="gpt-3.5-turbo",
             messages=[
                     {"role": "user", "content": """Generate a list of items essential to {context} as [item1,item2,item3...], so I can shop and prepare for {context}.
-                    Generate items specific to {context}, eliminate ambiguity.
-                    Do not include membership.
-                    For IDs or access cards, return card holder instead.
-                    Do not generate desciption of items. Max 15 most important items, Min 10 items. 
+                    Generate items very specific to {context}.
+                    Eliminate ambiguity, for example, instead of toys you should return cat toys or dog toys.
+                    Do not include {context} membership or member ship card.
+                    For {context} IDs or access cards, return card holder instead.
+                    Do not generate description of items. return 5 most important items.  
                     Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
                     Do not write anything outside of the JSON structure. 
                     Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
@@ -61,81 +62,128 @@ def callChatGPT_async(target, language, search_results):
     result5 = [None]*1
     result6 = [None]*1
     results = [result1, result2, result3, result4, result5, result6]
-    image_urls = [[],[],[]]
+    targets = []
+    image_urls = []
     prices = []
+    amounts = []
+    saving_amounts = []
+    saving_percentages = []
     amazon_fulfills = []
     free_shippings = []
     prime_eligibles = []
-    search_results = random.sample(search_results, min(3, len(search_results)))
+    scores = []
+    # search_results = random.sample(search_results, min(3, len(search_results)))
     for i, search_result in enumerate(search_results):
+        targets.append(search_result.item_info.title.display_value)
         data = {
             "language": language,
             "item_query": search_result.item_info.title.display_value,
             "details": search_result.detail_page_url
         }
 
+        score = 0
+
+        image_urls.append([])
         image_urls[i].append(search_result.images.primary.large.url)
         if search_result.images.variants:
             for url in search_result.images.variants:
                 image_urls[i].append(url.large.url)
         try:
             prices.append(search_result.offers.listings[0].price.display_amount)
+            score += 1
         except AttributeError:
             prices.append("check variants")
 
         try:
+            amounts.append(search_result.offers.listings[0].price.amount)
+        except AttributeError:
+            amounts.append("check variants")    
+
+        try:
+            saving_amounts.append(search_result.offers.listings[0].price.savings.amount)
+            score += 1
+        except AttributeError:
+            saving_amounts.append("check variants")
+
+        try:
+            saving_percentages.append(search_result.offers.listings[0].price.savings.percentage)
+        except AttributeError:
+            saving_percentages.append("check variants")  
+
+        try:
             amazon_fulfills.append(search_result.offers.listings[0].delivery_info.is_amazon_fulfilled)
+            if search_result.offers.listings[0].delivery_info.is_amazon_fulfilled:
+                score += 1
         except AttributeError:
             amazon_fulfills.append("view on checkout")
 
         try:
             free_shippings.append(search_result.offers.listings[0].delivery_info.is_free_shipping_eligible)
+            if search_result.offers.listings[0].delivery_info.is_free_shipping_eligible:
+                score += 1
         except AttributeError:
             free_shippings.append("view on checkout")
 
         try:
             prime_eligibles.append(search_result.offers.listings[0].delivery_info.is_prime_eligible)
+            if search_result.offers.listings[0].delivery_info.is_prime_eligible:
+                score += 1
         except AttributeError:
-            prime_eligibles.append("view on checkout")            
+            prime_eligibles.append("view on checkout")
 
-        thread = threading.Thread(target=callChatGPT, args=(data, results[i]))
-        thread.start()
-        threads.append(thread)
-        # thread = threading.Thread(target=callPaapi_variations, args=(search_result.asin, results[i+3]))
-        # thread.start()
-        # threads.append(thread)
+        scores.append(score)                
+
+    #     thread = threading.Thread(target=callChatGPT, args=(data, results[i]))
+    #     thread.start()
+    #     threads.append(thread)
+    #     # thread = threading.Thread(target=callPaapi_variations, args=(search_result.asin, results[i+3]))
+    #     # thread.start()
+    #     # threads.append(thread)
 
 
-    # Wait for all threads to finish.
-    for thread in threads:
-        thread.join()
+    # # Wait for all threads to finish.
+    # for thread in threads:
+    #     thread.join()
 
     # Get the results for each thread.
     response = {
             "target" : target,
             "choices": []
             }
-    for x in range(3):
-        if results[x][0] is not None:
-          temp1 = json.loads(results[x][0])
+    minScore = 5
+    for x , search_result in enumerate(search_results):
+        # if results[x][0] is not None:
+        #   temp1 = json.loads(results[x][0])
         #   temp2 = json.loads(results[x+3][0])
           tempJSON = {
-                  "target": temp1['target'],
+                #   "target": temp1['target'],
                 #   "variations": temp2,
-                  "pros": temp1['pros'],
+                #   "pros": temp1['pros'],
+                  "target": targets[x],
+                  "pros": [],
                   "cons": [],
                   "url": search_results[x].detail_page_url,
                   "asin": search_results[x].asin,
                   "parent_asin": search_results[x].parent_asin,
                   "price": prices[x],
+                  "amount": amounts[x],
+                  "saving_amount": saving_amounts[x],
+                  "saving_percentage": saving_percentages[x],
                   "amazon_fulfill": amazon_fulfills[x],
                   "free_shipping": free_shippings[x],
                   "prime_eligible": prime_eligibles[x],
                   "image_urls": image_urls[x]
                   }
-          response['choices'].append(tempJSON)
+          if scores[x] == minScore:
+            response['choices'].append(tempJSON)
+          if x == len(search_results)-1:
+              if len(response['choices']) == 0:
+                  minScore = minScore - 1
+                  x = 0
 
     # print(response)
+    if len(response['choices']) > 3:
+        response['choices'] = random.sample(response['choices'], 3)
     return response 
 
 def callChatGPT(data, result):

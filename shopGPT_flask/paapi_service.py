@@ -73,7 +73,7 @@ def search_items(item_query):
             search_index=search_index,
             item_count=item_count,
             resources=search_items_resource,
-            merchant='Amazon',
+            merchant='All',
             min_reviews_rating=4,
             availability='Available' 
         )
@@ -87,7 +87,7 @@ def search_items(item_query):
             response = default_api.search_items(search_items_request)
 
             print("API called Successfully")
-            print("Complete Response:", response)
+            # print("Complete Response:", response)
             return response
 
             """ Parse response """
@@ -209,10 +209,11 @@ def search_items_with_price(item_query, minPrice, maxPrice):
             search_index=search_index,
             item_count=item_count,
             resources=search_items_resource,
-            merchant='Amazon',
+            merchant='All',
             max_price=maxPrice,
             min_price=minPrice,
             min_reviews_rating=4,
+            min_saving_percent=20,
             availability='Available'
         )
     except ValueError as exception:
