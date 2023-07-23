@@ -140,7 +140,7 @@
         </el-row> -->
         <el-row :gutter="20" justify="center" class="search-form" v-show="isVisible">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
-            <el-input v-model="userInputInputbox" :placeholder="$t('what\'s in your mind')"  clearable size="large">
+            <el-input v-model="userInputInputbox" :placeholder="$t('what\'s in your mind')"  clearable size="large" class="my-input">
               <template #append>
                 <el-button type="info" plain @click="generateEssentials">{{$t('Help me get ready')}}</el-button>
               </template>
@@ -150,7 +150,7 @@
         <el-row :gutter="20" justify="center" class="card-container" ref="choice_card_container">
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
             <el-card shadow="hover" class="card" :body-style="{ padding: '5px' }" v-show="isVisible || store.state.generateListResults.itemList.length !== 0">
-              <div style="margin-bottom: 5px;"><el-tag type="warning" effect="dark" round>{{$t('Essentials')}}:</el-tag></div>
+              <!-- <div v-if="store.state.generateListResults.itemList.length !== 0" style="margin-bottom: 5px;"><el-tag type="warning" effect="dark" round>{{$t('Essentials')}}:</el-tag></div> -->
               <el-card v-if="store.state.generateListResults.itemList.length === 0">
                     <el-image :src="defaultListImage" fit="cover"/>
               </el-card>
@@ -160,14 +160,26 @@
                 :key="'first-' + index"
                 @click="setItemQuery($event)"
               > -->
-              <el-badge style="margin: 7px;" value="X" v-for="(item) in store.state.listResults" :key="item.target" @click="deleteFromList(item.target)">
+              <!-- <el-badge style="margin: 7px;" value="X" v-for="(item) in store.state.listResults" :key="item.target" @click="deleteFromList(item.target)"> -->
                 <el-button 
+                  v-for="(item) in store.state.listResults" :key="item.target"
+                  style="margin: 7px;"
                   round 
                   @click.stop="setItemQuery($event)"
                 >
                   {{ item.target }}
                 </el-button>
+                <el-badge 
+                v-if="store.state.generateListResults.itemList.length !== 0"
+                style="margin: 7px;" value="+" @click="moreItems()"
+                >
+                <el-button
+                  round 
+                  >
+                  more items
+                </el-button>
               </el-badge>
+              <!-- </el-badge> -->
               <!-- <div class="confirm-list-button">
                 <el-button style="margin-top: 5px;" v-if="Object.keys(store.state.listResults).length !== 0"
                 type="primary" @click="confirmList">{{$t('Confirm List and View Items')}}</el-button>
@@ -207,7 +219,7 @@
             <SearchForm @keydown.enter.prevent @submit="initialSubmit($event)" />
           </el-col>
         </el-row> -->
-        <el-row :gutter="20" justify="center" class="expand-button" v-if="searchResults.target">
+        <!-- <el-row :gutter="20" justify="center" class="expand-button" v-if="searchResults.target"> -->
           <!-- <el-button @click="toggleVisibility" size="medium">
             <template v-if="isVisible">
               <el-icon :size="15">
@@ -223,14 +235,14 @@
               <span>{{$t('Show Search Menu')}}</span>
             </template>
           </el-button> -->
-          <el-button size="medium" @click="showShoppingCart">
+          <!-- <el-button size="medium" @click="showShoppingCart">
               <span>{{$t('Shopping Cart')}}</span>
               <el-icon :size="15">
                 <ShoppingCart />
               </el-icon>
           </el-button>
-        </el-row>
-        <el-row :gutter="20" justify="center" class="next-button" ref="next_container">
+        </el-row> -->
+        <!-- <el-row :gutter="20" justify="center" class="next-button" ref="next_container">
           <el-button-group>
             <el-button 
               type="primary" 
@@ -271,11 +283,11 @@
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
           </el-button-group>
-        </el-row>
+        </el-row> -->
     <el-row :gutter="20" justify="center" class="card-container">
       <el-scrollbar>
         <div class="scrollbar-flex-content">
-          <div style="margin-left: 5px; max-width: 90vw;" v-for="choice in searchResults.choices" :key="choice.target">
+          <div style="margin-left: 5px; max-width: 95vw;" v-for="choice in searchResults.choices" :key="choice.target">
             <ChoiceCard :choice="choice" @ask-question="askQuestion" @add-to-cart="addToCart" @find-similar="findSimilar"  @find-variants="findVariants"/>
           </div>
         </div>
@@ -393,6 +405,16 @@
         </el-row>
       </el-footer>
     </el-container>
+    <div class="bot-search-bar" v-if="!isVisible">
+      <el-input
+      v-model="userInputInputbox_bot"
+      size="large"
+    >
+    <template #append>
+        <el-button :icon="Search" @click="generateEssentials"/>
+      </template>
+    </el-input>
+    </div>
     </div>
   </template>
   
@@ -421,7 +443,7 @@ import defaultListImage_en from '@/assets/images/thinking_en.png';
 import defaultListImage_zh from '@/assets/images/thinking_zh.png';
 
 import {
-  Avatar, ArrowLeft, ArrowRight, Tools, ShoppingCart, Delete
+  Avatar, ArrowLeft, ArrowRight, Tools, ShoppingCart, Delete, Search
 } from '@element-plus/icons-vue'
 
 
@@ -433,10 +455,11 @@ const globalState = inject('globalState')
 let item_query = ref(null)
 let selectedQualities = ref({})
 let userInputInputbox = ref('')
+let userInputInputbox_bot = ref('')
 let minPrice = ref('')
 let maxPrice = ref('')
 let choice_card_container = ref(null);
-let next_container = ref(null);
+// let next_container = ref(null);
 let cartDropdownItems= ref([]);
 let cart= ref(null);
 let language_dropdown= ref(null);
@@ -495,7 +518,7 @@ const initialSubmit = (query) => {
     store.dispatch('fetchSearchResults', payload)
 
     // Scroll to the position
-    window.scrollTo({ top: next_container.value.$el.offsetTop, behavior: 'smooth' });
+    window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
     isVisible.value = false;
 
   setTimeout(() => {  
@@ -539,6 +562,9 @@ const initialSubmit = (query) => {
 }
 
 const generateEssentials = () => {
+  if(userInputInputbox_bot.value){
+    userInputInputbox.value = userInputInputbox_bot.value
+  }
   closeLanguage()
   if (userInputInputbox.value != null && userInputInputbox.value != '') {
     loading.value = true;
@@ -579,7 +605,7 @@ const preItem = () => {
       store.dispatch('fetchSearchResults', payload)
   }  
     // Scroll to the position
-  window.scrollTo({ top: next_container.value.$el.offsetTop, behavior: 'smooth' });
+  window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
 }
 
 const nextItem = () => {
@@ -601,13 +627,13 @@ const nextItem = () => {
       store.dispatch('fetchSearchResults', payload)
   }  
     // Scroll to the position
-    window.scrollTo({ top: next_container.value.$el.offsetTop, behavior: 'smooth' });
+    window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
 }
 
 const submitQualities = () => {
     store.dispatch('fetchRefinedSearchResults', { target: searchResults.value.target, qualities: selectedQualities.value, minPrice: minPrice.value, maxPrice: maxPrice.value })
     // Scroll to the position
-    window.scrollTo({ top: next_container.value.$el.offsetTop, behavior: 'smooth' });
+    window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
 }
 
 const updateQuality = (selectedQuality) => {
@@ -748,7 +774,7 @@ const setItemQuery = (event) => {
   if (!exists) {
     // If the item doesn't exist, add it to the array
     cartDropdownItems.value.push({
-      target: choice.target, 
+      target: truncateValue(choice.target, 35), 
       asin: choice.asin, 
       image_urls: choice.image_urls, 
       price: choice.price, 
@@ -756,13 +782,13 @@ const setItemQuery = (event) => {
     });
 
     ElMessage({
-      message: choice.target + ' added to cart',
+      message: 'item added to cart',
       type: 'success',
       duration: 2000, // Duration is in milliseconds, so 2000 ms = 2 seconds
     });
   } else {
     ElMessage({
-      message: choice.target + ' is already in the cart',
+      message: 'item already in cart',
       type: 'info',
       duration: 2000,
     });
@@ -798,48 +824,52 @@ const closeLanguage = () => {
   }
 }
 
-const deleteFromList = (item) => {
+// const deleteFromList = (item) => {
 
-  let list = store.state.listResults
-  if(list[item]['target'] != store.state.searchResults['target']){
-  // Check if item exists in list
-  if (!list[item]) {
-        console.error('Item not found in list');
-        return list;
-    }
+//   let list = store.state.listResults
+//   if(list[item]['target'] != store.state.searchResults['target']){
+//   // Check if item exists in list
+//   if (!list[item]) {
+//         console.error('Item not found in list');
+//         return list;
+//     }
 
-    // Get the "pre" and "next" items from the item to be deleted
-    let pre = list[item]['pre'];
-    let next = list[item]['next'];
+//     // Get the "pre" and "next" items from the item to be deleted
+//     let pre = list[item]['pre'];
+//     let next = list[item]['next'];
 
-    // Update the "next" of the "pre" item
-    if (pre !== "" && list[pre]) {
-        list[pre]['next'] = next;
-    }
+//     // Update the "next" of the "pre" item
+//     if (pre !== "" && list[pre]) {
+//         list[pre]['next'] = next;
+//     }
 
-    // Update the "pre" of the "next" item
-    if (next !== "" && list[next]) {
-        list[next]['pre'] = pre;
-    }
+//     // Update the "pre" of the "next" item
+//     if (next !== "" && list[next]) {
+//         list[next]['pre'] = pre;
+//     }
 
-    // Delete the item from list
-    delete list[item];
+//     // Delete the item from list
+//     delete list[item];
 
-    console.log(store.state.listResults)
+//     console.log(store.state.listResults)
 
-    ElMessage({
-        message: item + ' Deleted',
-        type: 'success',
-        duration: 2000, // Duration is in milliseconds, so 2000 ms = 2 seconds
-    });
-  }else{
-    ElMessage({
-        message: 'Present item can not be deleted',
-        type: 'error',
-        duration: 2000, // Duration is in milliseconds, so 2000 ms = 2 seconds
-    });
-  }
+//     ElMessage({
+//         message: item + ' Deleted',
+//         type: 'success',
+//         duration: 2000, // Duration is in milliseconds, so 2000 ms = 2 seconds
+//     });
+//   }else{
+//     ElMessage({
+//         message: 'Present item can not be deleted',
+//         type: 'error',
+//         duration: 2000, // Duration is in milliseconds, so 2000 ms = 2 seconds
+//     });
+//   }
 
+// }
+
+const truncateValue = (value, length) => {
+  return value.length > length ? value.substring(0, length - 3) + '...' : value;
 }
 
 const goToHomePage = () => {

@@ -127,3 +127,12 @@ h4 {
   margin-left: 5px;
 }
 
+.my-input .el-input__inner {
+  height: 70px;  /* adjust as needed */
+}
+
+.bot-search-bar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}

@@ -101,12 +101,13 @@ def callChatGPT_async(target, language, search_results):
 
         try:
             saving_amounts.append(search_result.offers.listings[0].price.savings.amount)
-            score += 1
         except AttributeError:
             saving_amounts.append("check variants")
 
         try:
             saving_percentages.append(search_result.offers.listings[0].price.savings.percentage)
+            if search_result.offers.listings[0].price.savings.percentage >= 20:
+                score += 1
         except AttributeError:
             saving_percentages.append("check variants")  
 
@@ -151,7 +152,8 @@ def callChatGPT_async(target, language, search_results):
             "choices": []
             }
     minScore = 5
-    for x , search_result in enumerate(search_results):
+    x = 0
+    while x < len(search_results):
         # if results[x][0] is not None:
         #   temp1 = json.loads(results[x][0])
         #   temp2 = json.loads(results[x+3][0])
@@ -176,8 +178,11 @@ def callChatGPT_async(target, language, search_results):
                   }
           if scores[x] == minScore:
             response['choices'].append(tempJSON)
+            del search_results[x]
+
+          x += 1  
           if x == len(search_results)-1:
-              if len(response['choices']) == 0:
+              if len(response['choices']) < 3 and minScore >= 2:
                   minScore = minScore - 1
                   x = 0
 

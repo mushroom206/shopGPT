@@ -80,6 +80,7 @@ const messages = {
     'Essentials': 'Essentials',
     'Check Variants': 'Check Variants',
     'Household products': 'Household products',
+    'Deep Discount': 'Deep Discount',
     // other translations...
   },
   Simplified_Chinese: {
@@ -126,6 +127,7 @@ const messages = {
     'Your Activity': '你的活动',
     'Essentials': '必需品',
     'Household products': '家居用品',
+    'Deep Discount': '大幅折扣',
     // other translations...
   }
   // other languages...

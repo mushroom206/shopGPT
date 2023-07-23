@@ -32,8 +32,8 @@
                 <div class="amazon-info" v-if="!choice.default && localData.choice.amazon_fulfill"><el-tag size="large" type="success" effect="plain" round>{{$t('Fulfilled by Amazon')}}</el-tag></div>
                 <div class="amazon-info" style="margin-top: 5px;" v-if="!choice.default && localData.choice.free_shipping"><el-tag size="large" type="success" effect="plain" round>{{$t('Free Shipping')}}</el-tag></div>
                 <div class="amazon-info" style="margin-top: 5px;" v-if="!choice.default && localData.choice.prime_eligible"><el-tag size="large" type="success" effect="plain" round>{{$t('Prime Eligible')}}</el-tag></div>
-                <div class="amazon-info" style="margin-top: 5px;" v-if="!choice.default"><el-tag size="large" type="success" effect="plain" round><i class="fa fa-star"></i>{{$t('Above 4 stars')}}</el-tag></div>
-                <div class="amazon-info" style="margin-top: 5px;" v-if="!choice.default && Number(localData.choice.saving_amount)"><el-tag size="large" type="success" effect="plain" round>{{$t('Deep Discount')}}</el-tag></div>
+                <div class="amazon-info" style="margin-top: 5px;" v-if="!choice.default"><el-tag size="large" type="success" effect="plain" round>{{$t('Above 4 stars')}}</el-tag></div>
+                <div class="amazon-info" style="margin-top: 5px;" v-if="!choice.default && Number(localData.choice.saving_amount) && Number(localData.choice.saving_percentage) >= 20"><el-tag size="large" type="success" effect="plain" round>{{$t('Deep Discount')}}</el-tag></div>
                 <!-- <div class="amazon-info" style="margin-top: 15px;" v-if="!choice.default"><el-button @click="findVariants" size="medium" type="primary" :icon="Search">{{$t('Check Variants')}}</el-button></div> -->
               </div>
             </div>
