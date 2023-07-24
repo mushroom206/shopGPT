@@ -197,7 +197,14 @@
                   </el-dropdown-menu>
                 </template>
               </el-dropdown> -->
-              <div v-if="store.state.generateListResults.itemList.length === 0" style="text-align: center;">{{$t('Discover items with')}} <el-tag type="warning" >{{$t('most value')}}</el-tag> <el-tag type="warning" >{{$t('best rating')}}</el-tag><el-tag type="warning" >{{$t('fastest delivery')}}</el-tag> {{$t('and')}} <el-tag type="warning" >{{$t('significant discounts')}}</el-tag></div>
+              <div v-if="store.state.generateListResults.itemList.length === 0" style="margin-top: 5px; text-align: center;">
+                <el-text>{{$t('Discover items with')}} </el-text>
+                <el-tag type="warning" ><el-text type="warning" size="large">{{$t('most value')}}</el-text></el-tag> 
+                <el-tag type="warning" ><el-text type="warning" size="large">{{$t('best rating')}}</el-text></el-tag>
+                <el-tag type="warning" ><el-text type="warning" size="large">{{$t('fastest delivery')}}</el-text></el-tag>
+                <el-text> {{$t('and')}} </el-text>
+                <el-tag type="warning" ><el-text type="warning" size="large">{{$t('significant discounts')}}</el-text></el-tag>
+              </div>
             </el-card>
           </el-col>
         </el-row>
