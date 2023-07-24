@@ -332,7 +332,7 @@
             {{$t('Next item loading...')}}
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
-          <el-button v-else size="medium" @click="showShoppingCart">
+          <el-button v-else-if="store.state.generateListResults.itemList.length !== 0" size="medium" @click="showShoppingCart">
               <span>{{$t('Shopping Cart')}}</span>
               <el-icon :size="15">
                 <ShoppingCart />
