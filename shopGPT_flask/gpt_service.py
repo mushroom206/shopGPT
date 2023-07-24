@@ -24,12 +24,13 @@ def callChatGPT_list(data):
             completion = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "user", "content": """Generate a list of items essential to {context} as [item1,item2,item3...], so I can shop and prepare for {context}.
-                    Generate items very specific to {context}.
+                    {"role": "user", "content": """Generate a list of items relevant to {context} as [item1,item2,item3...], so I can shop and prepare for {context}.
+                    Try to generate items specific to {context} unless out of options.
+                    If out of options, return items in higher level or broader categories. 
                     Eliminate ambiguity, for example, instead of toys you should return cat toys or dog toys.
                     Do not include {context} membership or member ship card.
                     For {context} IDs or access cards, return card holder instead.
-                    Do not generate description of items. return 5 most important items.  
+                    Do not generate description of items. return 5 items.  
                     Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
                     Do not write anything outside of the JSON structure. 
                     Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
@@ -38,6 +39,7 @@ def callChatGPT_list(data):
                     "context": "",
                     "itemList": []
                     }
+                    context is type String, and itemList is type List.
                     now {context} =""" + data['list_query']
                     }
             ]
@@ -61,13 +63,14 @@ def callChatGPT_get_more_items(data):
             completion = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "user", "content": """Generate a list of items essential to {context} as [item1,item2,item3...], so I can shop and prepare for {context}.
-                    Generate items very specific to {context}.
+                    {"role": "user", "content": """Generate a list of items relevant to {context} as [item1,item2,item3...], so I can shop and prepare for {context}.
+                    Do not include these items: """+ str.join(', ', data['itemList']) +""". 
+                    Try to generate items specific to {context} unless out of options.
+                    If out of options, return items in higher level or broader categories.
                     Eliminate ambiguity, for example, instead of toys you should return cat toys or dog toys.
                     Do not include {context} membership or member ship card.
                     For {context} IDs or access cards, return card holder instead.
-                    Do not generate description of items. return 5 most important items. 
-                    Do not include these items: """+ str.join(', ', data['itemList']) +""".
+                    Do not generate description of items. return 5 items.  
                     Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
                     Do not write anything outside of the JSON structure. 
                     Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
@@ -76,8 +79,10 @@ def callChatGPT_get_more_items(data):
                     "context": "",
                     "itemList": []
                     }
+                    context is type String, and itemList is type List.
                     now {context} =""" + data['context']
                     }
+                    
                 ]
             )
             response = completion.choices[0].message.content

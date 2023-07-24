@@ -134,6 +134,7 @@ const messages = {
     'Find similar Item': '找近似商品',
     'Your Activity': '你的活动',
     'Essentials': '必需品',
+    'Options': '选项',
     'Household products': '家居用品',
     'Deep Discount': '大幅折扣',
     'looking for something?': '需要什么吗？',
@@ -212,7 +213,11 @@ const store = createStore({
             results['qualities-properties'] = state.searchResults['qualities-properties'];
         }
         if(!results.empty){
-          if(results.target.includes(state.searchResults.target)){
+          //check if properties are included in the target
+          if(results.target.includes(state.searchResults.target) 
+          && results['qualities-properties']
+          && results['qualities-properties'].length != 0 
+          && !results.target.include(results['qualities-properties'][0].quality) ){
             results.target = state.searchResults.target
           }
           state.searchResults = results;
@@ -460,7 +465,7 @@ actions: {
         console.error('Error parsing response:', e);
         results = response;  // Use the original response if parsing fails
       }
-      store.state.generateListResults.itemList += results.itemList
+      store.state.generateListResults.itemList =  store.state.generateListResults.itemList.concat(results.itemList)
       commit('setListResults', results.itemList);
       commit('endLoading'); 
       // ElMessageBox.alert(results['tip'], 'tip', {
