@@ -51,6 +51,43 @@ def callChatGPT_list(data):
         retries += 1
         time.sleep(1)      
 
+def callChatGPT_get_more_items(data):
+    # print("callChatGPT_get_more_items")
+    # print(data)
+    MAX_RETRIES = 3
+    retries = 0
+    while retries < MAX_RETRIES:
+        try:
+            completion = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "user", "content": """Generate a list of items essential to {context} as [item1,item2,item3...], so I can shop and prepare for {context}.
+                    Generate items very specific to {context}.
+                    Eliminate ambiguity, for example, instead of toys you should return cat toys or dog toys.
+                    Do not include {context} membership or member ship card.
+                    For {context} IDs or access cards, return card holder instead.
+                    Do not generate description of items. return 5 most important items. 
+                    Do not include these items: """+ str.join(', ', data['itemList']) +""".
+                    Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
+                    Do not write anything outside of the JSON structure. 
+                    Write the Value of JSON in """+ data['language'] +""", Key of JSON in English. 
+                    The structure is as follow: 
+                    {
+                    "context": "",
+                    "itemList": []
+                    }
+                    now {context} =""" + data['context']
+                    }
+                ]
+            )
+            response = completion.choices[0].message.content
+            # print(response)
+            return response
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+
+        retries += 1
+        time.sleep(1)
 
 def callChatGPT_async(target, language, search_results):
     # Create three threads to call ChatGPT simultaneously.
@@ -179,12 +216,19 @@ def callChatGPT_async(target, language, search_results):
           if scores[x] == minScore:
             response['choices'].append(tempJSON)
             del search_results[x]
-
-          x += 1  
-          if x == len(search_results)-1:
+            if x == len(search_results):
               if len(response['choices']) < 3 and minScore >= 2:
                   minScore = minScore - 1
                   x = 0
+            else:
+                x += 1      
+          else:
+            if x == len(search_results)-1:
+              if len(response['choices']) < 3 and minScore >= 2:
+                  minScore = minScore - 1
+                  x = 0
+            else:
+                x += 1               
 
     # print(response)
     if len(response['choices']) > 3:

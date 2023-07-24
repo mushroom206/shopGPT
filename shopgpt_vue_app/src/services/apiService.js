@@ -50,6 +50,35 @@ async function generateList(payload) {
 }
 
 
+async function getMoreItems(payload) {
+  const maxRetries = 1;
+  const delayBetweenRetriesMs = 1000;
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      console.log(`Attempt ${attempt+1}: Sending axios request with payload:`, payload);
+      const response = await axios.post(`${API_URL}getMoreItems`, payload, { timeout });
+      return response.data;  // If the request is successful, return the result immediately
+    } catch (error) {
+      console.error('Error:', error);
+
+      // Show an alert
+      // ElMessageBox.alert('generateList network error, please try again', 'Info', {
+      //   confirmButtonText: 'OK'
+      // });
+
+      // If this was the last attempt, rethrow the error
+      // if (attempt === maxRetries - 1) {
+      //   throw error;
+      // }
+
+      // If there are more attempts left, wait for a bit before trying again
+      await new Promise(resolve => setTimeout(resolve, delayBetweenRetriesMs));
+    }
+  }
+}
+
+
 // async function searchItems(payload) {
 //   try {
 //     console.log('Sending axios request with payload: ', payload);
@@ -267,6 +296,7 @@ async function getUserSearchHistory(userId) {
 
 export default {
   generateList,
+  getMoreItems,
   searchItems,
   searchProperties,
   refineSearchItems,

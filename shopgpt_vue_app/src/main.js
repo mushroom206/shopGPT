@@ -78,9 +78,11 @@ const messages = {
     'Find similar Item': 'Find similar Item',
     'Your Activity': 'Your Activity',
     'Essentials': 'Essentials',
-    'Check Variants': 'Check Variants',
+    'Options': 'Options',
     'Household products': 'Household products',
     'Deep Discount': 'Deep Discount',
+    'looking for something?': 'looking for something?',
+    'Best Deal': 'Best Deal',
     // other translations...
   },
   Simplified_Chinese: {
@@ -128,6 +130,8 @@ const messages = {
     'Essentials': '必需品',
     'Household products': '家居用品',
     'Deep Discount': '大幅折扣',
+    'looking for something?': '需要什么吗？',
+    'Best Deal': '最优选',
     // other translations...
   }
   // other languages...
@@ -418,6 +422,55 @@ actions: {
       })
     } catch (error) {
       console.error('Error ask question results:', error);
+    } finally {
+      commit('endLoading');  // End loading after the API request and committing the results or catching an error
+    }
+  },
+  async fetchMoreItems({ commit, dispatch }) {
+    try {
+      commit('startLoading');  // Start loading before the API request
+      let queryObject = store.state.generateListResults
+      queryObject.loading_flag = false;
+      queryObject.commit_flag = true;
+      queryObject.language = store.state.lang;
+      const response = await apiService.getMoreItems(queryObject);
+      let results;
+      try {
+        results = JSON.parse(response);
+      } catch (e) {
+        console.error('Error parsing response:', e);
+        results = response;  // Use the original response if parsing fails
+      }
+      store.state.generateListResults.itemList += results.itemList
+      commit('setListResults', results.itemList);
+      commit('endLoading'); 
+      // ElMessageBox.alert(results['tip'], 'tip', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        // confirmButtonText: 'OK',
+        // callback: (action) => {  // Remove type annotation here
+        //   ElMessage({
+        //     type: 'info',
+        //     message: `action: ${action}`,
+        //   })
+        // },
+      // })
+      queryObject.item_query = results.itemList[0]
+      dispatch('fetchSearchResults', queryObject)
+
+      results.itemList.forEach((result, index) => {
+        if(index != 0){
+          let queryObject1 = {...queryObject}
+          queryObject1.item_query = result
+          queryObject1.commit_flag = false;
+          setTimeout(() => { 
+          dispatch('fetchSearchResults', queryObject1)
+          }, 3000);
+        }
+      });
+      
+    } catch (error) {
+      console.error('Error fetching search results:', error);
     } finally {
       commit('endLoading');  // End loading after the API request and committing the results or catching an error
     }

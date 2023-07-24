@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from gpt_service import callChatGPT_async, callChatGPT_ask, callChatGPT_list, callChatGPT_properties
+from gpt_service import callChatGPT_async, callChatGPT_ask, callChatGPT_list, callChatGPT_properties, callChatGPT_get_more_items
 from paapi_service import search_items, search_items_with_price, get_variations
 from firebase_service import save_user_email, save_search_history, retrieve_search_history
 
@@ -25,6 +25,23 @@ def generateList():
         print('search error')
         print(e)
         return jsonify({"error": "An error occurred while processing the request"}), 500
+    
+@app.route('/api/getMoreItems', methods=['POST'])
+def getMoreItems():
+    try:
+        print('getMoreItems try')
+        data = request.get_json()
+        # print("search()"+str(data))
+        # if 'email' in data: # if user is logged in
+        #     save_search_history(data['email'], data['list_query'])
+        result = callChatGPT_get_more_items(data)
+        print("38")
+        print(result)
+        return jsonify(result), 200
+    except Exception as e:
+        print('search error')
+        print(e)
+        return jsonify({"error": "An error occurred while processing the request"}), 500    
 
 @app.route('/api/search', methods=['POST'])
 def search():

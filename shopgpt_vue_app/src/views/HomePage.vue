@@ -140,9 +140,9 @@
         </el-row> -->
         <el-row :gutter="20" justify="center" class="search-form" v-show="isVisible">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
-            <el-input v-model="userInputInputbox" :placeholder="$t('what\'s in your mind')"  clearable size="large" class="my-input">
+            <el-input v-model="userInputInputbox" :placeholder="$t('looking for something?')"  clearable size="large" class="my-input">
               <template #append>
-                <el-button type="info" plain @click="generateEssentials">{{$t('Help me get ready')}}</el-button>
+                <el-button type="info" plain @click="generateEssentials">{{$t('Best Deal')}}</el-button>
               </template>
             </el-input>
           </el-col>
@@ -171,12 +171,12 @@
                 </el-button>
                 <el-badge 
                 v-if="store.state.generateListResults.itemList.length !== 0"
-                style="margin: 7px;" value="+" @click="moreItems()"
+                style="margin: 7px;" value="+" @click="moreItems"
                 >
                 <el-button
                   round 
                   >
-                  more items
+                  more
                 </el-button>
               </el-badge>
               <!-- </el-badge> -->
@@ -334,7 +334,7 @@
             </el-button>
           </el-button-group>
         </el-row>
-        <el-row :gutter="20" justify="center" class="expand-button" v-if="searchResults.target">
+        <!-- <el-row :gutter="20" justify="center" class="expand-button" v-if="searchResults.target"> -->
           <!-- <el-button @click="toggleVisibility" size="medium">
             <template v-if="isVisible">
               <el-icon :size="15">
@@ -350,13 +350,13 @@
               <span>{{$t('Show Search Menu')}}</span>
             </template>
           </el-button> -->
-          <el-button size="medium" @click="showShoppingCart">
+          <!-- <el-button size="medium" @click="showShoppingCart">
               <span>{{$t('Shopping Cart')}}</span>
               <el-icon :size="15">
                 <ShoppingCart />
               </el-icon>
           </el-button>
-        </el-row>    
+        </el-row>     -->
     <el-row :gutter="20" justify="center" class="fine-tune-section">
       <el-col :xs="24" :sm="18" :md="10" :lg="8">
         <el-card :body-style="{ padding: '0px' }" v-if="searchResults['qualities-properties'] && searchResults['qualities-properties'].length" shadow="hover" class="fine-tune-card">
@@ -414,6 +414,11 @@
         <el-button :icon="Search" @click="generateEssentials"/>
       </template>
     </el-input>
+    <el-button size="large" @click="showShoppingCart" style="margin-right: 5px;" >
+      <el-icon :size="20">
+        <ShoppingCart />
+      </el-icon>
+    </el-button>
     </div>
     </div>
   </template>
@@ -584,6 +589,10 @@ const generateEssentials = () => {
 
     isVisible.value = false;
   }
+}
+
+const moreItems = () => {
+    store.dispatch('fetchMoreItems')
 }
 
 const preItem = () => {
@@ -915,7 +924,6 @@ onMounted(() => {
 
   .card-container{
     background-color: honeydew;
-    padding-top: 10px;
     padding-bottom: 10px;
   }
   .search-form{

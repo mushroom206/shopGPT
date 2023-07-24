@@ -80,10 +80,10 @@
               <el-image :src="require('@/assets/images/amazon_button.png')" :fit="contain" />
             </el-link> -->
             <el-link @click="addToCart" style="margin-bottom: 5px; margin-right:5px;">
-              <el-image :src="require('@/assets/images/amazon_button.png')" :fit="contain" style="width: 140px; height: 35px" />
+              <el-image :src="require('@/assets/images/amazon_button.png')" :fit="contain" style="width: 125px; height: 35px" />
             </el-link>
             <!-- <el-button @click="findSimilar" style="margin-bottom: 5px;" size="medium" type="primary" :icon="Search">{{$t('Find similar Item')}}</el-button> -->
-            <el-button style="margin-top: -5px;" @click="findVariants" size="medium" type="primary" :icon="Search">{{$t('Check Variants')}}</el-button>
+            <el-button style="margin-top: -5px;" @click="findVariants" size="medium" type="primary" :icon="Search">{{$t('Options')}}</el-button>
             </div>
             <!-- <div class="amazon-price" v-if="!choice.default"> 
               <h4>For: {{ choice.price }}</h4>
