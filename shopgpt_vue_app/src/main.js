@@ -83,6 +83,12 @@ const messages = {
     'Deep Discount': 'Deep Discount',
     'looking for something?': 'looking for something?',
     'Best Deal': 'Best Deal',
+    'Discover items with': 'Discover items with',
+    'most value': 'most value',
+    'best rating': 'best rating',
+    'fastest delivery': 'fastest delivery',
+    'and': 'and',
+    'significant discounts': 'significant discounts',
     // other translations...
   },
   Simplified_Chinese: {
@@ -132,6 +138,12 @@ const messages = {
     'Deep Discount': '大幅折扣',
     'looking for something?': '需要什么吗？',
     'Best Deal': '最优选',
+    'Discover items with': '找到',
+    'most value': '最有价值',
+    'best rating': '最高评价',
+    'fastest delivery': '最快送达',
+    'and': '以及',
+    'significant discounts': '最高折扣',
     // other translations...
   }
   // other languages...

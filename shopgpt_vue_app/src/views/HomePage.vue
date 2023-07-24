@@ -176,7 +176,7 @@
                 <el-button
                   round 
                   >
-                  more
+                  {{$t('more')}}
                 </el-button>
               </el-badge>
               <!-- </el-badge> -->
@@ -197,10 +197,11 @@
                   </el-dropdown-menu>
                 </template>
               </el-dropdown> -->
+              <div v-if="store.state.generateListResults.itemList.length === 0" style="text-align: center;">{{$t('Discover items with')}} <el-tag type="warning" >{{$t('most value')}}</el-tag> <el-tag type="warning" >{{$t('best rating')}}</el-tag><el-tag type="warning" >{{$t('fastest delivery')}}</el-tag> {{$t('and')}} <el-tag type="warning" >{{$t('significant discounts')}}</el-tag></div>
             </el-card>
           </el-col>
         </el-row>
-        <el-row :gutter="20" justify="center" class="card-container" v-if="store.state.userSearchHistory.searchHistory && store.state.userSearchHistory.searchHistory
+        <!-- <el-row :gutter="20" justify="center" class="card-container" v-if="store.state.userSearchHistory.searchHistory && store.state.userSearchHistory.searchHistory
 .length != 0">
           <el-col :xs="24" :sm="12" :md="8" :lg="6">
             <el-card shadow="hover" class="card" :body-style="{ padding: '10px' }">
@@ -213,7 +214,7 @@
               </el-button>
             </el-card>
           </el-col>
-        </el-row>
+        </el-row> -->
         <!-- <el-row :gutter="20" justify="center" class="search-form" v-show="isVisible">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
             <SearchForm @keydown.enter.prevent @submit="initialSubmit($event)" />
