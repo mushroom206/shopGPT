@@ -293,7 +293,7 @@
         </div>
       </el-scrollbar>
     </el-row>
-    <el-row :gutter="20" justify="center" class="next-button">
+    <!-- <el-row :gutter="20" justify="center" class="next-button">
       <el-button-group>
             <el-button 
               type="primary" 
@@ -333,7 +333,7 @@
               <el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
           </el-button-group>
-        </el-row>
+        </el-row> -->
         <!-- <el-row :gutter="20" justify="center" class="expand-button" v-if="searchResults.target"> -->
           <!-- <el-button @click="toggleVisibility" size="medium">
             <template v-if="isVisible">
@@ -448,7 +448,7 @@ import defaultListImage_en from '@/assets/images/thinking_en.png';
 import defaultListImage_zh from '@/assets/images/thinking_zh.png';
 
 import {
-  Avatar, ArrowLeft, ArrowRight, Tools, ShoppingCart, Delete, Search
+  Avatar, Tools, ShoppingCart, Delete, Search
 } from '@element-plus/icons-vue'
 
 
@@ -595,27 +595,27 @@ const moreItems = () => {
     store.dispatch('fetchMoreItems')
 }
 
-const preItem = () => {
-  globalState.itemQuery = store.state.listResults[store.state.searchResults.target].pre
-  store.dispatch('setPreItem', store.state.listResults[store.state.searchResults.target].pre)
-  if(store.state.listResults[store.state.searchResults.target].pre 
-  && store.state.listResults[store.state.listResults[store.state.searchResults.target].pre].choices.length == 0){
-    const storedUserData = localStorage.getItem('userData')
-      let payload = { item_query: store.state.listResults[store.state.searchResults.target].pre }
+// const preItem = () => {
+//   globalState.itemQuery = store.state.listResults[store.state.searchResults.target].pre
+//   store.dispatch('setPreItem', store.state.listResults[store.state.searchResults.target].pre)
+//   if(store.state.listResults[store.state.searchResults.target].pre 
+//   && store.state.listResults[store.state.listResults[store.state.searchResults.target].pre].choices.length == 0){
+//     const storedUserData = localStorage.getItem('userData')
+//       let payload = { item_query: store.state.listResults[store.state.searchResults.target].pre }
 
-      if (storedUserData) {
-        const userData = JSON.parse(storedUserData)
-        payload.email = userData.email // add email to payload
-      }
+//       if (storedUserData) {
+//         const userData = JSON.parse(storedUserData)
+//         payload.email = userData.email // add email to payload
+//       }
 
-      payload.loading_flag = false;
-      payload.commit_flag = false;
+//       payload.loading_flag = false;
+//       payload.commit_flag = false;
 
-      store.dispatch('fetchSearchResults', payload)
-  }  
-    // Scroll to the position
-  window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
-}
+//       store.dispatch('fetchSearchResults', payload)
+//   }  
+//     // Scroll to the position
+//   window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
+// }
 
 const nextItem = () => {
   globalState.itemQuery = store.state.listResults[store.state.searchResults.target].next
@@ -795,6 +795,13 @@ const setItemQuery = (event) => {
       type: 'success',
       duration: 2000, // Duration is in milliseconds, so 2000 ms = 2 seconds
     });
+
+    if(store.state.listResults[store.state.searchResults.target].next){
+      setTimeout(() => {
+        nextItem()
+      }, 1500); 
+    }
+
   } else {
     ElMessage({
       message: 'item already in cart',
