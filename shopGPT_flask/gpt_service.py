@@ -220,6 +220,8 @@ def callChatGPT_async(target, language, search_results):
               if len(response['choices']) < 3 and minScore >= 2:
                   minScore = minScore - 1
                   x = 0
+              else:
+                  x += 1    
             else:
                 x += 1      
           else:
@@ -227,6 +229,8 @@ def callChatGPT_async(target, language, search_results):
               if len(response['choices']) < 3 and minScore >= 2:
                   minScore = minScore - 1
                   x = 0
+              else:
+                  x += 1    
             else:
                 x += 1               
 

@@ -287,16 +287,23 @@ actions: {
       payload.item_query = results.itemList[0]
       dispatch('fetchSearchResults', payload)
 
-      results.itemList.forEach((result, index) => {
-        if(index != 0){
-          let payload1 = {...payload}
-          payload1.item_query = result
+      let payload1 = {...payload}
+          payload1.item_query = results.itemList[1]
           payload1.commit_flag = false;
           setTimeout(() => { 
           dispatch('fetchSearchResults', payload1)
           }, 3000);
-        }
-      });
+
+      // results.itemList.forEach((result, index) => {
+      //   if(index != 0){
+      //     let payload1 = {...payload}
+      //     payload1.item_query = result
+      //     payload1.commit_flag = false;
+      //     setTimeout(() => { 
+      //     dispatch('fetchSearchResults', payload1)
+      //     }, 3000);
+      //   }
+      // });
       
     } catch (error) {
       console.error('Error fetching search results:', error);
@@ -458,16 +465,23 @@ actions: {
       queryObject.item_query = results.itemList[0]
       dispatch('fetchSearchResults', queryObject)
 
-      results.itemList.forEach((result, index) => {
-        if(index != 0){
-          let queryObject1 = {...queryObject}
-          queryObject1.item_query = result
+      let queryObject1 = {...queryObject}
+          queryObject1.item_query = results.itemList[1]
           queryObject1.commit_flag = false;
           setTimeout(() => { 
           dispatch('fetchSearchResults', queryObject1)
           }, 3000);
-        }
-      });
+
+      // results.itemList.forEach((result, index) => {
+      //   if(index != 0){
+      //     let queryObject1 = {...queryObject}
+      //     queryObject1.item_query = result
+      //     queryObject1.commit_flag = false;
+      //     setTimeout(() => { 
+      //     dispatch('fetchSearchResults', queryObject1)
+      //     }, 3000);
+      //   }
+      // });
       
     } catch (error) {
       console.error('Error fetching search results:', error);
