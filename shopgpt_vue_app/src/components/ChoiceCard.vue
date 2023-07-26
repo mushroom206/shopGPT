@@ -5,7 +5,7 @@
         <el-main style="padding: 5px;">
           <el-card :body-style="{ 'padding-top': '5px', 'padding-bottom': '0px', 'padding-left': '5px', 'padding-right': '5px', 'font-size': '15px' }">
             <div style="margin-left: 5px;" v-if="!choice.default">
-              <b>{{ choice.target }}</b>
+              <el-text><b>{{ choice.target }}</b></el-text>
             </div>
             <div class="image-description">
               <div>

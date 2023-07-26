@@ -301,7 +301,7 @@
         </div>
       </el-scrollbar>
     </el-row>
-    <el-row :gutter="20" justify="center" class="next-button">
+    <!-- <el-row :gutter="20" justify="center" class="next-button">
       <el-button-group>
             <el-button 
               type="primary" 
@@ -347,7 +347,7 @@
               </el-icon>
           </el-button>
           </el-button-group>
-        </el-row>
+        </el-row> -->
         <!-- <el-row :gutter="20" justify="center" class="expand-button" v-if="searchResults.target"> -->
           <!-- <el-button @click="toggleVisibility" size="medium">
             <template v-if="isVisible">
@@ -419,7 +419,8 @@
         </el-row>
       </el-footer>
     </el-container>
-    <div class="bot-search-bar" v-if="!isVisible">
+    <div v-if="!isVisible">
+      <el-affix position="bottom" :offset="20">
       <el-input
       v-model="userInputInputbox_bot"
       size="large"
@@ -433,6 +434,7 @@
         <ShoppingCart />
       </el-icon>
     </el-button>
+  </el-affix>
     </div>
     </div>
   </template>
@@ -462,7 +464,7 @@ import defaultListImage_en from '@/assets/images/thinking_en.png';
 import defaultListImage_zh from '@/assets/images/thinking_zh.png';
 
 import {
-  Avatar, Tools, ShoppingCart, Delete, Search, ArrowRight, ArrowLeft
+  Avatar, Tools, ShoppingCart, Delete, Search
 } from '@element-plus/icons-vue'
 
 
@@ -609,49 +611,49 @@ const moreItems = () => {
     store.dispatch('fetchMoreItems')
 }
 
-const preItem = () => {
-  globalState.itemQuery = store.state.listResults[store.state.searchResults.target].pre
-  store.dispatch('setPreItem', store.state.listResults[store.state.searchResults.target].pre)
-  if(store.state.listResults[store.state.searchResults.target].pre 
-  && store.state.listResults[store.state.listResults[store.state.searchResults.target].pre].choices.length == 0){
-    const storedUserData = localStorage.getItem('userData')
-      let payload = { item_query: store.state.listResults[store.state.searchResults.target].pre }
+// const preItem = () => {
+//   globalState.itemQuery = store.state.listResults[store.state.searchResults.target].pre
+//   store.dispatch('setPreItem', store.state.listResults[store.state.searchResults.target].pre)
+//   if(store.state.listResults[store.state.searchResults.target].pre 
+//   && store.state.listResults[store.state.listResults[store.state.searchResults.target].pre].choices.length == 0){
+//     const storedUserData = localStorage.getItem('userData')
+//       let payload = { item_query: store.state.listResults[store.state.searchResults.target].pre }
 
-      if (storedUserData) {
-        const userData = JSON.parse(storedUserData)
-        payload.email = userData.email // add email to payload
-      }
+//       if (storedUserData) {
+//         const userData = JSON.parse(storedUserData)
+//         payload.email = userData.email // add email to payload
+//       }
 
-      payload.loading_flag = false;
-      payload.commit_flag = false;
+//       payload.loading_flag = false;
+//       payload.commit_flag = false;
 
-      store.dispatch('fetchSearchResults', payload)
-  }  
-    // Scroll to the position
-  window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
-}
+//       store.dispatch('fetchSearchResults', payload)
+//   }  
+//     // Scroll to the position
+//   window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
+// }
 
-const nextItem = () => {
-  globalState.itemQuery = store.state.listResults[store.state.searchResults.target].next
-  store.dispatch('setNextItem', store.state.listResults[store.state.searchResults.target].next)
-  if(store.state.listResults[store.state.searchResults.target].next 
-  && store.state.listResults[store.state.listResults[store.state.searchResults.target].next].choices.length == 0){
-    const storedUserData = localStorage.getItem('userData')
-      let payload = { item_query: store.state.listResults[store.state.searchResults.target].next }
+// const nextItem = () => {
+//   globalState.itemQuery = store.state.listResults[store.state.searchResults.target].next
+//   store.dispatch('setNextItem', store.state.listResults[store.state.searchResults.target].next)
+//   if(store.state.listResults[store.state.searchResults.target].next 
+//   && store.state.listResults[store.state.listResults[store.state.searchResults.target].next].choices.length == 0){
+//     const storedUserData = localStorage.getItem('userData')
+//       let payload = { item_query: store.state.listResults[store.state.searchResults.target].next }
 
-      if (storedUserData) {
-        const userData = JSON.parse(storedUserData)
-        payload.email = userData.email // add email to payload
-      }
+//       if (storedUserData) {
+//         const userData = JSON.parse(storedUserData)
+//         payload.email = userData.email // add email to payload
+//       }
 
-      payload.loading_flag = false;
-      payload.commit_flag = false;
+//       payload.loading_flag = false;
+//       payload.commit_flag = false;
 
-      store.dispatch('fetchSearchResults', payload)
-  }  
-    // Scroll to the position
-    window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
-}
+//       store.dispatch('fetchSearchResults', payload)
+//   }  
+//     // Scroll to the position
+//     window.scrollTo({ top: choice_card_container.value.$el.offsetTop, behavior: 'smooth' });
+// }
 
 const submitQualities = () => {
     store.dispatch('fetchRefinedSearchResults', { target: searchResults.value.target, qualities: selectedQualities.value, minPrice: minPrice.value, maxPrice: maxPrice.value })
