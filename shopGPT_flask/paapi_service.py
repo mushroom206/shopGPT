@@ -75,8 +75,7 @@ def search_items(item_query):
             resources=search_items_resource,
             merchant='All',
             min_reviews_rating=4,
-            availability='Available',
-            sort_by= 'Relevance' 
+            availability='Available'
         )
     except ValueError as exception:
         print("Error in forming SearchItemsRequest: ", exception)
@@ -215,8 +214,7 @@ def search_items_with_price(item_query, minPrice, maxPrice):
             min_price=minPrice,
             min_reviews_rating=4,
             min_saving_percent=20,
-            availability='Available',
-            sort_by= 'Relevance'
+            availability='Available'
         )
     except ValueError as exception:
         print("Error in forming SearchItemsRequest: ", exception)
