@@ -140,7 +140,7 @@
         </el-row> -->
         <el-row :gutter="20" justify="center" class="search-form" v-show="isVisible">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
-            <el-input v-model="userInputInputbox" :placeholder="$t('looking for something?')"  clearable size="large" class="my-input">
+            <el-input :prefix-icon="Search" v-model="userInputInputbox" :placeholder="$t('looking for something?')"  clearable size="large" class="my-input">
               <template #append>
                 <el-button type="info" plain @click="generateEssentials">{{$t('Best Deal')}}</el-button>
               </template>
@@ -419,23 +419,23 @@
         </el-row>
       </el-footer>
     </el-container>
-    <div v-if="!isVisible">
-      <el-affix position="bottom" :offset="20">
-      <el-input
-      v-model="userInputInputbox_bot"
-      size="large"
-    >
-    <template #append>
-        <el-button :icon="Search" @click="generateEssentials"/>
-      </template>
-    </el-input>
-    <el-button size="large" @click="showShoppingCart" style="margin-right: 5px;" >
-      <el-icon :size="20">
-        <ShoppingCart />
-      </el-icon>
-    </el-button>
-  </el-affix>
-    </div>
+    <!-- <div v-if="!isVisible">
+      <el-affix position="bottom" :offset="0">
+        <el-input
+        v-model="userInputInputbox_bot"
+        size="large"
+      >
+      <template #append>
+          <el-button :icon="Search" @click="generateEssentials"/>
+        </template>
+      </el-input>
+      <el-button size="large" @click="showShoppingCart" style="margin-right: 5px;" >
+        <el-icon :size="20">
+          <ShoppingCart />
+        </el-icon>
+      </el-button>
+    </el-affix>
+    </div> -->
     </div>
   </template>
   
@@ -840,12 +840,12 @@ const deleteCartItem = (target, index) => {
   }
 }
 
-const showShoppingCart = () => {
-  if (cart.value && cart.value.handleOpen) {
-    cart.value.handleOpen()
-  }
-  window.scrollTo({ top: cart.value.$el.offsetTop, behavior: 'smooth' });
-}
+// const showShoppingCart = () => {
+//   if (cart.value && cart.value.handleOpen) {
+//     cart.value.handleOpen()
+//   }
+//   window.scrollTo({ top: cart.value.$el.offsetTop, behavior: 'smooth' });
+// }
 
 const checkoutOnAmazon = () => {
       document.getElementById('amazon-form').submit();
