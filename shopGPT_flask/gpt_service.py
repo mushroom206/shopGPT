@@ -222,7 +222,7 @@ def callChatGPT_async(target, language, search_results):
             response['choices'].append(tempJSON)
             del search_results[x]
             if x == len(search_results):
-              if len(response['choices']) < 3 and minScore >= 2:
+              if len(response['choices']) < 3 and minScore >= 0:
                   minScore = minScore - 1
                   x = 0
               else:
@@ -231,7 +231,7 @@ def callChatGPT_async(target, language, search_results):
                 x += 1      
           else:
             if x == len(search_results)-1:
-              if len(response['choices']) < 3 and minScore >= 2:
+              if len(response['choices']) < 3 and minScore >= 0:
                   minScore = minScore - 1
                   x = 0
               else:
