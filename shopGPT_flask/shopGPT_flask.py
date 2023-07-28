@@ -66,6 +66,8 @@ def search():
                 "choices":[],
                 "empty": True
             }
+        print(data['item_query'])    
+        print(result['choices'])    
         return jsonify(result), 200
     except Exception as e:
         print('search error')

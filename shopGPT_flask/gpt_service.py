@@ -25,7 +25,7 @@ def callChatGPT_list(data):
             model="gpt-3.5-turbo",
             messages=[
                     {"role": "user", "content": """Generate a list of items relevant to {context} as [item1,item2,item3...], so I can shop and prepare for {context}.
-                    Inlude {context} in the list if applicable.
+                    Determine if {context} is an item, if yes, inlude {context} as first item in the list whenever possible.
                     Try to generate items specific to {context} unless out of options.
                     If out of options, return items in higher level or broader categories. 
                     Eliminate ambiguity, for example, instead of toys you should return cat toys or dog toys.
@@ -196,53 +196,58 @@ def callChatGPT_async(target, language, search_results):
             }
     minScore = 5
     x = 0
+    # print(target)
     while x < len(search_results):
+        #   print(search_results[x].item_info.title)
         # if results[x][0] is not None:
         #   temp1 = json.loads(results[x][0])
         #   temp2 = json.loads(results[x+3][0])
-          tempJSON = {
-                #   "target": temp1['target'],
-                #   "variations": temp2,
-                #   "pros": temp1['pros'],
-                  "target": targets[x],
-                  "pros": [],
-                  "cons": [],
-                  "url": search_results[x].detail_page_url,
-                  "asin": search_results[x].asin,
-                  "parent_asin": search_results[x].parent_asin,
-                  "price": prices[x],
-                  "amount": amounts[x],
-                  "saving_amount": saving_amounts[x],
-                  "saving_percentage": saving_percentages[x],
-                  "amazon_fulfill": amazon_fulfills[x],
-                  "free_shipping": free_shippings[x],
-                  "prime_eligible": prime_eligibles[x],
-                  "image_urls": image_urls[x]
-                  }
-          if scores[x] == minScore:
+        tempJSON = {
+        #   "target": temp1['target'],
+        #   "variations": temp2,
+        #   "pros": temp1['pros'],
+        "target": targets[x],
+        "pros": [],
+        "cons": [],
+        "url": search_results[x].detail_page_url,
+        "asin": search_results[x].asin,
+        "parent_asin": search_results[x].parent_asin,
+        "price": prices[x],
+        "amount": amounts[x],
+        "saving_amount": saving_amounts[x],
+        "saving_percentage": saving_percentages[x],
+        "amazon_fulfill": amazon_fulfills[x],
+        "free_shipping": free_shippings[x],
+        "prime_eligible": prime_eligibles[x],
+        "image_urls": image_urls[x]
+        }
+        if scores[x] == minScore:      
             response['choices'].append(tempJSON)
-            del search_results[x]
-            if x == len(search_results):
-              if len(response['choices']) < 3 and minScore >= 0:
-                  minScore = minScore - 1
-                  x = 0
-              else:
-                  x += 1    
-            else:
-                x += 1      
-          else:
-            if x == len(search_results)-1:
-              if len(response['choices']) < 3 and minScore >= 0:
-                  minScore = minScore - 1
-                  x = 0
-              else:
-                  x += 1    
-            else:
-                x += 1               
+        if x == len(search_results) - 1 and len(response['choices']) < 3:
+            minScore = minScore - 1
+            x = - 1
+        x = x + 1
+        #     del search_results[x]
+        #     if x == len(search_results):
+        #       if len(response['choices']) < 3 and minScore >= 0:
+        #           minScore = minScore - 1
+        #           x = 0
+        #       else:
+        #           x += 1    
+        #     else:
+        #         x += 1      
+        #   else:
+        #     if x == len(search_results)-1:
+        #       if len(response['choices']) < 3 and minScore >= 0:
+        #           minScore = minScore - 1
+        #           x = 0
+        #       else:
+        #           x += 1    
+        #     else:
+        #         x += 1               
 
-    # print(response)
     if len(response['choices']) > 3:
-        response['choices'] = random.sample(response['choices'], 3)
+        response['choices'] = random.sample(response['choices'], 3)  
     return response 
 
 def callChatGPT(data, result):
