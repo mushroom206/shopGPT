@@ -142,7 +142,16 @@
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
             <el-input :prefix-icon="Search" v-model="userInputInputbox" :placeholder="$t('looking for something?')"  clearable size="large" class="my-input">
               <template #append>
-                <el-button type="info" plain @click="generateEssentials">{{$t('Best Deal')}}</el-button>
+                <el-button type="info" plain @click="generateEssentials">{{$t('Find Deal')}}</el-button>
+              </template>
+            </el-input>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" justify="center" class="search-form" v-if="store.state.generateListResults.itemList.length !== 0">
+          <el-col ::xs="24" :sm="16" :md="12" :lg="8">
+            <el-input :prefix-icon="Search" v-model="userInputInputbox" clearable size="small" class="my-input-top">
+              <template #append>
+                <el-button type="info" plain @click="generateEssentials">{{$t('Find Deal')}}</el-button>
               </template>
             </el-input>
           </el-col>
@@ -161,24 +170,28 @@
                 @click="setItemQuery($event)"
               > -->
               <!-- <el-badge style="margin: 7px;" value="X" v-for="(item) in store.state.listResults" :key="item.target" @click="deleteFromList(item.target)"> -->
-                <el-button 
-                  v-for="(item) in store.state.listResults" :key="item.target"
-                  style="margin: 7px;"
-                  round 
-                  @click.stop="setItemQuery($event)"
-                >
-                  {{ item.target }}
-                </el-button>
-                <el-badge 
-                v-if="store.state.generateListResults.itemList.length !== 0"
-                style="margin: 7px;" value="+" @click="moreItems"
-                >
-                <el-button
-                  round 
-                  >
-                  {{$t('more')}}
-                </el-button>
-              </el-badge>
+                <el-scrollbar>
+                  <div style="max-height: 20vh;">
+                    <el-button 
+                      v-for="(item) in store.state.listResults" :key="item.target"
+                      style="margin: 7px;"
+                      round 
+                      @click.stop="setItemQuery($event)"
+                    >
+                      {{ item.target }}
+                    </el-button>
+                    <el-badge 
+                    v-if="store.state.generateListResults.itemList.length !== 0"
+                    style="margin: 7px;" value="+" @click="moreItems"
+                    >
+                    <el-button
+                      round 
+                      >
+                      {{$t('more')}}
+                    </el-button>
+                  </el-badge>
+                </div>
+              </el-scrollbar>
               <!-- </el-badge> -->
               <!-- <div class="confirm-list-button">
                 <el-button style="margin-top: 5px;" v-if="Object.keys(store.state.listResults).length !== 0"

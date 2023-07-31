@@ -43,7 +43,7 @@ const messages = {
     'Search' : 'Search',
     'Thinking...' : 'Thinking...',
     'Fine Tune Choices!' : 'Fine Tune Choices!',
-    'Tell me more' : 'Tell me more',
+    'question?' : 'question?',
     'Ask AI' : 'Ask AI',
     'Pros': 'Pros',
     'Cons': 'Cons',
@@ -82,7 +82,7 @@ const messages = {
     'Household products': 'Household products',
     'Deep Discount': 'Deep Discount',
     'looking for something?': 'looking for something?',
-    'Best Deal': 'Best Deal',
+    'Find Deal': 'Find Deal',
     'Discover items with': 'Discover items with',
     'most value': 'most value',
     'best rating': 'best rating',
@@ -99,7 +99,7 @@ const messages = {
     'Search' : '搜索',
     'Thinking...' : '思考中...',
     'Fine Tune Choices!' : '优化结果',
-    'Tell me more' : '了解更多',
+    'question?' : '有问题？',
     'Ask AI' : '问 AI',
     'Pros': '优点',
     'Cons': '缺点',
@@ -138,7 +138,7 @@ const messages = {
     'Household products': '家居用品',
     'Deep Discount': '大幅折扣',
     'looking for something?': '需要什么吗？',
-    'Best Deal': '最优选',
+    'Find Deal': '最优选',
     'Discover items with': '找到',
     'most value': '最有价值',
     'best rating': '最高评价',
@@ -171,7 +171,6 @@ const store = createStore({
       state.generateListResults = results;
     },
     setListResults(state, results) {
-      state.listResults = {};
       results.forEach((result, index) => {
         let pre = index > 0 ? results[index - 1] : '';
         let next = index < results.length - 1 ? results[index + 1] : '';

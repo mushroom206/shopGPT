@@ -28,14 +28,14 @@
                   <div class="amazon-info" style="margin-top: 5px;" v-if="!choice.default"><el-text tag="del">{{ computeDiscountText() }}</el-text></div>
                 </div>
               </div>
-              <div style="margin-left: 10px;">
-                <div class="amazon-info" v-if="!choice.default && localData.choice.amazon_fulfill"><el-tag size="large" type="success" effect="plain" round>{{$t('Fulfilled by Amazon')}}</el-tag></div>
-                <div class="amazon-info" style="margin-top: 5px;" v-if="!choice.default && localData.choice.free_shipping"><el-tag size="large" type="success" effect="plain" round>{{$t('Free Shipping')}}</el-tag></div>
-                <div class="amazon-info" style="margin-top: 5px;" v-if="!choice.default && localData.choice.prime_eligible"><el-tag size="large" type="success" effect="plain" round>{{$t('Prime Eligible')}}</el-tag></div>
-                <div class="amazon-info" style="margin-top: 5px;" v-if="!choice.default"><el-tag size="large" type="success" effect="plain" round>{{$t('Above 4 stars')}}</el-tag></div>
-                <div class="amazon-info" style="margin-top: 5px;" v-if="!choice.default && Number(localData.choice.saving_amount) && Number(localData.choice.saving_percentage) >= 20"><el-tag size="large" type="success" effect="plain" round>{{$t('Deep Discount')}}</el-tag></div>
+              <ul style="margin-left: 10px;" class="check-list">
+                <li class="amazon-info" v-if="!choice.default && localData.choice.amazon_fulfill"><el-tag size="large" type="success" effect="plain">{{$t('Fulfilled by Amazon')}}</el-tag></li>
+                <li class="amazon-info" style="margin-top: 5px;" v-if="!choice.default && localData.choice.free_shipping"><el-tag size="large" type="success" effect="plain">{{$t('Free Shipping')}}</el-tag></li>
+                <li class="amazon-info" style="margin-top: 5px;" v-if="!choice.default && localData.choice.prime_eligible"><el-tag size="large" type="success" effect="plain">{{$t('Prime Eligible')}}</el-tag></li>
+                <li class="amazon-info" style="margin-top: 5px;" v-if="!choice.default"><el-tag size="large" type="success" effect="plain">{{$t('Above 4 stars')}}</el-tag></li>
+                <li class="amazon-info" style="margin-top: 5px;" v-if="!choice.default && Number(localData.choice.saving_amount) && Number(localData.choice.saving_percentage) >= 20"><el-tag size="large" type="success" effect="plain">{{$t('Deep Discount')}}</el-tag></li>
                 <!-- <div class="amazon-info" style="margin-top: 15px;" v-if="!choice.default"><el-button @click="findVariants" size="medium" type="primary" :icon="Search">{{$t('Check Variants')}}</el-button></div> -->
-              </div>
+              </ul>
             </div>
             <!-- <span v-if="!choice.default">{{$t('click to see more')}}</span> -->
             <!-- <div class="description" v-if="!choice.default">{{ choice.description }}</div> -->
@@ -92,7 +92,7 @@
         </el-main>
         <el-footer height="40px" v-if="!choice.default">
           <div class="ask-question">
-            <el-input v-model="question" :placeholder="$t('Tell me more')" :prefix-icon="Search" clearable>
+            <el-input v-model="question" :placeholder="$t('question?')" :prefix-icon="Search" clearable>
               <template #append>
                 <el-button type="primary" @click="askQuestion" :loading="$store.state.loading">{{$t('Ask AI')}}</el-button>
               </template>
