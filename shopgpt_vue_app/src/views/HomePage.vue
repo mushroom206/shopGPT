@@ -149,7 +149,7 @@
         </el-row>
         <el-row :gutter="20" justify="center" class="search-form" v-if="store.state.generateListResults.itemList.length !== 0">
           <el-col ::xs="24" :sm="16" :md="12" :lg="8">
-            <el-input :prefix-icon="Search" v-model="userInputInputbox" clearable size="small" class="my-input-top">
+            <el-input :prefix-icon="Search" v-model="userInputInputbox" clearable size="small">
               <template #append>
                 <el-button type="info" plain @click="generateEssentials">{{$t('Find Deal')}}</el-button>
               </template>
