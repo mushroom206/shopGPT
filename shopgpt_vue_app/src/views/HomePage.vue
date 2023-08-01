@@ -172,11 +172,12 @@
               <!-- <el-badge style="margin: 7px;" value="X" v-for="(item) in store.state.listResults" :key="item.target" @click="deleteFromList(item.target)"> -->
                 <el-scrollbar>
                   <div style="max-height: 20vh;">
-                    <el-button 
+                    <el-button
                       v-for="(item) in store.state.listResults" :key="item.target"
                       style="margin: 7px;"
                       round 
                       @click.stop="setItemQuery($event)"
+                      :icon="Search"
                     >
                       {{ item.target }}
                     </el-button>
