@@ -30,11 +30,14 @@
               </div>
               <ul style="margin-left: 10px;" class="check-list">
                 <li class="amazon-info" v-if="!choice.default && localData.choice.amazon_fulfill"><el-tag size="large" type="success" effect="plain">{{$t('Fulfilled by Amazon')}}</el-tag></li>
-                <li class="amazon-info" style="margin-top: 5px;" v-if="!choice.default && localData.choice.free_shipping"><el-tag size="large" type="success" effect="plain">{{$t('Free Shipping')}}</el-tag></li>
-                <li class="amazon-info" style="margin-top: 5px;" v-if="!choice.default && localData.choice.prime_eligible"><el-tag size="large" type="success" effect="plain">{{$t('Prime Eligible')}}</el-tag></li>
-                <li class="amazon-info" style="margin-top: 5px;" v-if="!choice.default"><el-tag size="large" type="success" effect="plain">{{$t('Above 4 stars')}}</el-tag></li>
-                <li class="amazon-info" style="margin-top: 5px;" v-if="!choice.default && Number(localData.choice.saving_amount) && Number(localData.choice.saving_percentage) >= 20"><el-tag size="large" type="success" effect="plain">{{$t('Deep Discount')}}</el-tag></li>
+                <li class="amazon-info" style="margin-top: 3px;" v-if="!choice.default && localData.choice.free_shipping"><el-tag size="large" type="success" effect="plain">{{$t('Free Shipping')}}</el-tag></li>
+                <li class="amazon-info" style="margin-top: 3px;" v-if="!choice.default && localData.choice.prime_eligible"><el-tag size="large" type="success" effect="plain">{{$t('Prime Eligible')}}</el-tag></li>
+                <li class="amazon-info" style="margin-top: 3px;" v-if="!choice.default"><el-tag size="large" type="success" effect="plain">{{$t('Above 4 stars')}}</el-tag></li>
+                <li class="amazon-info" style="margin-top: 3px;" v-if="!choice.default && Number(localData.choice.saving_amount) && Number(localData.choice.saving_percentage) >= 20"><el-tag size="large" type="success" effect="plain">{{$t('Deep Discount')}}</el-tag></li>
                 <!-- <div class="amazon-info" style="margin-top: 15px;" v-if="!choice.default"><el-button @click="findVariants" size="medium" type="primary" :icon="Search">{{$t('Check Variants')}}</el-button></div> -->
+                <el-link @click="addToCart" style="margin-bottom: 5px;">
+                  <el-image :src="require('@/assets/images/amazon_button.png')" :fit="contain" style="width: 125px; height: 35px" />
+                </el-link> 
               </ul>
             </div>
             <!-- <span v-if="!choice.default">{{$t('click to see more')}}</span> -->
@@ -79,10 +82,8 @@
             <!-- <el-link :href="choice.url" target="_blank">
               <el-image :src="require('@/assets/images/amazon_button.png')" :fit="contain" />
             </el-link> -->
-            <el-link @click="addToCart" style="margin-bottom: 5px; margin-right:5px;">
-              <el-image :src="require('@/assets/images/amazon_button.png')" :fit="contain" style="width: 125px; height: 35px" />
-            </el-link>
-            <!-- <el-button @click="findSimilar" style="margin-bottom: 5px;" size="medium" type="primary" :icon="Search">{{$t('Find similar Item')}}</el-button> -->
+            
+            <el-button @click="findSimilar" style="margin-bottom: 5px;" size="medium" type="primary" :icon="Search">{{$t('Find similar Item')}}</el-button>
             <el-button style="margin-top: -5px;" @click="findVariants" size="medium" type="primary" :icon="Search">{{$t('Options')}}</el-button>
             </div>
             <!-- <div class="amazon-price" v-if="!choice.default"> 
@@ -239,9 +240,9 @@ const addToCart = () => {
   emit('add-to-cart', localData.choice);
 };
 
-// const findSimilar = () => {
-//   emit('find-similar', props.choice.target);
-// };
+const findSimilar = () => {
+  emit('find-similar', props.choice.target);
+};
 
 const findVariants = () => {
   emit('find-variants', props.choice.asin);
