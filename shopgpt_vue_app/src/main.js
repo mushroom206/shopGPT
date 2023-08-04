@@ -170,7 +170,12 @@ const store = createStore({
     setGenerateListResults(state, results) {
       state.generateListResults = results;
     },
-    setListResults(state, results) {
+    setListResults(state, payload) {
+      let results = payload.results
+      let flag = payload.flag
+      if(flag){
+        state.listResults = {}
+      }
       results.forEach((result, index) => {
         let pre = index > 0 ? results[index - 1] : '';
         let next = index < results.length - 1 ? results[index + 1] : '';
@@ -287,7 +292,7 @@ actions: {
         results = response;  // Use the original response if parsing fails
       }
       commit('setGenerateListResults', results);
-      commit('setListResults', results.itemList);
+      commit('setListResults', { results: results.itemList, flag: true });
       commit('endLoading'); 
       // ElMessageBox.alert(results['tip'], 'tip', {
         // if you want to disable its autofocus
@@ -465,7 +470,7 @@ actions: {
         results = response;  // Use the original response if parsing fails
       }
       store.state.generateListResults.itemList =  store.state.generateListResults.itemList.concat(results.itemList)
-      commit('setListResults', results.itemList);
+      commit('setListResults', { results: results.itemList, flag: false });
       commit('endLoading'); 
       // ElMessageBox.alert(results['tip'], 'tip', {
         // if you want to disable its autofocus

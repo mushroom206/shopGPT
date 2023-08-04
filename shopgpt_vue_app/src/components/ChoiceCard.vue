@@ -28,7 +28,7 @@
                   <div class="amazon-info" style="margin-top: 5px;" v-if="!choice.default"><el-text tag="del">{{ computeDiscountText() }}</el-text></div>
                 </div>
               </div>
-              <ul style="margin-left: 10px;" class="check-list">
+              <ul style="margin-left: 10px;" class="check-list"> 
                 <li class="amazon-info" v-if="!choice.default && localData.choice.amazon_fulfill"><el-tag size="large" type="success" effect="plain">{{$t('Fulfilled by Amazon')}}</el-tag></li>
                 <li class="amazon-info" style="margin-top: 3px;" v-if="!choice.default && localData.choice.free_shipping"><el-tag size="large" type="success" effect="plain">{{$t('Free Shipping')}}</el-tag></li>
                 <li class="amazon-info" style="margin-top: 3px;" v-if="!choice.default && localData.choice.prime_eligible"><el-tag size="large" type="success" effect="plain">{{$t('Prime Eligible')}}</el-tag></li>
