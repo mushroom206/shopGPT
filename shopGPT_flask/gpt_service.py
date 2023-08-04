@@ -438,7 +438,7 @@ def callChatGPT_ask(data):
             messages=[
                     {"role": "user", "content": """you are my shopping advisor. 
                     Answer my {question} about {target}, try to be specific and informative.
-                    Define {details} as your product reference link.
+                    Define {details} as your product reference link, but do not include the link in your answer.
                     {target} = """ + data['queryObject']['choice']['target'] + """.
                     {question} = """+ data['queryObject']['question'] + """. 
                     {details} = """+ data['queryObject']['choice']['url'] + """. 
