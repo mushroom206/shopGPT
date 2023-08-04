@@ -25,7 +25,7 @@ def callChatGPT_list(data):
             model="gpt-3.5-turbo",
             messages=[
                     {"role": "user", "content": """Generate a list of items relevant to {context} as [item1,item2,item3...], so I can shop and prepare for {context}.
-                    Determine if {context} is an commodity, if yes, inlude {context} as first item in the list whenever possible.
+                    Inlude {context} itself as the first item in the list if applicable.
                     Try to generate items specific to {context} unless out of options.
                     If out of options, return items in higher level or broader categories. 
                     Eliminate ambiguity, for example, instead of toys you should return cat toys or dog toys.
