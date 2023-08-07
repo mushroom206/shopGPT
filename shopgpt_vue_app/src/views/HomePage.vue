@@ -218,6 +218,7 @@
                 <el-tag type="warning" ><el-text type="warning" size="large">{{$t('fastest delivery')}}</el-text></el-tag>
                 <el-text> {{$t('and')}} </el-text>
                 <el-tag type="warning" ><el-text type="warning" size="large">{{$t('significant discounts')}}</el-text></el-tag>
+                <el-text> {{$t('on Amazon')}} </el-text>
               </div>
             </el-card>
           </el-col>

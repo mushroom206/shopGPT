@@ -445,7 +445,7 @@ def callChatGPT_ask(data):
                     Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
                     Do not write anything outside of the JSON structure. 
                     Write the Value of JSON in """+ data['queryObject']['language'] +""", Key of JSON in English. 
-                    Keep the value of brand and model in english. 
+                    Keep the value of brand and model in english.  
                     The structure is as follow, the key must be the word "answer": 
                     {
                     "answer": ""
