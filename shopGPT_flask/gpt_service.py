@@ -22,7 +22,7 @@ def callChatGPT_list(data):
     while retries < MAX_RETRIES:
         try:
             completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4",
             messages=[
                     {"role": "user", "content": """Generate a list of items relevant to {context} as [item1,item2,item3...], so I can shop and prepare for {context}.
                     Inlude {context} itself as the first item in the list if applicable.
@@ -62,7 +62,7 @@ def callChatGPT_get_more_items(data):
     while retries < MAX_RETRIES:
         try:
             completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4",
             messages=[
                     {"role": "user", "content": """Generate a list of items relevant to {context} as [item1,item2,item3...], so I can shop and prepare for {context}.
                     Do not include these items: """+ str.join(', ', data['itemList']) +""". 
@@ -260,7 +260,7 @@ def callChatGPT(data, result):
     while retries < MAX_RETRIES:
         try:
             completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4",
             messages=[
                     {"role": "user", "content": """you are my shopping advisor. 
                     Define {target} as a product.
@@ -325,7 +325,7 @@ def callChatGPT_properties(data):
     while retries < MAX_RETRIES:
         try:
             completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4",
             messages=[
                     {"role": "user", "content": """you are my shopping advisor. 
                     Define {target} as an item category or a concept of an item. 
