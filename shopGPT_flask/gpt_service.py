@@ -434,7 +434,7 @@ def callChatGPT_ask(data):
     while retries < MAX_RETRIES:
         try:
             completion = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4",
             messages=[
                     {"role": "user", "content": """you are my shopping advisor. 
                     Answer my {question} about {target}, try to be specific and informative.
