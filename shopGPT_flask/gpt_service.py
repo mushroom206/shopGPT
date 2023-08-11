@@ -436,7 +436,12 @@ def callChatGPT_ask(data):
             completion = openai.ChatCompletion.create(
             model="gpt-4",
             messages=[
-                    {"role": "user", "content": data['queryObject']['choice']['target'] + """
+                    {"role": "user", "content": """you are my shopping advisor. 
+                    Answer my {question} about {target}, try to be specific and informative.
+                    Define {details} as your product reference link, refer to the content in the link when you answer, but do not include the link in your answer.
+                    {target} = """ + data['queryObject']['choice']['target'] + """.
+                    {question} = """+ data['queryObject']['question'] + """. 
+                    {details} = """+ data['queryObject']['choice']['url'] + """.
                     Generate your response in valid JSON format, watch out for symbols or contents that may break valid JSON format.
                     Do not write anything outside of the JSON structure. 
                     Write the Value of JSON in """+ data['queryObject']['language'] +""", Key of JSON in English. 
