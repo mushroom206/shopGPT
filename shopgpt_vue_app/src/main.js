@@ -19,13 +19,15 @@ import HomePage from './views/HomePage.vue'
 import PrivacyPolicy from './views/PrivacyPolicy.vue'
 import TermsOfService from './views/TermsOfService.vue'
 import DataDeletion from './views/DataDeletion.vue'
+import UserMap from './views/UserMap.vue'
 
 // Define your routes
 const routes = [
   { path: '/', component: HomePage },
   { path: '/privacy-policy', component: PrivacyPolicy },
   { path: '/terms-of-service', component: TermsOfService },
-  { path: '/data-deletion', component: DataDeletion }
+  { path: '/data-deletion', component: DataDeletion },
+  { path: '/user-map', component: UserMap }
 ]
 
 // Create the router instance and pass the `routes` option
