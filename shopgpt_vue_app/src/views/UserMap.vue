@@ -32,10 +32,12 @@
           { top: '32%', left: '63%' },
           // Add more circles and positions as needed
         ],
+        isCircleClicked: false, // Flag to indicate if a circle is being clicked
       };
     },
     methods: {
       handleCircleClick(index) {
+        this.isCircleClicked = true; // Set the flag to true
         const currentTop = this.circles[index].top;
         const currentLeft = this.circles[index].left;
   
@@ -55,19 +57,15 @@
             this.circles[index].left = `${leftValue}%`;
           }
         }
+  
+        setTimeout(() => {
+          this.isCircleClicked = false; // Reset the flag after a delay
+        }, 0);
       },
       handleOverlayClick(event) {
-        const clickedTop = `${event.clientY}px`;
-        const clickedLeft = `${event.clientX}px`;
-  
-        // Check if the clicked position overlaps with any existing circle
-        const isOverlapping = this.circles.some(
-          (circle) =>
-            Math.abs(parseFloat(circle.top) - event.clientY) < 10 &&
-            Math.abs(parseFloat(circle.left) - event.clientX) < 10
-        );
-  
-        if (!isOverlapping) {
+        if (!this.isCircleClicked) {
+          const clickedTop = `${event.clientY}px`;
+          const clickedLeft = `${event.clientX}px`;
           this.circles.push({ top: clickedTop, left: clickedLeft });
         }
       },
