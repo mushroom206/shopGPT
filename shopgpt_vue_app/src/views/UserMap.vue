@@ -14,8 +14,8 @@
           :style="{ top: circle.top, left: circle.left }"
         >
           <div class="circle1"></div>
-          <div class="circle2"></div>
-          <div class="circle3"></div>
+          <!-- <div class="circle2"></div>
+          <div class="circle3"></div> -->
         </div>
       </div>
     </div>
@@ -120,12 +120,12 @@
   .circle1 {
     animation-delay: 1s;    
   }
-  .circle2 {
+  /* .circle2 {
     animation-delay: 2s; 
   }
   .circle3 {
     animation-delay: 3s;
-  }
+  } */
 }
 
 @keyframes growAndFade {
