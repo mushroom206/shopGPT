@@ -10,10 +10,14 @@
           v-for="(circle, index) in circles"
           :key="index"
           class="circles"
-          @click="handleCircleClick(index)"
+
           :style="{ top: circle.top, left: circle.left }"
         >
-          <div class="circle1"></div>
+        <!-- @click="handleCircleClick(index)" -->
+        <el-image
+            :src="require('@/assets/images/logo-nobackground-1000.png')"
+            class="circle1"
+          ></el-image>
           <!-- <div class="circle2"></div>
           <div class="circle3"></div> -->
         </div>
@@ -103,13 +107,13 @@
 }
 
 .circles {
-  height: 10vmin;
+  height: 5vmin;
   position: absolute;
-  width: 10vmin;
+  width: 5vmin;
   
   > div {
     animation: growAndFade 3s infinite ease-out;
-    background-color: rgb(25, 2, 35);
+    background-color: rgb(255, 255, 255);
     border-radius: 50%;
     height: 100%;
     opacity: 0;
@@ -130,11 +134,11 @@
 
 @keyframes growAndFade {
   0% {
-    opacity: .25;
+    opacity: .9;
     transform: scale(0);
   }
   100% {
-    opacity: 0;
+    opacity: 0.6;
     transform: scale(1);
   }
 }
